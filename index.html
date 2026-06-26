@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MechSuite - 기구설계 보조 시스템</title>
+    <style>
+        :root {
+            --primary-color: #1e293b; 
+            --accent-color: #ef4444;  
+            --bg-color: #f1f5f9;
+            --sidebar-width: 260px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: var(--bg-color); color: #334155; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
+        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; }
+        .sidebar-brand h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.5px; }
+        .sidebar-brand span { font-size: 12px; color: #94a3b8; }
+        .sidebar-menu { list-style: none; margin-top: 20px; flex-grow: 1; }
+        .sidebar-menu li a { display: block; padding: 14px 20px; color: #cbd5e1; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: white; border-left-color: var(--accent-color); }
+        .sidebar-footer { padding: 0 20px; font-size: 11px; color: #64748b; text-align: center; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .main-header { height: 65px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 30px; }
+        .main-header h2 { font-size: 18px; font-weight: 600; color: #1e293b; }
+        .content-body { padding: 30px; overflow-y: auto; flex: 1; }
+        
+        /* 웰컴 섹션 */
+        .welcome-box { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 35px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .welcome-box h3 { font-size: 24px; margin-bottom: 10px; }
+        .welcome-box p { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
+        
+        /* 카드 그리드 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+        .card h4 { font-size: 16px; color: #1e293b; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .card p { font-size: 13px; color: #64748b; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <h1>MechSuite</h1>
+                <span>기구설계 보조 포털 v1.0</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="index.html">🏠 Home</a></li>
+                <li><a href="motion.html">⏱ Tact Time 종합</a></li>
+                <li><a href="#" onclick="alert('준비 중입니다.')">🔩 볼스크류 선정</a></li>
+                <li><a href="#" onclick="alert('준비 중입니다.')">⚙️ 벨트 & 풀리</a></li>
+                <li><a href="#" onclick="alert('준비 중입니다.')">🧪 공차 분석</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <p>© 2026 장비설계팀 Asset</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>System Overview</h2>
+        </div>
+        <div class="content-body">
+            <div class="welcome-box">
+                <h3>MechSuite 포털에 오신 것을 환영합니다</h3>
+                <p>장비 및 기구설계 실무에서 빈번하게 수반되는 다양한 기구학적 연산과 스펙 검증을 신속하고 정확하게 수행하기 위한 사내 기술 자산 포털입니다. 좌측 내비게이션 바를 이용하거나 아래 링크 카드를 통해 필요한 계산 시스템으로 바로 이동할 수 있습니다.</p>
+            </div>
+
+            <div class="grid">
+                <a href="motion.html" class="card">
+                    <h4>⏱ Tact Time 종합 계산기</h4>
+                    <p>목표 속도, 가속도(G), 스트로크를 기반으로 사다리꼴 및 삼각 구동 모션 프로파일을 생성하고, 정확한 파라미터 연산 결과를 그래프와 함께 시각화합니다.</p>
+                </a>
+                <div class="card" onclick="alert('준비 중입니다.')">
+                    <h4>🔩 볼스크류 선정 검토</h4>
+                    <p>정격 수명, 허용 회전수, 좌굴 하중 등 볼스크류 메커니즘 설계 시 요구되는 복합 역학 계산 및 안전율 검증 시스템을 제공할 예정입니다.</p>
+                </div>
+                <div class="card" onclick="alert('준비 중입니다.')">
+                    <h4>⚙️ 벨트 & 풀리 계산</h4>
+                    <p>RPP / 축간거리 / 이빨 개수에 따른 피치경, 루트 직경 계산 및 고정 세트 스크루의 축 간섭 여부를 정밀 분석하는 레이아웃 템플릿입니다.</p>
+                </div>
+                <div class="card" onclick="alert('준비 중입니다.')">
+                    <h4>🧪 공차 누적(Tolerance) 분석</h4>
+                    <p>조립 부품 간 치수 공차 분산 및 누적 누설 공차를 통계적(Worst Case & RSS) 방식으로 계산하여 기구적 간섭 위험도를 사전에 예측합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

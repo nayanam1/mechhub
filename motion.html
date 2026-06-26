@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="webTitle">MechSuite</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #1e293b; 
+            --accent-color: #ef4444;  
+            --bg-color: #f1f5f9;
+            --sidebar-width: 260px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: var(--bg-color); color: #334155; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* 사이드바 스타일 정의 */
+        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
+        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; }
+        .sidebar-brand h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.5px; }
+        .sidebar-brand span { font-size: 12px; color: #94a3b8; }
+        
+        .sidebar-menu { list-style: none; margin-top: 20px; flex-grow: 1; }
+        .sidebar-menu li a { display: block; padding: 14px 20px; color: #cbd5e1; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: white; border-left-color: var(--accent-color); }
+        
+        /* 홈 메뉴 전용 하이라이트 스타일 */
+        .sidebar-menu li.home-link a { color: #f8fafc; font-weight: 600; border-bottom: 1px solid #334155; margin-bottom: 10px; padding-bottom: 15px; }
+        .sidebar-menu li.home-link a:hover { background-color: #334155; }
+
+        .sidebar-footer { padding: 0 20px; font-size: 11px; color: #64748b; text-align: center; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .main-header { height: 65px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 30px; justify-content: space-between; }
+        .main-header h2 { font-size: 18px; font-weight: 600; color: #1e293b; }
+        .content-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .multi-calc-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
+        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 15px; }
+        .card h3 { font-size: 15px; margin-bottom: 15px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; display: flex; justify-content: space-between; }
+        .card h3 span.unit-title { font-weight: normal; color: #64748b; font-size: 12px; }
+        .input-group { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .input-group label { font-size: 13px; color: #64748b; flex: 1; }
+        .input-wrapper { display: flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 4px; overflow: hidden; background: #fff; width: 150px; }
+        .input-wrapper input { flex: 1; border: none; padding: 6px 8px; font-size: 13px; text-align: right; outline: none; width: 100%; }
+        .input-wrapper .unit { background: #f1f5f9; padding: 6px 8px; font-size: 11px; color: #64748b; border-left: 1px solid #cbd5e1; min-width: 55px; text-align: center; }
+        .btn-calc-sm { padding: 6px 12px; background-color: #94a3b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-calc-main { display: block; width: 100%; padding: 10px; background-color: #334155; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; margin-top: 10px; }
+        .btn-calc-main:hover { background-color: var(--primary-color); }
+        .result-graph-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        @media (max-width: 1024px) { .result-graph-container { grid-template-columns: 1fr; } }
+        .result-list { margin-top: 10px; }
+        .result-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .result-item span:first-child { color: #64748b; }
+        .result-item span:last-child { font-weight: 600; color: #0f172a; }
+        .result-item.highlight { border-top: 2px solid #e2e8f0; margin-top: 10px; padding-top: 10px; }
+        .result-item.highlight span:last-child { color: var(--accent-color); font-size: 15px; }
+        .chart-wrapper { min-height: 380px; position: relative; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <h1 id="brandName">MechSuite</h1>
+                <span id="brandSub">v1.0</span>
+            </div>
+            <ul class="sidebar-menu" id="sideMenu">
+                <li class="home-link"><a href="index.html">🏠 Home</a></li>
+                </ul>
+        </div>
+        <div class="sidebar-footer">
+            <p id="footerText"></p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2 id="mainTitle">Tact Time</h2>
+            <span style="font-size: 13px; color:#64748b;" id="breadcrumb">Home</span>
+        </div>
+
+        <div class="content-body">
+            <div class="multi-calc-container">
+                
+                <div class="card">
+                    <h3 id="card1Title">Tact Time <button class="btn-calc-sm" id="btnReset" onclick="location.reload()">Reset</button></h3>
+                    <div class="input-group"><label id="lblV">Velocity</label><div class="input-wrapper"><input type="number" id="targetV" value="500"><div class="unit">mm/sec</div></div></div>
+                    <div class="input-group"><label id="lblS">Distance</label><div class="input-wrapper"><input type="number" id="distance" value="500"><div class="unit">mm</div></div></div>
+                    <div class="input-group"><label id="lblA" style="color:var(--accent-color); font-weight:bold;">Acc.</label><div class="input-wrapper" style="border-color:var(--accent-color);"><input type="number" id="accG" value="0.55" step="0.01"><div class="unit">G</div></div></div>
+                    <button class="btn-calc-main" id="btnRun1" onclick="calculateTactTime()">Run</button>
+                </div>
+
+                <div class="card">
+                    <h3 id="card2Title">Speed</h3>
+                    <div class="input-group"><label>RPM</label><div class="input-wrapper"><input type="number" value="0"><div class="unit">rev/min</div></div></div>
+                    <div class="input-group"><label id="lblLead">Ball Screw Lead</label><div class="input-wrapper"><input type="number" value="0"><div class="unit">mm</div></div></div>
+                    <div class="input-group"><label id="lblRatio">Pulley Ratio</label><div class="input-wrapper"><input type="number" value="0"><div class="unit">ratio</div></div></div>
+                    <div class="result-item" style="margin-top:10px; border:none; padding:0;"><span id="lblResSpeed">Result:</span><span style="color:blue;">- mm/s</span></div>
+                    <button class="btn-calc-main" style="background-color:#94a3b8;" id="btnRun2" onclick="alert('준비 중입니다.')">Run</button>
+                </div>
+
+                <div class="card">
+                    <h3 id="card3Title">Acc.</h3>
+                    <div class="input-group"><label id="lblAccV">Velocity (V)</label><div class="input-wrapper"><input type="number" value="0"><div class="unit">mm/s</div></div></div>
+                    <div class="input-group"><label id="lblAccT">Time (t)</label><div class="input-wrapper"><input type="number" value="0"><div class="unit">msec</div></div></div>
+                    <div class="result-item" style="margin-top:25px; border:none; padding:0;"><span id="lblResAcc1">Acc:</span><span style="color:blue;">- m/s^2</span></div>
+                    <div class="result-item" style="border:none; padding:0;"><span id="lblResAcc2">Acc(G):</span><span style="color:var(--accent-color);">- G</span></div>
+                    <button class="btn-calc-main" style="background-color:#94a3b8;" id="btnRun3" onclick="alert('준비 중입니다.')">Run</button>
+                </div>
+
+            </div>
+
+            <div class="result-graph-container">
+                <div class="card">
+                    <h3 id="cardResultTitle">Results</h3>
+                    <div class="result-list">
+                        <div class="result-item"><span id="outMaxV">Max Velocity</span><span id="resMaxV">-</span></div>
+                        <div class="result-item"><span id="outTa">Acc. Time (ta)</span><span id="resTa">-</span></div>
+                        <div class="result-item"><span id="outTc">Const. Time (tc)</span><span id="resTc">-</span></div>
+                        <div class="result-item"><span id="outTd">Dec. Time (td)</span><span id="resTd">-</span></div>
+                        <div class="result-item highlight"><span id="outTotalT">Total Time (Tact)</span><span id="resTotalT">-</span></div>
+                        <div class="result-item" style="margin-top:10px;"><span id="outDistA">Dist. (Acc)</span><span id="resDistA">-</span></div>
+                        <div class="result-item"><span id="outDistC">Dist. (Const)</span><span id="resDistC">-</span></div>
+                        <div class="result-item"><span id="outDistD">Dist. (Dec)</span><span id="resDistD">-</span></div>
+                        <div class="result-item"><span id="outTotalDist">Total Dist.</span><span id="resTotalDist">-</span></div>
+                    </div>
+                </div>
+
+                <div class="card chart-wrapper">
+                    <h3 id="cardChartTitle">Profile</h3>
+                    <canvas id="motionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rawData = "eyJ0aXRsZSI6Ik1lY2hTdWl0ZSAtIOq4sOq1rOyEpOqzhCDht2ZSDtkeyA6PrjE0IiwiYnJhbmRTdWIiOiLquKDesOq1rOyEpOqzhCDtkeyA6PrsubCDNMS4wIiwibWVudSI6WyLsubXsubYgVGFjdCBUaW1lIOyihe2VcCIsIuyoTrshKzshY3rpZwg7ISg7KCVIiwi6rKM7Yq4ICYg7ZKn66asIiwi6rO17LCoIOWIhOyEneIlXSwiZm9vdGVyIjoiwqkgMjAyNiDsnKXsubXshKzqn4zsubYgQXNzZXQiLCJtYWluSGVhZGVyIjoiVGFjdCBUaW1lIOyihe2VcCPrsubXsubXsubYgKPrqqjshZwg7ZSm66ccl7Yy8KSIsImJyZWFkY3J1bWIiOiJIb21lID4gVGFjdCBUaW1lIOyihe2VcCIsImMxVGl0bGUiOiJUYWN0IFRpbWUg67subDsubYiLCJjMVJlc2V0Ijoi67Ko6rW8IHNsdXNsdSIsImMxQnRuIjoi67subDsubYg7ZWY6riwIiwibGJsViI6IuyImeqPhCAoVmVsb2NpdHkpIiwibGJsUyI6IuqxsOasriAoRGlzdGFuY2UpIiwibGJsQSI6IuqwseyImeqPhCAoQWNjLikiLCJjMlRpdGxlIjoiuyImeqPhCDqu7XsubXsubkiLCJsYmxMZWFkIjoi677Iqk7YGs66ZIExlYWQiLCJsYmxSYXRpbyI6Iu2Kn66as67mEICjquKDesC/subjXsubDtmKn66asKSIsImxibFJlc1NwZWVkIjoiuyImeqPhCDqu7XsubXsubkg67Ko6rW8OiIsImMzVGl0bGUiOiLquKDeseyImeqPhCDqu7XsubXsubkiLCJsYmxBY2NWIjoic3Vsed6PhCAoVilfIiwibGJsQWNjVCI6IuqwseyImeq掘6as67qmICg0KSIsImxibFJlc0FjYzEiOiLquKDeseyImeqPhCDqu7XsubXsubkgOiIsImxibFJlc0FjYzIiOiLquKDeseyImeqPhChHKSDqu7XsubXsubkgOiIsInJlc1RpdGxlIjoi67Ko6rW8IOqwkiDXsubDshiLCJvdXRNYXhWIjoi7LGF6rOgIHN1sed6PhCAoVl9tYXgpIiwib3V0VGEiOiLquKDeseyImfAgsrqu6asIChtX2EpIiwib3V0VGMiOiLsubXsubXsubYg6rWs67CEIOK6uqq6asIChtX2MpIiwib3V0VGQiOiLsubFsubXshKwg6rqu6asIChtX2QpIiwib3V0VG90YWxUIjoi7LSdIOybhOynhMqrsubDsubXqu6asIChUYWN0KSIsIm91dERpc3RBIjoi7KO87ZaJ6rKr67asICjquKDesSkiLCJvdXREaXN0QyI6Iuyo7Fad6rKr67asICjsubXsubUpIiwib3V0RGlzdEQiOiLuyo7Fad6rKr67asICjsubFsubUpIiwib3V0VG90YWxEaXN0Ijoi7LSdIOuyo7Fad6rKr67asIiwiY2hhcnRUaXRsZSI6IreqfXsubDsubYg6rdy67Wg7ZSmIChWZWxvY2l0eSBQcm9maWxlKSIsImNoYXJ0TDEiOiLsubTrs7wguyImeqPhCAobW0vcykiLCJNoYXJ0TDIiOiLsubTrsubwguyImeqPhCAobW0vcykiLCJNoYXJ0WCI6Iurqu6asKHNlYykiLCJNoYXJ0WSI6IuyImeqPhChtbS9zKSJ9";
+        
+        const LANG = JSON.parse(decodeURIComponent(atob(rawData).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')));
+
+        document.getElementById('webTitle').innerText = LANG.title;
+        document.getElementById('brandSub').innerText = LANG.brandSub;
+        document.getElementById('footerText').innerText = LANG.footer;
+        document.getElementById('mainTitle').innerText = LANG.mainHeader;
+        document.getElementById('breadcrumb').innerText = LANG.breadcrumb;
+        document.getElementById('card1Title').innerHTML = LANG.c1Title + ' <button class="btn-calc-sm" onclick="location.reload()">' + LANG.c1Reset + '</button>';
+        document.getElementById('btnRun1').innerText = LANG.c1Btn;
+        document.getElementById('lblV').innerText = LANG.lblV;
+        document.getElementById('lblS').innerText = LANG.lblS;
+        document.getElementById('lblA').innerText = LANG.lblA;
+        document.getElementById('card2Title').innerHTML = LANG.c2Title + ' <span class="unit-title">(Input)</span>';
+        document.getElementById('lblLead').innerText = LANG.lblLead;
+        document.getElementById('lblRatio').innerText = LANG.lblRatio;
+        document.getElementById('lblResSpeed').innerText = LANG.lblResSpeed;
+        document.getElementById('btnRun2').innerText = LANG.c1Btn;
+        document.getElementById('card3Title').innerHTML = LANG.c3Title + ' <span class="unit-title">(Input)</span>';
+        document.getElementById('lblAccV').innerText = LANG.lblAccV;
+        document.getElementById('lblAccT').innerText = LANG.lblAccT;
+        document.getElementById('lblResAcc1').innerText = LANG.lblResAcc1;
+        document.getElementById('lblResAcc2').innerText = LANG.lblResAcc2;
+        document.getElementById('btnRun3').innerText = LANG.c1Btn;
+        document.getElementById('cardResultTitle').innerText = LANG.resTitle;
+        document.getElementById('cardChartTitle').innerText = LANG.chartTitle;
+        document.getElementById('outMaxV').innerText = LANG.outMaxV;
+        document.getElementById('outTa').innerText = LANG.outTa;
+        document.getElementById('outTc').innerText = LANG.outTc;
+        document.getElementById('outTd').innerText = LANG.outTd;
+        document.getElementById('outTotalT').innerText = LANG.outTotalT;
+        document.getElementById('outDistA').innerText = LANG.outDistA;
+        document.getElementById('outDistC').innerText = LANG.outDistC;
+        document.getElementById('outDistD').innerText = LANG.outDistD;
+        document.getElementById('outTotalDist').innerText = LANG.outTotalDist;
+
+        // 사이드바 동적 생성 영역 (홈 버튼과 충돌하지 않도록 조정)
+        const fileLinks = ["motion.html", "#", "#", "#"];
+        const menuUl = document.getElementById('sideMenu');
+
+        LANG.menu.forEach((m, idx) => {
+            const li = document.createElement('li');
+            if(idx === 0) li.className = 'active';
+            li.innerHTML = '<a href="' + fileLinks[idx] + '" onclick="' + (idx > 0 ? "alert('준비 중입니다.'); return false;" : "") + '">' + m + '</a>';
+            menuUl.appendChild(li);
+        });
+
+        let motionChart = null;
+
+        function calculateTactTime() {
+            const V_target = parseFloat(document.getElementById('targetV').value);
+            const S_total = parseFloat(document.getElementById('distance').value);
+            const G = parseFloat(document.getElementById('accG').value);
+            
+            const g_acc = G * 9806.65; 
+            const V_peak_tri = Math.sqrt(g_acc * S_total);
+            
+            let V_max, t_a, t_c, t_d, S_a, S_c, S_d;
+
+            if (V_peak_tri <= V_target) {
+                V_max = V_peak_tri;
+                t_a = V_max / g_acc;
+                t_d = t_a;
+                t_c = 0;
+                S_a = S_total / 2;
+                S_d = S_total / 2;
+                S_c = 0;
+            } else {
+                V_max = V_target;
+                t_a = V_max / g_acc;
+                t_d = t_a;
+                S_a = 0.5 * g_acc * Math.pow(t_a, 2);
+                S_d = S_a;
+                S_c = S_total - (S_a + S_d);
+                t_c = S_c / V_max;
+            }
+
+            const t_total = t_a + t_c + t_d;
+
+            document.getElementById('resMaxV').innerText = V_max.toFixed(1) + " mm/sec";
+            document.getElementById('resTa').innerText = t_a.toFixed(2) + " sec";
+            document.getElementById('resTc').innerText = t_c > 0 ? t_c.toFixed(2) + " sec" : "- sec";
+            document.getElementById('resTd').innerText = t_d.toFixed(2) + " sec";
+            document.getElementById('resTotalT').innerText = t_total.toFixed(2) + " sec";
+            document.getElementById('resDistA').innerText = S_a.toFixed(1) + " mm";
+            document.getElementById('resDistC').innerText = S_c.toFixed(1) + " mm";
+            document.getElementById('resDistD').innerText = S_d.toFixed(1) + " mm";
+            document.getElementById('resTotalDist').innerText = S_total.toFixed(1) + " mm";
+
+            updateChart(t_a, t_c, t_d, V_max, V_target, t_total);
+        }
+
+        function updateChart(ta, tc, td, vmax, vtarget, ttotal) {
+            const ctx = document.getElementById('motionChart').getContext('2d');
+            const timePoints = [0, ta, ta + tc, ta + tc + td];
+            const speedPoints = [0, vmax, vmax, 0];
+
+            if (motionChart) { motionChart.destroy(); }
+
+            motionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: LANG.chartL1,
+                            data: timePoints.map((t, i) => ({ x: t, y: speedPoints[i] })),
+                            borderColor: '#ef4444', 
+                            borderWidth: 2,
+                            fill: false,          
+                            lineTension: 0,        
+                            pointRadius: 2
+                        },
+                        {
+                            label: LANG.chartL2,
+                            data: [{x: 0, y: vtarget}, {x: ttotal, y: vtarget}], 
+                            borderColor: '#2563eb', 
+                            borderWidth: 2,
+                            fill: false,
+                            lineTension: 0,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'top', labels: { boxWidth: 20, font: { size: 12 } } },
+                        title: { display: true, text: 'Tact time profile', font: { size: 14, weight: 'bold' } } 
+                    },
+                    scales: {
+                        x: { 
+                            type: 'linear', 
+                            position: 'bottom',
+                            title: { display: true, text: LANG.chartX, font: { size: 12 } },
+                            grid: { color: '#e2e8f0' },
+                            ticks: {
+                                callback: function(value) { return value.toFixed(2) + 's'; }
+                            }
+                        },
+                        y: { 
+                            title: { display: true, text: LANG.chartY, font: { size: 12 } },
+                            min: 0,
+                            grid: { color: '#e2e8f0' }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = calculateTactTime;
+    </script>
+</body>
+</html>
