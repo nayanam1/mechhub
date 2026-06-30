@@ -6,72 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="webTitle">mechhub</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-color: #1e293b; 
-            --accent-color: #ef4444;  
-            --bg-color: #f1f5f9;
-            --sidebar-width: 260px;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: var(--bg-color); color: #334155; display: flex; height: 100vh; overflow: hidden; }
-        
-        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
-        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; }
-        .sidebar-brand h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.5px; }
-        .sidebar-brand span { font-size: 12px; color: #94a3b8; }
-        
-        .sidebar-menu { list-style: none; margin-top: 20px; flex-grow: 1; }
-        .sidebar-menu li a { display: block; padding: 14px 20px; color: #cbd5e1; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
-        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: white; border-left-color: var(--accent-color); }
-        
-        .sidebar-menu li.home-link a { color: #f8fafc; font-weight: 600; border-bottom: 1px solid #334155; margin-bottom: 10px; padding-bottom: 15px; }
-        .sidebar-menu li.home-link a:hover { background-color: #334155; }
-
-        .sidebar-footer { padding: 0 20px; font-size: 11px; color: #64748b; text-align: center; }
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .main-header { height: 65px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 30px; justify-content: space-between; }
-        .main-header h2 { font-size: 18px; font-weight: 600; color: #1e293b; }
-        .content-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
-        .multi-calc-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
-        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 15px; }
-        .card h3 { font-size: 15px; margin-bottom: 15px; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; display: flex; justify-content: space-between; }
-        .card h3 span.unit-title { font-weight: normal; color: #64748b; font-size: 12px; }
-        .input-group { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .input-group label { font-size: 13px; color: #64748b; flex: 1; }
-        .input-wrapper { display: flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 4px; overflow: hidden; background: #fff; width: 150px; }
-        .input-wrapper input { flex: 1; border: none; padding: 6px 8px; font-size: 13px; text-align: right; outline: none; width: 100%; }
-        .input-wrapper .unit { background: #f1f5f9; padding: 6px 8px; font-size: 11px; color: #64748b; border-left: 1px solid #cbd5e1; min-width: 55px; text-align: center; }
-        .btn-calc-sm { padding: 6px 12px; background-color: #94a3b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .btn-calc-main { display: block; width: 100%; padding: 10px; background-color: #334155; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; margin-top: 10px; }
-        .btn-calc-main:hover { background-color: var(--primary-color); }
-        .result-graph-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-        @media (max-width: 1024px) { .result-graph-container { grid-template-columns: 1fr; } }
-        .result-list { margin-top: 10px; }
-        .result-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-        .result-item span:first-child { color: #64748b; }
-        .result-item span:last-child { font-weight: 600; color: #0f172a; }
-        .result-item.highlight { border-top: 2px solid #e2e8f0; margin-top: 10px; padding-top: 10px; }
-        .result-item.highlight span:last-child { color: var(--accent-color); font-size: 15px; }
-        
-        /* 버그 해결: 무한 증식 방지를 위한 고정 높이 지정 */
-        .chart-wrapper { height: 380px; position: relative; overflow: hidden; }
-    </style>
+    <link rel="stylesheet" href="common.css">
 </head>
 <body>
 
     <div class="sidebar">
-        <div>
+        <div class="sidebar-scroll">
             <div class="sidebar-brand">
-                <h1 id="brandName">mechhub</h1>
-                <span id="brandSub">v1.0</span>
+                <h1>mechhub</h1>
+                <span>기구설계 보조 포털 v1.0</span>
             </div>
-            <ul class="sidebar-menu" id="sideMenu">
-                <li class="home-link"><a href="index.html">🏠 Home</a></li>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">🏠 메인 홈</a></li>
+                <li class="ready"><a href="#">1. 기계제도 & RF & EMI <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">2. Steel 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">3. Stainless 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">4. Aluminum 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">5. 수지/세라믹/기타 <span class="badge-ready">준비중</span></a></li>
+                <li><a href="index.html#machining-section">6. 기계가공 (구현됨) ⚡</a></li>
+                <li><a href="index.html#elements-section">7. 기계요소 (구현됨) ⚡</a></li>
+                <li class="active"><a href="motion.html">8. 요소설계 & 계산 (구현중)</a></li>
+                <li class="ready"><a href="#">9. 진공부품 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">10. Vision Camera <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">11. Electricity & Control <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">12. Utility 선정 & 반응 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">13. 기판 & Vibration <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">14. Transportation & ETC <span class="badge-ready">준비중</span></a></li>
             </ul>
         </div>
         <div class="sidebar-footer">
-            <p id="footerText"></p>
+            <p>© 2026 장비설계팀 Asset</p>
         </div>
     </div>
 

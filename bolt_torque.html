@@ -4,81 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mechhub - 볼트 규격 및 체결 토크 계산</title>
-    <style>
-        :root {
-            --primary-color: #1e293b; 
-            --accent-color: #ef4444;  
-            --bg-color: #f1f5f9;
-            --sidebar-width: 280px;
-            --text-muted: #94a3b8;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: var(--bg-color); color: #334155; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* 사이드바 스타일 */
-        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; min-width: var(--sidebar-width); }
-        .sidebar-scroll { flex-grow: 1; overflow-y: auto; padding-bottom: 20px; }
-        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; position: sticky; top: 0; background-color: var(--primary-color); z-index: 10; }
-        .sidebar-brand h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.5px; }
-        .sidebar-brand span { font-size: 12px; color: var(--text-muted); }
-        .sidebar-menu { list-style: none; margin-top: 15px; }
-        .sidebar-menu li a { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; color: #cbd5e1; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
-        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: white; border-left-color: var(--accent-color); }
-        .sidebar-menu li.ready a { color: #64748b; cursor: not-allowed; }
-        .badge-ready { font-size: 10px; padding: 2px 6px; background-color: #334155; color: #64748b; border-radius: 10px; }
-        .sidebar-footer { padding: 15px 20px 0 20px; border-top: 1px solid #334155; font-size: 11px; color: #64748b; text-align: center; }
-
-        /* 메인 영역 스타일 */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .main-header { height: 65px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 30px; justify-content: space-between; }
-        .main-header h2 { font-size: 18px; font-weight: 600; color: #1e293b; }
-        .content-body { padding: 30px; overflow-y: auto; flex: 1; }
-
-        /* 레이아웃 분할 */
-        .calculator-container { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: start; }
-        
-        /* 카드 공통 */
-        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .card h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; gap: 8px; }
-        
-        /* 폼 요소 */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; }
-        .form-control { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; color: #1e293b; background-color: #fff; transition: border-color 0.2s; }
-        .form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1); }
-
-        /* 결과 창 데이터 */
-        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .result-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; }
-        .result-item .label { font-size: 12px; color: #64748b; margin-bottom: 6px; display: block; font-weight: 600; }
-        .result-item .value { font-size: 17px; font-weight: 700; color: #0f172a; }
-        .result-item .value span { font-size: 12px; font-weight: 500; color: #64748b; margin-left: 4px; }
-        .result-item.highlight { border-left: 4px solid var(--accent-color); background: #fff5f5; }
-        .result-item.highlight .value { color: var(--accent-color); }
-
-        /* 상용 길이 칩 레이아웃 */
-        .length-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .length-chip { padding: 6px 12px; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 600; color: #334155; cursor: pointer; transition: all 0.2s; }
-        .length-chip:hover { border-color: var(--primary-color); background-color: #e2e8f0; }
-        .length-chip.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
-
-        /* 탭 구조 */
-        .tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; }
-        .tab-btn { padding: 10px 20px; background: none; border: none; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* 데이터 테이블 */
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: center; }
-        .data-table th { background-color: #f1f5f9; color: #334155; font-weight: 600; padding: 10px; border: 1px solid #e2e8f0; }
-        .data-table td { padding: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; }
-        .data-table tr:nth-child(even) td { background-color: #f8fafc; }
-
-        /* 도면 그래픽 기호 스타일 가이드 */
-        .drawing-placeholder { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 15px; text-align: left; font-size: 12px; color: #475569; margin-top: 15px; line-height: 1.6; }
-        .drawing-placeholder ul { margin-left: 18px; margin-top: 5px; }
-    </style>
+    <link rel="stylesheet" href="common.css">
 </head>
 <body>
 
@@ -95,9 +21,9 @@
                 <li class="ready"><a href="#">3. Stainless 소재 <span class="badge-ready">준비중</span></a></li>
                 <li class="ready"><a href="#">4. Aluminum 소재 <span class="badge-ready">준비중</span></a></li>
                 <li class="ready"><a href="#">5. 수지/세라믹/기타 <span class="badge-ready">준비중</span></a></li>
-                <li><a href="index.html#machining-section">6. 기계가공</a></li>
-                <li class="active"><a href="bolt_torque.html">7. 기계요소 (볼트규격) ⚡</a></li>
-                <li><a href="motion.html">8. 요소설계 & 계산</a></li>
+                <li><a href="index.html#machining-section">6. 기계가공 (구현됨) ⚡</a></li>
+                <li class="active"><a href="index.html#elements-section">7. 기계요소 (구현됨) ⚡</a></li>
+                <li><a href="motion.html">8. 요소설계 & 계산 (구현중)</a></li>
                 <li class="ready"><a href="#">9. 진공부품 <span class="badge-ready">준비중</span></a></li>
                 <li class="ready"><a href="#">10. Vision Camera <span class="badge-ready">준비중</span></a></li>
                 <li class="ready"><a href="#">11. Electricity & Control <span class="badge-ready">준비중</span></a></li>

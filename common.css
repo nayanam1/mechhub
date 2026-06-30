@@ -1,0 +1,57 @@
+        :root {
+            --primary-color: #1e293b; 
+            --accent-color: #ef4444;  
+            --bg-color: #f1f5f9;
+            --sidebar-width: 280px;
+            --text-muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: var(--bg-color); color: #334155; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* 사이드바 스크롤 가능하도록 개선 (메뉴 증가 대응) */
+        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; min-width: var(--sidebar-width); }
+        .sidebar-scroll { flex-grow: 1; overflow-y: auto; padding-bottom: 20px; }
+        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; position: sticky; top: 0; background-color: var(--primary-color); z-index: 10; }
+        .sidebar-brand h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.5px; }
+        .sidebar-brand span { font-size: 12px; color: var(--text-muted); }
+        
+        .sidebar-menu { list-style: none; margin-top: 15px; }
+        .sidebar-menu li a { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; color: #cbd5e1; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: white; border-left-color: var(--accent-color); }
+        
+        /* 미구현 메뉴 스타일 */
+        .sidebar-menu li.ready a { color: #64748b; cursor: not-allowed; }
+        .sidebar-menu li.ready a:hover { background-color: transparent; border-left-color: transparent; }
+        .badge-ready { font-size: 10px; padding: 2px 6px; background-color: #334155; color: #64748b; border-radius: 10px; font-weight: normal; }
+
+        .sidebar-footer { padding: 15px 20px 0 20px; border-top: 1px solid #334155; font-size: 11px; color: #64748b; text-align: center; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .main-header { height: 65px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 30px; }
+        .main-header h2 { font-size: 18px; font-weight: 600; color: #1e293b; }
+        .content-body { padding: 30px; overflow-y: auto; flex: 1; }
+        
+        /* 웰컴 섹션 */
+        .welcome-box { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 35px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .welcome-box h3 { font-size: 24px; margin-bottom: 10px; }
+        .welcome-box p { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
+        
+        /* 섹션 타이틀 */
+        .section-title { font-size: 16px; font-weight: 700; color: #1e293b; margin: 30px 0 15px 0; padding-left: 8px; border-left: 4px solid var(--primary-color); }
+        .section-title:first-of-type { margin-top: 0; }
+
+        /* 카드 그리드 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; }
+        .card:not(.disabled) { cursor: pointer; }
+        .card:not(.disabled):hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+        
+        /* 미구현 카드 스타일 */
+        .card.disabled { background-color: #f8fafc; opacity: 0.6; cursor: not-allowed; }
+        
+        .card h4 { font-size: 15px; color: #1e293b; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .card p { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 15px; }
+        
+        /* 부품 리스트 태그 스타일 */
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { font-size: 11px; background-color: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .card:not(.disabled):hover .tag { background-color: #fef2f2; color: var(--accent-color); border-color: #fee2e2; }
