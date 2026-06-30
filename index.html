@@ -9,18 +9,29 @@
             --primary-color: #1e293b; 
             --accent-color: #ef4444;  
             --bg-color: #f1f5f9;
-            --sidebar-width: 260px;
+            --sidebar-width: 280px;
+            --text-muted: #94a3b8;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: var(--bg-color); color: #334155; display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; }
-        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; }
+        
+        /* 사이드바 스크롤 가능하도록 개선 (메뉴 증가 대응) */
+        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; min-width: var(--sidebar-width); }
+        .sidebar-scroll { flex-grow: 1; overflow-y: auto; padding-bottom: 20px; }
+        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; position: sticky; top: 0; background-color: var(--primary-color); z-index: 10; }
         .sidebar-brand h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.5px; }
-        .sidebar-brand span { font-size: 12px; color: #94a3b8; }
-        .sidebar-menu { list-style: none; margin-top: 20px; flex-grow: 1; }
-        .sidebar-menu li a { display: block; padding: 14px 20px; color: #cbd5e1; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-brand span { font-size: 12px; color: var(--text-muted); }
+        
+        .sidebar-menu { list-style: none; margin-top: 15px; }
+        .sidebar-menu li a { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; color: #cbd5e1; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
         .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: white; border-left-color: var(--accent-color); }
-        .sidebar-footer { padding: 0 20px; font-size: 11px; color: #64748b; text-align: center; }
+        
+        /* 미구현 메뉴 스타일 */
+        .sidebar-menu li.ready a { color: #64748b; cursor: not-allowed; }
+        .sidebar-menu li.ready a:hover { background-color: transparent; border-left-color: transparent; }
+        .badge-ready { font-size: 10px; padding: 2px 6px; background-color: #334155; color: #64748b; border-radius: 10px; font-weight: normal; }
+
+        .sidebar-footer { padding: 15px 20px 0 20px; border-top: 1px solid #334155; font-size: 11px; color: #64748b; text-align: center; }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .main-header { height: 65px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 30px; }
         .main-header h2 { font-size: 18px; font-weight: 600; color: #1e293b; }
@@ -31,28 +42,52 @@
         .welcome-box h3 { font-size: 24px; margin-bottom: 10px; }
         .welcome-box p { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
         
+        /* 섹션 타이틀 */
+        .section-title { font-size: 16px; font-weight: 700; color: #1e293b; margin: 30px 0 15px 0; padding-left: 8px; border-left: 4px solid var(--primary-color); }
+        .section-title:first-of-type { margin-top: 0; }
+
         /* 카드 그리드 */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--accent-color); }
-        .card h4 { font-size: 16px; color: #1e293b; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .card p { font-size: 13px; color: #64748b; line-height: 1.5; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; }
+        .card:not(.disabled) { cursor: pointer; }
+        .card:not(.disabled):hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+        
+        /* 미구현 카드 스타일 */
+        .card.disabled { background-color: #f8fafc; opacity: 0.6; cursor: not-allowed; }
+        
+        .card h4 { font-size: 15px; color: #1e293b; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .card p { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 15px; }
+        
+        /* 부품 리스트 태그 스타일 */
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { font-size: 11px; background-color: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .card:not(.disabled):hover .tag { background-color: #fef2f2; color: var(--accent-color); border-color: #fee2e2; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div>
+        <div class="sidebar-scroll">
             <div class="sidebar-brand">
                 <h1>mechhub</h1>
                 <span>기구설계 보조 포털 v1.0</span>
             </div>
             <ul class="sidebar-menu">
-                <li class="active"><a href="index.html">🏠 Home</a></li>
-                <li><a href="motion.html">⏱ Tact Time 종합</a></li>
-                <li><a href="#" onclick="alert('준비 중입니다.')">🔩 볼스크류 선정</a></li>
-                <li><a href="belt.html">⚙️ 벨트 & 풀리</a></li>                
-                <li><a href="#" onclick="alert('준비 중입니다.')">🧪 공차 분석</a></li>
+                <li class="active"><a href="index.html">🏠 메인 홈</a></li>
+                <li class="ready"><a href="#">1. 기계제도 & RF & EMI <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">2. Steel 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">3. Stainless 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">4. Aluminum 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">5. 수지/세라믹/기타 <span class="badge-ready">준비중</span></a></li>
+                <li><a href="#machining-section">6. 기계가공 (구현됨) ⚡</a></li>
+                <li><a href="#elements-section">7. 기계요소 (구현됨) ⚡</a></li>
+                <li><a href="motion.html">8. 요소설계 & 계산 (구현중)</a></li>
+                <li class="ready"><a href="#">9. 진공부품 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">10. Vision Camera <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">11. Electricity & Control <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">12. Utility 선정 & 반응 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">13. 기판 & Vibration <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">14. Transportation & ETC <span class="badge-ready">준비중</span></a></li>
             </ul>
         </div>
         <div class="sidebar-footer">
@@ -67,27 +102,142 @@
         <div class="content-body">
             <div class="welcome-box">
                 <h3>mechhub 포털에 오신 것을 환영합니다</h3>
-                <p>장비 및 기구설계 실무에서 빈번하게 수반되는 다양한 기구학적 연산과 스펙 검증을 신속하고 정확하게 수행하기 위한 사내 기술 자산 포털입니다. 좌측 내비게이션 바를 이용하거나 아래 링크 카드를 통해 필요한 계산 시스템으로 바로 이동할 수 있습니다.</p>
+                <p>장비 및 기구설계 실무에서 빈번하게 수반되는 다양한 기구학적 연산과 스펙 검증을 신속하고 정확하게 수행하기 위한 사내 기술 자산 포털입니다. 이미지 가공 가이드라인에 기반한 6번(기계가공) 및 7번(기계요소) 모듈이 우선 구성되었습니다.</p>
             </div>
 
+            <div class="section-title" id="machining-section">6. 기계가공 (Machining)</div>
             <div class="grid">
-                <a href="motion.html" class="card">
-                    <h4>⏱ Tact Time 종합 계산기</h4>
-                    <p>목표 속도, 가속도(G), 스트로크를 기반으로 사다리꼴 및 삼각 구동 모션 프로파일을 생성하고, 정확한 파라미터 연산 결과를 그래프와 함께 시각화합니다.</p>
+                <a href="machining_allowance.html" class="card">
+                    <div>
+                        <h4>📐 일반형상 공차값 / 허용차 계산</h4>
+                        <p>길이 치수, 각도 치수, 중심거리에 대한 일반 가공 공차 규격을 확인하고 도면 보조 데이터를 연산합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">일반공차</span><span class="tag">허용차</span><span class="tag">중심거리</span>
+                    </div>
                 </a>
-                <div class="card" onclick="alert('준비 중입니다.')">
-                    <h4>🔩 볼스크류 선정 검토</h4>
-                    <p>정격 수명, 허용 회전수, 좌굴 하중 등 볼스크류 메커니즘 설계 시 요구되는 복합 역학 계산 및 안전율 검증 시스템을 제공할 예정입니다.</p>
-                </div>
-                <div class="card" onclick="alert('준비 중입니다.')">
-                    <h4>⚙️ 벨트 & 풀리 계산</h4>
-                    <p>RPP / 축간거리 / 이빨 개수에 따른 피치경, 루트 직경 계산 및 고정 세트 스크루의 축 간섭 여부를 정밀 분석하는 레이아웃 템플릿입니다.</p>
-                </div>
-                <div class="card" onclick="alert('준비 중입니다.')">
-                    <h4>🧪 공차 누적(Tolerance) 분석</h4>
-                    <p>조립 부품 간 치수 공차 분산 및 누적 누설 공차를 통계적(Worst Case & RSS) 방식으로 계산하여 기구적 간섭 위험도를 사전에 예측합니다.</p>
+                <a href="fit_clearance.html" class="card">
+                    <div>
+                        <h4>🕳 끼워맞춤 공차 & Hole / Shaft 조회</h4>
+                        <p>H7/g6, H7/p6 등 구멍과 축의 조합에 따른 틈새 및 죔새 분포를 분석하고 정밀 감성 치수를 산출합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">끼워맞춤</span><span class="tag">IT공차</span><span class="tag">Hole & Shaft</span>
+                    </div>
+                </a>
+                <a href="roughness_mesh.html" class="card">
+                    <div>
+                        <h4>✨ 표면거칠기 & 가공방법별 조도</h4>
+                        <p>Ra, Rz, Ry 매칭 데이터 및 Mesh Size 전환 테이블, 석정반 가공 공차 사양을 검토합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">표면거칠기</span><span class="tag">Mesh Size</span><span class="tag">석정반</span>
+                    </div>
+                </a>
+                <a href="bending_radius.html" class="card">
+                    <div>
+                        <h4>📐 절곡 최소값 & Bending Radius (Tube)</h4>
+                        <p>판재 절곡 시 외곽 최소치수와 파이프/튜브 밴딩 시 발생하는 간섭 반경 및 연신율을 계산합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">절곡 R</span><span class="tag">Bending</span><span class="tag">튜브 배관</span>
+                    </div>
+                </a>
+                <a href="surface_treatment.html" class="card">
+                    <div>
+                        <h4>🧪 아노다이징 및 도금 피막 두께 비교</h4>
+                        <p>Anodizing, Cr/Ni/亜연/인산염/Teflon 코팅 등 도금 종류별 편측 피막 두께와 철강 재료의 열처리 사양을 분석합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">Anodizing</span><span class="tag">도금 피막</span><span class="tag">열처리</span>
+                    </div>
+                </a>
+                <div class="card disabled">
+                    <div>
+                        <h4>👨‍🏭 Flange Welding (Tube) <span class="badge-ready">준비중</span></h4>
+                        <p>튜브 플랜지 용접부의 강도 검증 및 용접 비드 치수 설계 가이드를 제공할 예정입니다.</p>
+                    </div>
                 </div>
             </div>
+
+            <div class="section-title" id="elements-section">7. 기계요소 (Machine Element)</div>
+            <div class="grid">
+                <a href="bolt_torque.html" class="card">
+                    <div>
+                        <h4>🔩 볼트 규격 & 체결 토크 계산</h4>
+                        <p>Bolt 사이즈별 적정 체결 토크, 렌치 홀(Hexa Head), U/I-Bolt 및 카운터보어(자리파기) 치수 데이터를 제공합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">체결토크</span><span class="tag">Hex 렌치</span><span class="tag">자리파기</span>
+                    </div>
+                </a>
+                <a href="nut_pop.html" class="card">
+                    <div>
+                        <h4>🔩 NUT 규격 - 육각 / POP / CLINCHING</h4>
+                        <p>일반 육각너트부터 판금용 팝너트, 클린칭 너트(PEM 너트) 압입용 홀 규격 및 사양을 매칭합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">팝너트</span><span class="tag">클린칭너트</span><span class="tag">PEM</span>
+                    </div>
+                </a>
+                <a href="snap_ring.html" class="card">
+                    <div>
+                        <h4>동력전달 및 고정 - Key홈, 스냅링, 평행핀</h4>
+                        <p>Key홈 규격, 스냅링(E형, 축용, 구멍용) 규격과 다우엘 핀(Dowel Pin) 압입 공차 사양을 검토합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">스냅링</span><span class="tag">Key홈</span><span class="tag">Dowel Pin</span>
+                    </div>
+                </a>
+                <a href="oring_selection.html" class="card">
+                    <div>
+                        <h4>⭕ 오링(O-Ring) 종류 및 홈 설계</h4>
+                        <p>AS568, P/G/V 계열 오링 선정, 고무 재질별 특성(KALREZ 등), 압착율 및 여유 체적(Free Volume)을 계산합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">O-Ring</span><span class="tag">AS568</span><span class="tag">여유체적</span>
+                    </div>
+                </a>
+                <a href="belt.html" class="card">
+                    <div>
+                        <h4>⚙️ 타이밍 풀리 및 벨트 레이아웃 템플릿</h4>
+                        <p>RPP5 등 타이밍 벨트 피치경, 루트 직경(내경) 연산 및 세트 스크루 축 간섭 여부를 정밀 분석합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">Timing Pulley</span><span class="tag">루트직경</span><span class="tag">간섭체크</span>
+                    </div>
+                </a>
+                <div class="card disabled">
+                    <div>
+                        <h4>⚙️ 널링 / 쉴드 링 (Knurling / EMI) <span class="badge-ready">준비중</span></h4>
+                        <p>Knurling 피치 규격 및 EMI Gasket 가이드라인 시스템을 제공할 예정입니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">8. 요소설계 & 계산 (Mecha Design)</div>
+            <div class="grid">
+                <a href="motion.html" class="card">
+                    <div>
+                        <h4>⏱ Tact Time 종합 계산기</h4>
+                        <p>목표 속도, 가속도(G), 스트로크를 기반으로 사다리꼴 및 삼각 구동 모션 프로파일을 생성하고 연산 결과를 시각화합니다.</p>
+                    </div>
+                    <div class="tag-container"><span class="tag">Motion</span><span class="tag">Tact Time</span></div>
+                </a>
+                <div class="card disabled">
+                    <div>
+                        <h4>🔩 볼스크류 선정 검토 <span class="badge-ready">준비중</span></h4>
+                        <p>정격 수명, 허용 회전수, 좌굴 하중 등 볼스크류 메커니즘 설계 시 요구되는 복합 역학 계산 시스템입니다.</p>
+                    </div>
+                </div>
+                <div class="card disabled">
+                    <div>
+                        <h4>🧪 공차 누적(Tolerance) 분석 <span class="badge-ready">준비중</span></h4>
+                        <p>조립 부품 간 치수 공차 분산 및 누적 누설 공차를 통계적(Worst Case & RSS) 방식으로 계산합니다.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

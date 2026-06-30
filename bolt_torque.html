@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - 볼트 규격 및 체결 토크 계산</title>
+    <style>
+        :root {
+            --primary-color: #1e293b; 
+            --accent-color: #ef4444;  
+            --bg-color: #f1f5f9;
+            --sidebar-width: 280px;
+            --text-muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: var(--bg-color); color: #334155; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* 사이드바 스타일 */
+        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 0; min-width: var(--sidebar-width); }
+        .sidebar-scroll { flex-grow: 1; overflow-y: auto; padding-bottom: 20px; }
+        .sidebar-brand { padding: 0 20px 20px 20px; border-bottom: 1px solid #334155; position: sticky; top: 0; background-color: var(--primary-color); z-index: 10; }
+        .sidebar-brand h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: 0.5px; }
+        .sidebar-brand span { font-size: 12px; color: var(--text-muted); }
+        .sidebar-menu { list-style: none; margin-top: 15px; }
+        .sidebar-menu li a { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; color: #cbd5e1; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; border-left: 4px solid transparent; }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a { background-color: #334155; color: white; border-left-color: var(--accent-color); }
+        .sidebar-menu li.ready a { color: #64748b; cursor: not-allowed; }
+        .badge-ready { font-size: 10px; padding: 2px 6px; background-color: #334155; color: #64748b; border-radius: 10px; }
+        .sidebar-footer { padding: 15px 20px 0 20px; border-top: 1px solid #334155; font-size: 11px; color: #64748b; text-align: center; }
+
+        /* 메인 영역 스타일 */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .main-header { height: 65px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 30px; justify-content: space-between; }
+        .main-header h2 { font-size: 18px; font-weight: 600; color: #1e293b; }
+        .content-body { padding: 30px; overflow-y: auto; flex: 1; }
+
+        /* 레이아웃 분할 */
+        .calculator-container { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: start; }
+        
+        /* 카드 공통 */
+        .card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; gap: 8px; }
+        
+        /* 폼 요소 */
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+        .form-control { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; color: #1e293b; background-color: #fff; transition: border-color 0.2s; }
+        .form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1); }
+
+        /* 결과 창 데이터 */
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .result-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; }
+        .result-item .label { font-size: 12px; color: #64748b; margin-bottom: 6px; display: block; font-weight: 600; }
+        .result-item .value { font-size: 17px; font-weight: 700; color: #0f172a; }
+        .result-item .value span { font-size: 12px; font-weight: 500; color: #64748b; margin-left: 4px; }
+        .result-item.highlight { border-left: 4px solid var(--accent-color); background: #fff5f5; }
+        .result-item.highlight .value { color: var(--accent-color); }
+
+        /* 상용 길이 칩 레이아웃 */
+        .length-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .length-chip { padding: 6px 12px; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 600; color: #334155; cursor: pointer; transition: all 0.2s; }
+        .length-chip:hover { border-color: var(--primary-color); background-color: #e2e8f0; }
+        .length-chip.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+        /* 탭 구조 */
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; }
+        .tab-btn { padding: 10px 20px; background: none; border: none; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* 데이터 테이블 */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: center; }
+        .data-table th { background-color: #f1f5f9; color: #334155; font-weight: 600; padding: 10px; border: 1px solid #e2e8f0; }
+        .data-table td { padding: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; }
+        .data-table tr:nth-child(even) td { background-color: #f8fafc; }
+
+        /* 도면 그래픽 기호 스타일 가이드 */
+        .drawing-placeholder { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 15px; text-align: left; font-size: 12px; color: #475569; margin-top: 15px; line-height: 1.6; }
+        .drawing-placeholder ul { margin-left: 18px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand">
+                <h1>mechhub</h1>
+                <span>기구설계 보조 포털 v1.0</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">🏠 메인 홈</a></li>
+                <li class="ready"><a href="#">1. 기계제도 & RF & EMI <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">2. Steel 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">3. Stainless 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">4. Aluminum 소재 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">5. 수지/세라믹/기타 <span class="badge-ready">준비중</span></a></li>
+                <li><a href="index.html#machining-section">6. 기계가공</a></li>
+                <li class="active"><a href="bolt_torque.html">7. 기계요소 (볼트규격) ⚡</a></li>
+                <li><a href="motion.html">8. 요소설계 & 계산</a></li>
+                <li class="ready"><a href="#">9. 진공부품 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">10. Vision Camera <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">11. Electricity & Control <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">12. Utility 선정 & 반응 <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">13. 기판 & Vibration <span class="badge-ready">준비중</span></a></li>
+                <li class="ready"><a href="#">14. Transportation & ETC <span class="badge-ready">준비중</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>7. 기계요소 🔩 볼트 외각 치수 및 상용 길이 종합 계산기</h2>
+        </div>
+        
+        <div class="content-body">
+            <div class="calculator-container">
+                
+                <div class="card">
+                    <h3>⚙️ 조건 설정</h3>
+                    <div class="form-group">
+                        <label for="boltSize">볼트 호칭 (Size)</label>
+                        <select id="boltSize" class="form-control" onchange="calculateBolt()">
+                            <option value="M2">M2</option>
+                            <option value="M2.5">M2.5</option>
+                            <option value="M3" selected>M3</option>
+                            <option value="M4">M4</option>
+                            <option value="M5">M5</option>
+                            <option value="M6">M6</option>
+                            <option value="M8">M8</option>
+                            <option value="M10">M10</option>
+                            <option value="M12">M12</option>
+                            <option value="M16">M16</option>
+                            <option value="M20">M20</option>
+                            <option value="M24">M24</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="strengthClass">강도 구분 (Strength Class)</label>
+                        <select id="strengthClass" class="form-control" onchange="calculateBolt()">
+                            <option value="12.9" selected>12.9 (고장력/구동부추천)</option>
+                            <option value="10.9">10.9</option>
+                            <option value="8.8">8.8 (일반 구조용)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="drawing-placeholder">
+                        <strong>📌 육각구멍붙이볼트(선택 기준) 기호 안내</strong>
+                        <ul>
+                            <li><strong>dk</strong>: 볼트 머리 직경 (외곽 Ø)</li>
+                            <li><strong>k</strong>: 볼트 머리 높이</li>
+                            <li><strong>s</strong>: 체결 육각 렌치 키 사이즈</li>
+                            <li><strong>d2</strong>: 카운터보어 자리파기 직경</li>
+                            <li><strong>t</strong>: 카운터보어 자리파기 깊이</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card">
+                        <h3>📊 볼트 헤드 외각 치수 및 가공 데이터 (정밀 검증)</h3>
+                        <div class="result-grid">
+                            <div class="result-item" style="border-top: 4px solid #3b82f6;">
+                                <span class="label">머리 직경 (dk) - 외곽 사이즈</span>
+                                <div class="value" id="headDiameter">- <span>mm</span></div>
+                            </div>
+                            <div class="result-item" style="border-top: 4px solid #3b82f6;">
+                                <span class="label">머리 높이 (k)</span>
+                                <div class="value" id="headHeight">- <span>mm</span></div>
+                            </div>
+                            <div class="result-item" style="border-top: 4px solid #3b82f6;">
+                                <span class="label">육각 홈 사이즈 (s)</span>
+                                <div class="value" id="wrenchSize">- <span>mm</span></div>
+                            </div>
+                        </div>
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="label">자리파기 직경 (d2)</span>
+                                <div class="value" id="cbDiameter">- <span>mm</span></div>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">자리파기 깊이 (t)</span>
+                                <div class="value" id="cbDepth">- <span>mm</span></div>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">나사 피치 (거친나사)</span>
+                                <div class="value" id="boltPitch">- <span>mm</span></div>
+                            </div>
+                        </div>
+                        <div class="result-grid">
+                            <div class="result-item highlight">
+                                <span class="label">적정 체결 토크 (N·m)</span>
+                                <div class="value" id="torqueNm">0.00 <span>N·m</span></div>
+                            </div>
+                            <div class="result-item highlight">
+                                <span class="label">적정 체결 토크 (kgf·cm)</span>
+                                <div class="value" id="torqueKgf">0.00 <span>kgf·cm</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📦 상용품 규격 길이 목록 (L)</h3>
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">※ 해당 볼트 호칭에서 시장 공급이 원활한 상용 길이 목록입니다. 클릭하여 도면 반영 길이를 검토하세요.</p>
+                        <div class="length-container" id="lengthContainer">
+                            </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab('ubolt')">U-Bolt 규격 참조</button>
+                            <button class="tab-btn" onclick="switchTab('ibolt')">I-Bolt(아이볼트) 사양</button>
+                        </div>
+                        
+                        <div id="ubolt" class="tab-content active">
+                            <table class="data-table">
+                               <thead>
+                                   <tr>
+                                       <th>관 호칭 (A)</th>
+                                       <th>파이프 외경 (D)</th>
+                                       <th>볼트 나사산 (M)</th>
+                                       <th>내측 폭 (W)</th>
+                                       <th>총 높이 (H)</th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   <tr><td>15A</td><td>21.7 mm</td><td>M6</td><td>24 mm</td><td>50 mm</td></tr>
+                                   <tr><td>20A</td><td>27.2 mm</td><td>M6</td><td>30 mm</td><td>55 mm</td></tr>
+                                   <tr><td>25A</td><td>34.0 mm</td><td>M8</td><td>38 mm</td><td>68 mm</td></tr>
+                                   <tr><td>32A</td><td>42.7 mm</td><td>M8</td><td>46 mm</td><td>75 mm</td></tr>
+                                   <tr><td>40A</td><td>48.6 mm</td><td>M8</td><td>52 mm</td><td>80 mm</td></tr>
+                                   <tr><td>50A</td><td>60.5 mm</td><td>M10</td><td>65 mm</td><td>98 mm</td></tr>
+                               </tbody>
+                            </table>
+                        </div>
+
+                        <div id="ibolt" class="tab-content">
+                            <table class="data-table">
+                               <thead>
+                                   <tr>
+                                       <th>볼트 호칭 (M)</th>
+                                       <th>수직 매달기 허용하중 (kgf)</th>
+                                       <th>링 내경 (D)</th>
+                                       <th>링 외경 (B)</th>
+                                       <th>나사산 길이 (L)</th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   <tr><td>M8</td><td>80 kgf</td><td>20 mm</td><td>36 mm</td><td>15 mm</td></tr>
+                                   <tr><td>M10</td><td>150 kgf</td><td>25 mm</td><td>45 mm</td><td>18 mm</td></tr>
+                                   <tr><td>M12</td><td>220 kgf</td><td>30 mm</td><td>54 mm</td><td>22 mm</td></tr>
+                                   <tr><td>M16</td><td>450 kgf</td><td>35 mm</td><td>63 mm</td><td>27 mm</td></tr>
+                                   <tr><td>M20</td><td>630 kgf</td><td>40 mm</td><td>72 mm</td><td>30 mm</td></tr>
+                               </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 볼트 종합 실무 데이터베이스 (외각 사이즈 dk, k 및 상용 길이 배열 대폭 확장)
+        const boltDB = {
+            "M2":   { dk: 3.8,  k: 2.0, pitch: 0.4,  wrench: 1.5, cb_d: 4.3,  cb_t: 2.5, lengths: [4, 5, 6, 8, 10, 12, 15, 16, 20], torque: { "12.9": 0.45, "10.9": 0.37, "8.8": 0.26 } },
+            "M2.5": { dk: 4.5,  k: 2.5, pitch: 0.45, wrench: 2.0, cb_d: 5.0,  cb_t: 3.0, lengths: [5, 6, 8, 10, 12, 15, 16, 20, 25], torque: { "12.9": 0.92, "10.9": 0.77, "8.8": 0.53 } },
+            "M3":   { dk: 5.5,  k: 3.0, pitch: 0.5,  wrench: 2.5, cb_d: 6.0,  cb_t: 3.5, lengths: [6, 8, 10, 12, 15, 16, 18, 20, 22, 25, 30], torque: { "12.9": 1.60, "10.9": 1.30, "8.8": 0.95 } },
+            "M4":   { dk: 7.0,  k: 4.0, pitch: 0.7,  wrench: 3.0, cb_d: 7.5,  cb_t: 4.5, lengths: [8, 10, 12, 15, 16, 20, 25, 30, 35, 40], torque: { "12.9": 3.70, "10.9": 3.10, "8.8": 2.20 } },
+            "M5":   { dk: 8.5,  k: 5.0, pitch: 0.8,  wrench: 4.0, cb_d: 9.0,  cb_t: 5.5, lengths: [8, 10, 12, 15, 16, 20, 25, 30, 35, 40, 45, 50], torque: { "12.9": 7.30, "10.9": 6.10, "8.8": 4.30 } },
+            "M6":   { dk: 10.0, k: 6.0, pitch: 1.0,  wrench: 5.0, cb_d: 11.0, cb_t: 6.5, lengths: [10, 12, 15, 16, 20, 25, 30, 35, 40, 45, 50, 55, 60], torque: { "12.9": 12.6,  "10.9": 10.5,  "8.8": 7.4 } },
+            "M8":   { dk: 13.0, k: 8.0, pitch: 1.25, wrench: 6.0, cb_d: 14.0, cb_t: 8.5, lengths: [12, 15, 16, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80], torque: { "12.9": 30.0,  "10.9": 25.0,  "8.8": 18.0 } },
+            "M10":  { dk: 16.0, k: 10.0,pitch: 1.5,  wrench: 8.0, cb_d: 17.5, cb_t: 10.5,lengths: [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100], torque: { "12.9": 59.0,  "10.9": 49.0,  "8.8": 36.0 } },
+            "M12":  { dk: 18.0, k: 12.0,pitch: 1.75, wrench: 10.0,cb_d: 20.0, cb_t: 12.5,lengths: [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120], torque: { "12.9": 103.0, "10.9": 86.0,  "8.8": 61.0 } },
+            "M16":  { dk: 24.0, k: 16.0,pitch: 2.0,  wrench: 14.0,cb_d: 26.0, cb_t: 16.5,lengths: [25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120, 130, 140, 150], torque: { "12.9": 250.0, "10.9": 210.0, "8.8": 145.0 } },
+            "M20":  { dk: 30.0, k: 20.0,pitch: 2.5,  wrench: 17.0,cb_d: 32.0, cb_t: 20.5,lengths: [30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120, 130, 140, 150], torque: { "12.9": 490.0, "10.9": 410.0, "8.8": 285.0 } },
+            "M24":  { dk: 36.0, k: 24.0,pitch: 3.0,  wrench: 19.0,cb_d: 39.0, cb_t: 24.5,lengths: [40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120, 130, 140, 150, 160, 180, 200], torque: { "12.9": 840.0, "10.9": 700.0, "8.8": 495.0 } }
+        };
+
+        function calculateBolt() {
+            const size = document.getElementById("boltSize").value;
+            const strength = document.getElementById("strengthClass").value;
+            
+            const data = boltDB[size];
+            if (!data) return;
+
+            // 1. 역학 및 형상 데이터 UI 매칭
+            const nmValue = data.torque[strength];
+            const kgfValue = nmValue * 10.1972;
+
+            document.getElementById("headDiameter").innerHTML = data.dk.toFixed(1) + " <span>mm</span>";
+            document.getElementById("headHeight").innerHTML = data.k.toFixed(1) + " <span>mm</span>";
+            document.getElementById("wrenchSize").innerHTML = data.wrench + " <span>mm</span>";
+            document.getElementById("cbDiameter").innerHTML = data.cb_d.toFixed(1) + " <span>mm</span>";
+            document.getElementById("cbDepth").innerHTML = data.cb_t.toFixed(1) + " <span>mm</span>";
+            document.getElementById("boltPitch").innerHTML = data.pitch.toFixed(2) + " <span>mm</span>";
+            
+            document.getElementById("torqueNm").innerHTML = nmValue.toFixed(2) + " <span>N·m</span>";
+            document.getElementById("torqueKgf").innerHTML = kgfValue.toFixed(1) + " <span>kgf·cm</span>";
+
+            // 2. 상용 길이(L) 칩 컴포넌트 동적 생성 생성
+            const container = document.getElementById("lengthContainer");
+            container.innerHTML = ""; // 기존 목록 초기화
+
+            data.lengths.forEach((len, idx) => {
+                const chip = document.createElement("button");
+                chip.className = "length-chip";
+                if(idx === 2) chip.classList.add("active"); // 기본값 3번째 항목 활성화 예시
+                chip.innerText = "L" + len;
+                chip.onclick = function() {
+                    document.querySelectorAll('.length-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                };
+                container.appendChild(chip);
+            });
+        }
+
+        // 하단 서브 탭 시스템
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // 초기 구동 실행
+        window.onload = function() {
+            calculateBolt();
+        };
+    </script>
+</body>
+</html>
