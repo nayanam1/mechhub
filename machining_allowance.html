@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - 일반형상 공차 / 허용차 계산</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand"><h1>mechhub</h1><span>기구설계 보조 포털 v1.0</span></div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>6. 기계가공 📐 일반형상 공차값 / 허용차 계산</h2>
+        </div>
+        <div class="content-body">
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('linear')">길이 치수 공차 (ISO 2768)</button>
+                    <button class="tab-btn" onclick="switchTab('angular')">각도 공차 (ISO 2768)</button>
+                    <button class="tab-btn" onclick="switchTab('center')">중심거리 허용차</button>
+                    <button class="tab-btn" onclick="switchTab('geometric')">기하 공차 (ISO 2768-2)</button>
+                </div>
+
+                <!-- =========== 길이 치수 공차 =========== -->
+                <div id="linear" class="tab-content active">
+                    <p class="card-note">ISO 2768-1 일반공차. 도면에 공차가 개별 기재되지 않은 가공 치수에 적용합니다. f(정밀), m(중간), c(거침), v(매우거침) 4등급.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:180px; margin-bottom:0;">
+                            <label>도면 치수 (mm)</label>
+                            <div class="input-wrapper"><input type="number" id="linDim" value="50" oninput="calcLinear()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>공차 등급</label>
+                            <div class="input-wrapper">
+                                <select id="linGrade" class="form-control" onchange="calcLinear()">
+                                    <option value="f">f (Fine, 정밀)</option>
+                                    <option value="m" selected>m (Medium, 중간)</option>
+                                    <option value="c">c (Coarse, 거침)</option>
+                                    <option value="v">v (Very Coarse, 매우거침)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-item highlight"><span>허용차 (±)</span><span class="value" id="linTol">- <span>mm</span></span></div>
+                        <div class="result-item"><span>최대 치수 (Upper Limit)</span><span class="value" id="linMax">- <span>mm</span></span></div>
+                        <div class="result-item"><span>최소 치수 (Lower Limit)</span><span class="value" id="linMin">- <span>mm</span></span></div>
+                        <div class="result-item"><span>해당 치수 구간</span><span class="value" id="linRange" style="font-size:13px;">-</span></div>
+                    </div>
+
+                    <h3 style="margin-top:20px;">전체 허용차 참조표 (ISO 2768-1)</h3>
+                    <table class="data-table" id="linearTable">
+                        <thead><tr><th>치수 구간 (mm)</th><th>f (정밀) ±</th><th>m (중간) ±</th><th>c (거침) ±</th><th>v (매우거침) ±</th></tr></thead>
+                        <tbody id="linearTbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- =========== 각도 공차 =========== -->
+                <div id="angular" class="tab-content">
+                    <p class="card-note">ISO 2768-1 각도 치수 일반공차. 짧은 쪽 변의 길이(mm)를 기준으로 허용차를 적용합니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:180px; margin-bottom:0;">
+                            <label>짧은 쪽 변 길이 (mm)</label>
+                            <div class="input-wrapper"><input type="number" id="angLen" value="50" oninput="calcAngular()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>공차 등급</label>
+                            <div class="input-wrapper">
+                                <select id="angGrade" class="form-control" onchange="calcAngular()">
+                                    <option value="f">f (정밀)</option>
+                                    <option value="m" selected>m (중간)</option>
+                                    <option value="c">c (거침)</option>
+                                    <option value="v">v (매우거침)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-item highlight"><span>각도 허용차 (±)</span><span class="value" id="angTol">-</span></div>
+                        <div class="result-item"><span>mm 환산 허용차 (at 1m)</span><span class="value" id="angMm">- <span>mm</span></span></div>
+                    </div>
+
+                    <h3 style="margin-top:20px;">각도 공차 참조표 (ISO 2768-1)</h3>
+                    <table class="data-table">
+                        <thead><tr><th>짧은 쪽 변 길이 (mm)</th><th>f (정밀)</th><th>m (중간)</th><th>c (거침)</th><th>v (매우거침)</th></tr></thead>
+                        <tbody>
+                            <tr><td>~10</td><td>±1°</td><td>±1°</td><td>±1°30'</td><td>±3°</td></tr>
+                            <tr><td>10 초과 ~ 50</td><td>±0°30'</td><td>±0°30'</td><td>±1°</td><td>±2°</td></tr>
+                            <tr><td>50 초과 ~ 120</td><td>±0°20'</td><td>±0°20'</td><td>±0°30'</td><td>±1°</td></tr>
+                            <tr><td>120 초과 ~ 400</td><td>±0°10'</td><td>±0°10'</td><td>±0°15'</td><td>±0°30'</td></tr>
+                            <tr><td>400 초과</td><td>±0°5'</td><td>±0°5'</td><td>±0°10'</td><td>±0°20'</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- =========== 중심거리 허용차 =========== -->
+                <div id="center" class="tab-content">
+                    <p class="card-note">두 구멍(또는 두 보스) 사이의 중심간 거리(Center Distance)에 대한 허용차. ISO 2768 또는 KS B ISO 규격의 일반가공 공차를 기준으로 합니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:180px; margin-bottom:0;">
+                            <label>중심간 거리 치수 (mm)</label>
+                            <div class="input-wrapper"><input type="number" id="cdDim" value="100" oninput="calcCenter()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>공차 등급</label>
+                            <div class="input-wrapper">
+                                <select id="cdGrade" class="form-control" onchange="calcCenter()">
+                                    <option value="f">f (정밀)</option>
+                                    <option value="m" selected>m (중간)</option>
+                                    <option value="c">c (거침)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:180px; margin-bottom:0;">
+                            <label>가공 방법 (참고)</label>
+                            <div class="input-wrapper">
+                                <select id="cdMethod" class="form-control" onchange="calcCenter()">
+                                    <option value="mc">머시닝센터 (M/C)</option>
+                                    <option value="drill">드릴링 (일반)</option>
+                                    <option value="jig">지그 보링</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-item highlight"><span>중심거리 허용차 (±)</span><span class="value" id="cdTol">- <span>mm</span></span></div>
+                        <div class="result-item"><span>최대 중심거리</span><span class="value" id="cdMax">- <span>mm</span></span></div>
+                        <div class="result-item"><span>최소 중심거리</span><span class="value" id="cdMin">- <span>mm</span></span></div>
+                        <div class="result-item"><span>가공방법 권장 정밀도</span><span class="value" id="cdMethodTol" style="font-size:13px;">-</span></div>
+                    </div>
+                    <div class="notice-banner info">※ 중심거리 허용차는 길이 치수 공차와 동일한 ISO 2768 등급표를 적용합니다. 정밀 위치결정(d=0.01mm급)이 필요한 경우 지그 보링 또는 CNC 머시닝 후 좌표 측정(CMM)으로 관리하세요.</div>
+                </div>
+
+                <!-- =========== 기하공차 =========== -->
+                <div id="geometric" class="tab-content">
+                    <p class="card-note">ISO 2768-2 일반 기하공차. 직진도·평면도·진원도·원통도·평행도·직각도·대칭도를 도면에 개별 기재 없이 적용할 등급입니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:180px; margin-bottom:0;">
+                            <label>기준 치수 (해당 형체 크기, mm)</label>
+                            <div class="input-wrapper"><input type="number" id="geoDim" value="50" oninput="calcGeo()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>공차 등급</label>
+                            <div class="input-wrapper">
+                                <select id="geoGrade" class="form-control" onchange="calcGeo()">
+                                    <option value="H">H (정밀)</option>
+                                    <option value="K" selected>K (중간)</option>
+                                    <option value="L">L (거침)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));">
+                        <div class="result-item highlight"><span>직진도 / 평면도</span><span class="value" id="geoFlat">- <span>mm</span></span></div>
+                        <div class="result-item"><span>진원도</span><span class="value" id="geoRound">- <span>mm</span></span></div>
+                        <div class="result-item"><span>원통도</span><span class="value" id="geoCyl">- <span>mm</span></span></div>
+                        <div class="result-item"><span>평행도</span><span class="value" id="geoPara">- <span>mm</span></span></div>
+                        <div class="result-item"><span>직각도</span><span class="value" id="geoPerp">- <span>mm</span></span></div>
+                        <div class="result-item"><span>대칭도</span><span class="value" id="geoSymm">- <span>mm</span></span></div>
+                    </div>
+
+                    <h3 style="margin-top:20px;">기하공차 참조표 (ISO 2768-2)</h3>
+                    <table class="data-table">
+                        <thead><tr><th>공차 항목</th><th>치수 구간(mm)</th><th>H (정밀)</th><th>K (중간)</th><th>L (거침)</th></tr></thead>
+                        <tbody>
+                            <tr><td rowspan="3">직진도 / 평면도</td><td>~30</td><td>0.05</td><td>0.1</td><td>0.2</td></tr>
+                            <tr><td>30 ~ 100</td><td>0.05</td><td>0.1</td><td>0.3</td></tr>
+                            <tr><td>100 ~ 300</td><td>0.1</td><td>0.2</td><td>0.5</td></tr>
+                            <tr><td>진원도</td><td>-</td><td>IT5/2</td><td>IT7/2</td><td>IT9/2</td></tr>
+                            <tr><td>평행도</td><td>~30</td><td>0.05</td><td>0.1</td><td>0.3</td></tr>
+                            <tr><td>직각도</td><td>~100</td><td>0.1</td><td>0.2</td><td>0.5</td></tr>
+                            <tr><td>대칭도</td><td>~100</td><td>0.1</td><td>0.2</td><td>0.5</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ISO 2768-1 길이 치수 일반공차 (mm, ±)
+        const linTolTable = [
+            { min:0,    max:3,    f:0.05, m:0.1,  c:0.2,  v:0.5  },
+            { min:3,    max:6,    f:0.05, m:0.1,  c:0.3,  v:0.5  },
+            { min:6,    max:30,   f:0.1,  m:0.2,  c:0.5,  v:1.0  },
+            { min:30,   max:120,  f:0.15, m:0.3,  c:0.8,  v:1.5  },
+            { min:120,  max:400,  f:0.2,  m:0.5,  c:1.2,  v:2.5  },
+            { min:400,  max:1000, f:0.3,  m:0.8,  c:2.0,  v:4.0  },
+            { min:1000, max:2000, f:0.5,  m:1.2,  c:3.0,  v:6.0  },
+            { min:2000, max:4000, f:null, m:2.0,  c:4.0,  v:8.0  },
+        ];
+
+        // ISO 2768-1 각도 공차 (분 단위로 저장)
+        const angTolTable = [
+            { max:10,   f:60,  m:60,  c:90,  v:180 },
+            { max:50,   f:30,  m:30,  c:60,  v:120 },
+            { max:120,  f:20,  m:20,  c:30,  v:60  },
+            { max:400,  f:10,  m:10,  c:15,  v:30  },
+            { max:1e9,  f:5,   m:5,   c:10,  v:20  },
+        ];
+
+        // ISO 2768-2 기하공차 (mm)
+        const geoTable = {
+            flatness: [
+                { max:30,  H:0.05, K:0.1, L:0.2 },
+                { max:100, H:0.05, K:0.1, L:0.3 },
+                { max:300, H:0.1,  K:0.2, L:0.5 },
+                { max:1e9, H:0.2,  K:0.4, L:1.0 },
+            ],
+            roundness: [
+                { max:1e9, H:0.025, K:0.05, L:0.15 },
+            ],
+            cylindricity: [
+                { max:1e9, H:0.05, K:0.1, L:0.3 },
+            ],
+            parallelism: [
+                { max:30,  H:0.05, K:0.1, L:0.3 },
+                { max:100, H:0.1,  K:0.2, L:0.6 },
+                { max:300, H:0.2,  K:0.4, L:1.0 },
+                { max:1e9, H:0.3,  K:0.6, L:1.5 },
+            ],
+            perpendicularity: [
+                { max:100, H:0.1,  K:0.2, L:0.5 },
+                { max:300, H:0.2,  K:0.4, L:1.0 },
+                { max:1e9, H:0.3,  K:0.6, L:1.5 },
+            ],
+            symmetry: [
+                { max:100, H:0.1,  K:0.2, L:0.5 },
+                { max:300, H:0.2,  K:0.4, L:1.0 },
+                { max:1e9, H:0.3,  K:0.6, L:1.5 },
+            ],
+        };
+
+        const methodInfo = {
+            mc:    "±0.05~0.1mm (CNC 머시닝센터 일반가공 기준)",
+            drill: "±0.1~0.3mm (드릴링 위치 정밀도 기준)",
+            jig:   "±0.005~0.02mm (지그 보링, 고정밀)",
+        };
+
+        function getLinRow(dim) {
+            return linTolTable.find(r => dim > r.min && dim <= r.max) || linTolTable[linTolTable.length-1];
+        }
+
+        function calcLinear() {
+            const dim = parseFloat(document.getElementById("linDim").value);
+            const grade = document.getElementById("linGrade").value;
+            if (!isFinite(dim) || dim <= 0) return;
+            const row = getLinRow(dim);
+            const tol = row[grade];
+            if (tol == null) {
+                document.getElementById("linTol").innerHTML = "해당없음";
+                return;
+            }
+            document.getElementById("linTol").innerHTML = `±${tol} <span>mm</span>`;
+            document.getElementById("linMax").innerHTML = `${(dim + tol).toFixed(3)} <span>mm</span>`;
+            document.getElementById("linMin").innerHTML = `${(dim - tol).toFixed(3)} <span>mm</span>`;
+            document.getElementById("linRange").innerHTML = `${row.min} 초과 ~ ${row.max} 이하`;
+            // 표 행 강조
+            document.querySelectorAll("#linearTbody tr").forEach((tr, i) => {
+                const r = linTolTable[i];
+                tr.classList.toggle("row-active", dim > r.min && dim <= r.max);
+            });
+        }
+
+        function calcAngular() {
+            const len = parseFloat(document.getElementById("angLen").value);
+            const grade = document.getElementById("angGrade").value;
+            if (!isFinite(len) || len <= 0) return;
+            const row = angTolTable.find(r => len <= r.max);
+            const tolMin = row[grade];
+            const deg = Math.floor(tolMin / 60), min = tolMin % 60;
+            document.getElementById("angTol").innerHTML = deg > 0 ? `±${deg}°${min > 0 ? min+"'" : ""}` : `±${min}'`;
+            const mmAt1m = (Math.tan(tolMin / 60 * Math.PI / 180) * 1000).toFixed(3);
+            document.getElementById("angMm").innerHTML = `${mmAt1m} <span>mm</span>`;
+        }
+
+        function calcCenter() {
+            const dim = parseFloat(document.getElementById("cdDim").value);
+            const grade = document.getElementById("cdGrade").value;
+            const method = document.getElementById("cdMethod").value;
+            if (!isFinite(dim) || dim <= 0) return;
+            const row = getLinRow(dim);
+            const tol = row[grade] || "-";
+            document.getElementById("cdTol").innerHTML = tol !== "-" ? `±${tol} <span>mm</span>` : "-";
+            document.getElementById("cdMax").innerHTML = tol !== "-" ? `${(dim + tol).toFixed(3)} <span>mm</span>` : "-";
+            document.getElementById("cdMin").innerHTML = tol !== "-" ? `${(dim - tol).toFixed(3)} <span>mm</span>` : "-";
+            document.getElementById("cdMethodTol").innerHTML = methodInfo[method];
+        }
+
+        function calcGeo() {
+            const dim = parseFloat(document.getElementById("geoDim").value);
+            const grade = document.getElementById("geoGrade").value;
+            if (!isFinite(dim) || dim <= 0) return;
+            const get = (table) => (table.find(r => dim <= r.max) || table[table.length-1])[grade];
+            document.getElementById("geoFlat").innerHTML = `${get(geoTable.flatness)} <span>mm</span>`;
+            document.getElementById("geoRound").innerHTML = `${get(geoTable.roundness)} <span>mm</span>`;
+            document.getElementById("geoCyl").innerHTML = `${get(geoTable.cylindricity)} <span>mm</span>`;
+            document.getElementById("geoPara").innerHTML = `${get(geoTable.parallelism)} <span>mm</span>`;
+            document.getElementById("geoPerp").innerHTML = `${get(geoTable.perpendicularity)} <span>mm</span>`;
+            document.getElementById("geoSymm").innerHTML = `${get(geoTable.symmetry)} <span>mm</span>`;
+        }
+
+        function buildLinearTable() {
+            const tbody = document.getElementById("linearTbody");
+            tbody.innerHTML = linTolTable.map(r =>
+                `<tr><td>${r.min} ~ ${r.max}</td><td>${r.f ?? "-"}</td><td>${r.m ?? "-"}</td><td>${r.c ?? "-"}</td><td>${r.v ?? "-"}</td></tr>`
+            ).join("");
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        function createSidebarMenu() {
+            const menuItems = [
+                { name: '🏠 메인 홈', href: 'index.html' },
+                { name: '6. 기계가공 (구현됨) ⚡', href: 'index.html#machining-section', active: true },
+                { name: '7. 기계요소 (구현됨) ⚡', href: 'index.html#elements-section' },
+                { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html' },
+                { name: '1~5. 소재 데이터', href: 'javascript:void(0)', ready: true },
+                { name: '9. 진공부품', href: 'javascript:void(0)', ready: true },
+                { name: '10. Vision Camera', href: 'javascript:void(0)', ready: true },
+                { name: '11. Electricity & Control', href: 'javascript:void(0)', ready: true },
+            ];
+            document.getElementById("sidebarMenu").innerHTML = menuItems.map(i =>
+                `<li class="${i.active ? 'active' : ''} ${i.ready ? 'ready' : ''}"><a href="${i.href}">${i.name}${i.ready ? ' <span class="badge-ready">준비중</span>' : ''}</a></li>`
+            ).join("");
+        }
+
+        window.onload = () => { createSidebarMenu(); buildLinearTable(); calcLinear(); calcAngular(); calcCenter(); calcGeo(); };
+    </script>
+</body>
+</html>

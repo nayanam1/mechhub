@@ -55,3 +55,80 @@
         .tag-container { display: flex; flex-wrap: wrap; gap: 6px; }
         .tag { font-size: 11px; background-color: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
         .card:not(.disabled):hover .tag { background-color: #fef2f2; color: var(--accent-color); border-color: #fee2e2; }
+/* ========================================================
+   공통 계산기 컴포넌트 (모든 세부 계산 페이지 공용)
+   ======================================================== */
+
+/* 2단 레이아웃 컬럼 내부 카드 간격 */
+.input-column, .output-column { display: flex; flex-direction: column; gap: 20px; }
+.grid-container { display: flex; flex-direction: column; gap: 20px; }
+
+/* 카드 내부 타이틀 */
+.card h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; gap: 6px; }
+.card .card-note { font-size: 12px; color: #94a3b8; margin: -8px 0 14px 0; line-height: 1.5; }
+
+/* 입력 폼 (input-group / form-group 두 네이밍 모두 지원) */
+.input-group, .form-group { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+.input-group label, .form-group label { font-size: 12px; font-weight: 600; color: #475569; }
+
+.input-wrapper { display: flex; align-items: stretch; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: white; transition: border-color 0.15s; }
+.input-wrapper:focus-within { border-color: var(--accent-color); }
+.input-wrapper input, .input-wrapper select { flex: 1; min-width: 0; border: none; padding: 10px 12px; font-size: 14px; outline: none; background: transparent; color: #1e293b; }
+.input-wrapper .unit { background: #f1f5f9; color: #64748b; padding: 0 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; border-left: 1px solid #e2e8f0; white-space: nowrap; }
+
+input.form-control, select.form-control { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; color: #1e293b; background: white; outline: none; }
+input.form-control:focus, select.form-control:focus { border-color: var(--accent-color); }
+
+/* 탭 버튼 */
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.tab-btn { flex: 1; min-width: 90px; padding: 9px 10px; border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 6px; font-size: 12px; font-weight: 700; color: #64748b; cursor: pointer; transition: all 0.15s; }
+.tab-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+.tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* 참고 도면 */
+.drawing-container { display: none; padding: 10px 0; }
+.drawing-container.active { display: block; }
+
+/* 계산 버튼 */
+.btn-calc-main { width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; margin: 14px 0 4px 0; transition: background 0.15s; }
+.btn-calc-main:hover { background: #dc2626; }
+.btn-calc-sm { padding: 7px 14px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-calc-sm:hover { background: #475569; }
+
+/* 결과 박스 */
+.result-box, .result-grid, .result-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 6px; }
+.result-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.result-item > span:first-child, .result-item .label { font-size: 11px; color: #64748b; font-weight: 600; }
+.result-item .value, .result-item > span:last-child:not(.label) { font-size: 19px; font-weight: 700; color: #1e293b; }
+.result-item .value span, .result-item > span:last-child span { font-size: 11px; font-weight: 500; color: #94a3b8; margin-left: 2px; }
+.result-item.highlight { background: #fef2f2; border-color: #fecaca; }
+.result-item.highlight .value, .result-item.highlight > span:last-child { color: var(--accent-color); }
+.result-item.warn { background: #fffbeb; border-color: #fde68a; }
+.result-item.warn .value { color: #d97706; }
+.result-item.ok { background: #f0fdf4; border-color: #bbf7d0; }
+.result-item.ok .value { color: #16a34a; }
+
+/* 데이터 테이블 */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+.data-table th { background: var(--primary-color); color: white; padding: 8px 6px; text-align: center; font-weight: 600; }
+.data-table td { padding: 7px 6px; text-align: center; border-bottom: 1px solid #e2e8f0; color: #334155; }
+.data-table tbody tr:hover td { background: #f8fafc; }
+.data-table tbody tr.row-active td { background: #fef2f2; color: var(--accent-color); font-weight: 700; }
+
+/* 상용 길이 칩 */
+.length-container { display: flex; flex-wrap: wrap; gap: 8px; }
+.length-chip { padding: 6px 13px; border: 1px solid #cbd5e1; border-radius: 20px; background: white; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.15s; }
+.length-chip:hover { border-color: var(--accent-color); }
+.length-chip.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+
+/* 차트/그래프 영역 */
+.chart-wrapper { min-height: 280px; }
+
+/* 경고/안내 배너 */
+.notice-banner { display: flex; gap: 10px; align-items: flex-start; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #92400e; line-height: 1.6; margin-top: 14px; }
+.notice-banner.info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+
+/* 작은 보조 텍스트 */
+.helper-text { font-size: 11px; color: #94a3b8; margin-top: 4px; }

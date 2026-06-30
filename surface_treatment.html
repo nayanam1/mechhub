@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - 표면처리 / 도금 / 아노다이징</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand"><h1>mechhub</h1><span>기구설계 보조 포털 v1.0</span></div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>6. 기계가공 🧪 아노다이징 / 도금 피막 두께 / 열처리 사양 비교</h2>
+        </div>
+        <div class="content-body">
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('anodize')">아노다이징 (Anodizing)</button>
+                    <button class="tab-btn" onclick="switchTab('plating')">도금 종류별 피막</button>
+                    <button class="tab-btn" onclick="switchTab('heat')">강재 열처리 사양</button>
+                    <button class="tab-btn" onclick="switchTab('dimCalc')">치수 보정 계산기</button>
+                </div>
+
+                <!-- =========== 아노다이징 =========== -->
+                <div id="anodize" class="tab-content active">
+                    <p class="card-note">알루미늄 아노다이징 후 피막 두께에 따른 치수 변화 참고 데이터입니다. 아노다이징은 알루미늄 표면을 산화시켜 성장하므로, 편측 기준으로 약 50%는 내부로 침식, 50%는 외부로 성장합니다.</p>
+                    <table class="data-table">
+                        <thead><tr><th>종류</th><th>피막 두께 (편측, 총 기준)</th><th>치수 변화 (편측)</th><th>경도 (HV)</th><th>주 용도</th></tr></thead>
+                        <tbody>
+                            <tr><td>Type I (크롬산)</td><td>0.5 ~ 2 μm</td><td>~+0.001mm</td><td>200~300</td><td>항공, 극박 피막</td></tr>
+                            <tr><td>Type II (황산, 일반)</td><td>5 ~ 15 μm</td><td>+0.003~+0.008mm</td><td>200~400</td><td>장식, 내식, 일반 산업</td></tr>
+                            <tr><td>Type II (착색/흑색)</td><td>5 ~ 20 μm</td><td>+0.003~+0.010mm</td><td>200~350</td><td>외관 품질, 열방사</td></tr>
+                            <tr><td>Type III (경질, Hard)</td><td>25 ~ 75 μm</td><td>+0.013~+0.038mm</td><td>400~700</td><td>내마모, 정밀부품, 슬라이드</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="notice-banner">⚠️ Type III 경질 아노다이징 후 치수가 최대 편측 +0.038mm 증가하므로, 끼워맞춤 부품(축, 구멍, 슬라이드)은 아노다이징 여유치를 미리 가공 치수에 반영해야 합니다. 피막 두께는 처리업체/조건에 따라 편차가 있으므로 처리 전 협의하세요.</div>
+
+                    <h3 style="margin-top:20px;">Andz / Cr / Ni / 아연 / 인산염 / Teflon 코팅 비교</h3>
+                    <table class="data-table">
+                        <thead><tr><th>표면처리</th><th>적용 모재</th><th>피막 두께 (편측)</th><th>내식성</th><th>특징</th></tr></thead>
+                        <tbody>
+                            <tr><td>알로다인(Alodine, Cr3+)</td><td>Al</td><td>0.1 ~ 1 μm</td><td>★★★</td><td>도전성 유지, 도료 하지처리</td></tr>
+                            <tr><td>Cr 도금 (경질)</td><td>Steel/STS</td><td>5 ~ 100 μm</td><td>★★★★</td><td>내마모, 광택, 수리 가능</td></tr>
+                            <tr><td>Ni 도금 (무전해)</td><td>Steel/Al/Cu</td><td>5 ~ 50 μm</td><td>★★★★</td><td>균일 피막, 복잡 형상, 내화학</td></tr>
+                            <tr><td>아연(Zn) 도금</td><td>Steel</td><td>5 ~ 25 μm</td><td>★★★</td><td>희생양극, 저렴, 볼트류 표준</td></tr>
+                            <tr><td>아연+삼가크롬 처리</td><td>Steel</td><td>8 ~ 20 μm</td><td>★★★★</td><td>RoHS, 흰/노랑/검정 색상</td></tr>
+                            <tr><td>인산염(Parkerizing)</td><td>Steel</td><td>2 ~ 15 μm</td><td>★★</td><td>방청, 도료 하지, 오일링 흡수</td></tr>
+                            <tr><td>Teflon/PTFE 코팅</td><td>Steel/Al</td><td>10 ~ 40 μm</td><td>★★★★</td><td>비점착, 저마찰, 내약품</td></tr>
+                            <tr><td>DLC (다이아몬드라이크)</td><td>Steel/Al</td><td>1 ~ 5 μm</td><td>★★★★★</td><td>초경도, 저마찰, 고비용</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- =========== 도금 피막 =========== -->
+                <div id="plating" class="tab-content">
+                    <p class="card-note">도금 종류별 피막 두께 범위, 소재 침식량, 실 치수 변화량 및 주의사항입니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:200px; margin-bottom:0;">
+                            <label>도금 종류 선택</label>
+                            <div class="input-wrapper">
+                                <select id="platingType" class="form-control" onchange="showPlating()">
+                                    <option value="zn">아연 도금 (Zn, 삼가크롬)</option>
+                                    <option value="ni_el">무전해 Ni 도금 (EN)</option>
+                                    <option value="ni_el">전해 Ni 도금</option>
+                                    <option value="cr_hard">경질 Cr 도금</option>
+                                    <option value="cu">구리 도금 (Cu)</option>
+                                    <option value="tin">주석 도금 (Sn)</option>
+                                    <option value="au">금 도금 (Au)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-box" id="platingResult" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));"></div>
+
+                    <h3 style="margin-top:20px;">도금 두께 기준 치수 보정 방향</h3>
+                    <div class="notice-banner info">
+                        도금은 <b>기준 치수 이후에 적용</b>되므로, 치수 관리 방향은 <b>용도에 따라 다릅니다</b>.<br>
+                        • 내경(구멍) → 도금 후 내경이 줄어드므로 <b>도금 전 가공 시 +여유</b> 필요<br>
+                        • 외경(축) → 도금 후 외경이 커지므로 <b>도금 전 가공 시 -여유</b> 필요<br>
+                        • 무전해 Ni 도금은 형상에 관계없이 균일하여 정밀 치수관리에 유리
+                    </div>
+                </div>
+
+                <!-- =========== 열처리 =========== -->
+                <div id="heat" class="tab-content">
+                    <p class="card-note">강재 열처리 종류별 적용 온도, 냉각 방법, 달성 경도 및 주요 적용 강종 참고 데이터입니다.</p>
+                    <table class="data-table">
+                        <thead><tr><th>열처리 종류</th><th>온도 범위</th><th>냉각 방법</th><th>달성 경도 (HRC/HB)</th><th>주요 강종 / 용도</th></tr></thead>
+                        <tbody>
+                            <tr><td>담금질 (Quenching)</td><td>830~900℃</td><td>수냉/유냉</td><td>HRC 50~65</td><td>S45C, SCM440, SKD11, 공구강</td></tr>
+                            <tr><td>뜨임 (Tempering)</td><td>150~650℃</td><td>공냉</td><td>담금질 강도 조정</td><td>담금질 후 반드시 실시</td></tr>
+                            <tr><td>불림 (Normalizing)</td><td>890~940℃</td><td>공냉</td><td>HB 140~200</td><td>조직 균일화, 기계가공성 향상</td></tr>
+                            <tr><td>풀림 (Annealing)</td><td>720~900℃</td><td>로냉</td><td>HB 100~180</td><td>응력제거, 연화, 냉간가공 후</td></tr>
+                            <tr><td>침탄 (Carburizing)</td><td>900~950℃</td><td>유냉 후 템퍼</td><td>표면 HRC 55~65, 심부 HRC 25~35</td><td>SCM415/420, 표면경화 기어/핀</td></tr>
+                            <tr><td>질화 (Nitriding)</td><td>480~570℃</td><td>공냉</td><td>표면 HV 700~1200</td><td>SACM645, SKD61, 크랭크샤프트</td></tr>
+                            <tr><td>고주파 담금질 (IH)</td><td>부위 급속 가열</td><td>수냉</td><td>표면 HRC 50~62</td><td>국소 경화, S45C, SCM440</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- =========== 치수 보정 계산기 =========== -->
+                <div id="dimCalc" class="tab-content">
+                    <p class="card-note">가공 치수 → 표면처리 후 최종 치수를 역산하는 계산기입니다. 끼워맞춤 설계 시 활용하세요.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>목표 최종 치수 (mm)</label>
+                            <div class="input-wrapper"><input type="number" id="dcTarget" value="20.000" step="0.001" oninput="calcDimCorr()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>피막 두께 편측 (μm)</label>
+                            <div class="input-wrapper"><input type="number" id="dcThick" value="25" oninput="calcDimCorr()"><div class="unit">μm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>치수 유형</label>
+                            <div class="input-wrapper">
+                                <select id="dcType" class="form-control" onchange="calcDimCorr()">
+                                    <option value="outer">외경 / 두께 (도금 후 증가)</option>
+                                    <option value="inner">내경 / 홀 (도금 후 감소)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-item highlight"><span>도금/처리 전 가공 치수</span><span class="value" id="dcPre">- <span>mm</span></span></div>
+                        <div class="result-item"><span>처리 후 최종 치수 (검증)</span><span class="value" id="dcPost">- <span>mm</span></span></div>
+                        <div class="result-item"><span>편측 보정량</span><span class="value" id="dcCorr">- <span>mm</span></span></div>
+                        <div class="result-item"><span>양측 보정량 (직경 기준)</span><span class="value" id="dcCorrTotal">- <span>mm</span></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const platingDB = {
+            zn:      { name:"아연 도금",         min:5,  max:25, base_erosion:0, note:"경제적, 철강 방청 표준. 삼가크롬 처리 추가 시 내식성 향상 (RoHS 대응)." },
+            ni_el:   { name:"무전해 Ni 도금",     min:5,  max:50, base_erosion:1, note:"두께 균일도 우수. 복잡 형상에도 균일 석출. 경도 HV 500~700 (열처리 후)." },
+            cr_hard: { name:"경질 Cr 도금",       min:5,  max:100,base_erosion:0, note:"최고 내마모, 마찰계수 낮음. 수소취성 주의, 후처리 베이킹 필요." },
+            cu:      { name:"구리 도금",           min:3,  max:30, base_erosion:0, note:"열/전기 전도성 향상. Ni/Cr 도금 하지(밀착층)로 자주 사용." },
+            tin:     { name:"주석 도금 (Sn)",     min:2,  max:20, base_erosion:0, note:"납땜성 우수, 식품 안전. 위스커(Whisker) 발생 주의." },
+            au:      { name:"금 도금 (Au)",        min:0.1,max:5,  base_erosion:0, note:"최고 내식성, 전기접점. 경질금 도금(Co, Ni 합금) 시 내마모↑." },
+        };
+
+        function showPlating() {
+            const key = document.getElementById("platingType").value;
+            const db = platingDB[key];
+            if (!db) return;
+            document.getElementById("platingResult").innerHTML = `
+                <div class="result-item highlight"><span>피막 두께 (편측, 최소)</span><span class="value">${db.min} <span>μm</span></span></div>
+                <div class="result-item highlight"><span>피막 두께 (편측, 최대)</span><span class="value">${db.max} <span>μm</span></span></div>
+                <div class="result-item"><span>외경 변화 (양측 기준, min)</span><span class="value">+${db.min*2} <span>μm</span></span></div>
+                <div class="result-item"><span>외경 변화 (양측 기준, max)</span><span class="value">+${db.max*2} <span>μm</span></span></div>
+                <div class="result-item" style="grid-column:1/-1;"><span>특징</span><span style="font-size:13px;color:#475569;">${db.note}</span></div>`;
+        }
+
+        function calcDimCorr() {
+            const target = parseFloat(document.getElementById("dcTarget").value);
+            const thick = parseFloat(document.getElementById("dcThick").value) / 1000;  // μm → mm
+            const type = document.getElementById("dcType").value;
+            if (!isFinite(target) || !isFinite(thick)) return;
+
+            const pre = type === "outer" ? target - thick * 2 : target + thick * 2;
+            document.getElementById("dcPre").innerHTML = `${pre.toFixed(4)} <span>mm</span>`;
+            document.getElementById("dcPost").innerHTML = `${target.toFixed(4)} <span>mm</span>`;
+            document.getElementById("dcCorr").innerHTML = `${thick.toFixed(4)} <span>mm</span>`;
+            document.getElementById("dcCorrTotal").innerHTML = `${(thick * 2).toFixed(4)} <span>mm</span>`;
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        function createSidebarMenu() {
+            const items = [
+                { name: '🏠 메인 홈', href: 'index.html' },
+                { name: '6. 기계가공 ⚡', href: 'index.html#machining-section', active: true },
+                { name: '7. 기계요소 ⚡', href: 'index.html#elements-section' },
+                { name: '8. 요소설계 & 계산', href: 'motion.html' },
+            ];
+            document.getElementById("sidebarMenu").innerHTML = items.map(i =>
+                `<li class="${i.active ? 'active' : ''}"><a href="${i.href}">${i.name}</a></li>`
+            ).join("");
+        }
+
+        window.onload = () => { createSidebarMenu(); showPlating(); calcDimCorr(); };
+    </script>
+</body>
+</html>

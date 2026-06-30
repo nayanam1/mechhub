@@ -14,23 +14,7 @@
                 <h1>mechhub</h1>
                 <span>기구설계 보조 포털 v1.0</span>
             </div>
-            <ul class="sidebar-menu">
-                <li class="active"><a href="index.html">🏠 메인 홈</a></li>
-                <li class="ready"><a href="javascript:void(0)">1. 기계제도 & RF & EMI <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">2. Steel 소재 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">3. Stainless 소재 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">4. Aluminum 소재 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">5. 수지/세라믹/기타 <span class="badge-ready">준비중</span></a></li>
-                <li><a href="#machining-section">6. 기계가공 (구현됨) ⚡</a></li>
-                <li><a href="#elements-section">7. 기계요소 (구현됨) ⚡</a></li>
-                <li><a href="motion.html">8. 요소설계 & 계산 (구현중)</a></li>
-                <li class="ready"><a href="javascript:void(0)">9. 진공부품 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">10. Vision Camera <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">11. Electricity & Control <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">12. Utility 선정 & 반응 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">13. 기판 & Vibration <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="javascript:void(0)">14. Transportation & ETC <span class="badge-ready">준비중</span></a></li>
-            </ul>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
         </div>
         <div class="sidebar-footer">
             <p>© 2026 장비설계팀 Asset</p>
@@ -183,5 +167,30 @@
         </div>
     </div>
 
+    <script>
+        // 사이드바 메뉴 동적 생성
+        function createSidebarMenu() {
+            const menuItems = [
+                { name: '🏠 메인 홈', href: 'index.html', status: 'active' },
+                { name: '1. 기계제도 & RF & EMI', href: 'javascript:void(0)', status: 'ready' },
+                { name: '2. Steel 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '3. Stainless 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '4. Aluminum 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '5. 수지/세라믹/기타', href: 'javascript:void(0)', status: 'ready' },
+                { name: '6. 기계가공 (구현됨) ⚡', href: '#machining-section', status: '' },
+                { name: '7. 기계요소 (구현됨) ⚡', href: '#elements-section', status: '' },
+                { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html', status: '' },
+                { name: '9. 진공부품', href: 'javascript:void(0)', status: 'ready' },
+                { name: '10. Vision Camera', href: 'javascript:void(0)', status: 'ready' },
+                { name: '11. Electricity & Control', href: 'javascript:void(0)', status: 'ready' },
+                { name: '12. Utility 선정 & 반응', href: 'javascript:void(0)', status: 'ready' },
+                { name: '13. 기판 & Vibration', href: 'javascript:void(0)', status: 'ready' },
+                { name: '14. Transportation & ETC', href: 'javascript:void(0)', status: 'ready' },
+            ];
+            const menuUl = document.getElementById('sidebarMenu');
+            menuUl.innerHTML = menuItems.map(item => `<li class="${item.status === 'ready' ? 'ready' : ''} ${item.status === 'active' ? 'active' : ''}"><a href="${item.href}">${item.name}${item.status === 'ready' ? ' <span class="badge-ready">준비중</span>' : ''}</a></li>`).join('');
+        }
+        window.onload = createSidebarMenu;
+    </script>
 </body>
 </html>

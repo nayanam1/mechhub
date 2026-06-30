@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - NUT 규격 (육각/POP/CLINCHING)</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand">
+                <h1>mechhub</h1>
+                <span>기구설계 보조 포털 v1.0</span>
+            </div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>7. 기계요소 🔩 NUT 규격 - 육각 / POP / CLINCHING</h2>
+            <span style="font-size: 13px; color:#64748b; margin-left:auto;">Home > 기계요소 > NUT 규격</span>
+        </div>
+
+        <div class="content-body">
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('hex', this)">육각 너트 (Hex Nut)</button>
+                    <button class="tab-btn" onclick="switchTab('pop', this)">POP 너트 (리벳너트)</button>
+                    <button class="tab-btn" onclick="switchTab('clinch', this)">클린칭 너트 (PEM)</button>
+                </div>
+
+                <!-- ============ 육각 너트 ============ -->
+                <div id="hex" class="tab-content active">
+                    <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end;">
+                        <div class="input-group" style="flex:1; min-width:200px; margin-bottom:0;">
+                            <label>너트 호칭 (M)</label>
+                            <div class="input-wrapper">
+                                <select id="hexSize" class="form-control" onchange="calcHex()"></select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex:1.5; min-width:240px; margin-bottom:0;">
+                            <label>너트 종류</label>
+                            <div class="input-wrapper">
+                                <select id="hexType" class="form-control" onchange="calcHex()">
+                                    <option value="standard">육각너트 (DIN934 / ISO4032)</option>
+                                    <option value="thin">육각 박형너트 (DIN439, Jam Nut)</option>
+                                    <option value="flange">플랜지 육각너트 (DIN6923)</option>
+                                    <option value="nylock">나일론 풀림방지너트 (Nylock)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="hexDrawing" style="margin-top:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; text-align:center;"></div>
+                    <div class="notice-banner info" style="margin-top:14px;">※ 와셔 분리형 볼트 체결 시 적정 체결 토크는 [볼트 규격 & 체결 토크] 메뉴를 참고하세요. 같은 호칭이면 동일 토크값을 적용합니다.</div>
+                    <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin-top:16px;">
+                        <div class="result-item highlight"><span>대각폭 / 렌치 사이즈 (s)</span><span class="value" id="hexS">- <span>mm</span></span></div>
+                        <div class="result-item highlight"><span>너트 높이 (m)</span><span class="value" id="hexM">- <span>mm</span></span></div>
+                        <div class="result-item"><span>대변간 외접원경 (e, 약)</span><span class="value" id="hexE">- <span>mm</span></span></div>
+                        <div class="result-item"><span>나사 피치 (거친나사)</span><span class="value" id="hexPitch">- <span>mm</span></span></div>
+                    </div>
+                </div>
+
+                <!-- ============ POP 너트 ============ -->
+                <div id="pop" class="tab-content">
+                    <p class="card-note">박판(SUS/AL) 패널에 압입 리벳팅하여 암나사를 만드는 블라인드 리벳너트(POP너트) 규격입니다. 편측 작업(뒷면 접근 불가)에 사용합니다.</p>
+                    <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end;">
+                        <div class="input-group" style="flex:1; min-width:200px; margin-bottom:0;">
+                            <label>너트 호칭 (M)</label>
+                            <div class="input-wrapper">
+                                <select id="popSize" class="form-control" onchange="calcPop()"></select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex:1.5; min-width:220px; margin-bottom:0;">
+                            <label>플랜지 타입</label>
+                            <div class="input-wrapper">
+                                <select id="popFlange" class="form-control" onchange="calcPop()">
+                                    <option value="small">표준 헤드 (Small Flange)</option>
+                                    <option value="large">대형 헤드 (Large Flange)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="popDrawing" style="margin-top:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; text-align:center;"></div>
+                    <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin-top:16px;">
+                        <div class="result-item highlight"><span>가공 홀 직경 (드릴, D)</span><span class="value" id="popHole">- <span>mm</span></span></div>
+                        <div class="result-item"><span>헤드(플랜지) 직경</span><span class="value" id="popHeadDia">- <span>mm</span></span></div>
+                        <div class="result-item"><span>적용 판재 두께 범위 (그립 범위)</span><span class="value" id="popGrip">- <span>mm</span></span></div>
+                        <div class="result-item"><span>전체 길이 (참고)</span><span class="value" id="popLen">- <span>mm</span></span></div>
+                    </div>
+                    <div class="notice-banner">※ 그립 범위(Grip Range)는 제조사/모델에 따라 0.5~1.0mm 단위로 세분화되어 있습니다. 실제 발주 시 적용 판재 두께에 맞는 정확한 그립 범위 모델을 카탈로그에서 선택하세요.</div>
+                </div>
+
+                <!-- ============ 클린칭 너트 ============ -->
+                <div id="clinch" class="tab-content">
+                    <p class="card-note">프레스로 압입하여 모재에 영구 고정되는 셀프 클린칭 너트(PEM Type 등) 규격입니다. 양면 접근 불가 패널의 영구 체결점에 사용합니다.</p>
+                    <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-end;">
+                        <div class="input-group" style="flex:1; min-width:200px; margin-bottom:0;">
+                            <label>너트 호칭 (M)</label>
+                            <div class="input-wrapper">
+                                <select id="clinchSize" class="form-control" onchange="calcClinch()"></select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex:1.5; min-width:220px; margin-bottom:0;">
+                            <label>모재(패널) 재질</label>
+                            <div class="input-wrapper">
+                                <select id="clinchMaterial" class="form-control" onchange="calcClinch()">
+                                    <option value="steel">CRS / 일반 강판</option>
+                                    <option value="al">알루미늄</option>
+                                    <option value="sus">STS (스테인리스)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="clinchDrawing" style="margin-top:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; text-align:center;"></div>
+                    <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin-top:16px;">
+                        <div class="result-item highlight"><span>압입 홀 직경 (D)</span><span class="value" id="clinchHole">- <span>mm</span></span></div>
+                        <div class="result-item"><span>최소 권장 판재 두께</span><span class="value" id="clinchMinT">- <span>mm</span></span></div>
+                        <div class="result-item"><span>최소 모서리 간격 (Edge Distance)</span><span class="value" id="clinchEdge">- <span>mm</span></span></div>
+                        <div class="result-item"><span>너트 전체 높이 (참고)</span><span class="value" id="clinchHeight">- <span>mm</span></span></div>
+                    </div>
+                    <div class="notice-banner">⚠️ 클린칭 너트 압입 홀 직경 및 최소 판재 두께는 제조사(PennEngineering 등) 및 너트 타입(S/SP/F/FH 등)에 따라 차이가 있습니다. 본 표는 일반적인 강판용 Type S 기준 참고값이며, 실제 적용 전 반드시 채용 제조사 카탈로그로 교차 확인하세요.</div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ===== 육각 너트 (DIN934/439/6923, Nylock) - 대각폭(s) / 높이(m) 참고값 =====
+        const hexNutDB = {
+            standard: { // DIN934 / ISO4032
+                "M2":{s:4,  m:1.6}, "M2.5":{s:5,  m:2.0}, "M3":{s:5.5,m:2.4}, "M4":{s:7,  m:3.2},
+                "M5":{s:8,  m:4.7}, "M6":{s:10, m:5.2}, "M8":{s:13, m:6.8}, "M10":{s:16,m:8.4},
+                "M12":{s:18,m:10.8},"M14":{s:21,m:12.8},"M16":{s:24,m:14.8},"M20":{s:30,m:18.0},
+            },
+            thin: { // DIN439 박형(잼)너트
+                "M2":{s:4,  m:1.2}, "M2.5":{s:5,  m:1.6}, "M3":{s:5.5,m:1.8}, "M4":{s:7,  m:2.2},
+                "M5":{s:8,  m:2.7}, "M6":{s:10, m:3.2}, "M8":{s:13, m:4.0}, "M10":{s:16,m:5.0},
+                "M12":{s:18,m:6.0}, "M14":{s:21,m:7.0}, "M16":{s:24,m:8.0}, "M20":{s:30,m:10.0},
+            },
+            flange: { // DIN6923 플랜지너트 (s는 동일, m은 약간 큼, 플랜지경 dw 별도 표기 생략)
+                "M3":{s:5.5,m:3.0}, "M4":{s:7,  m:4.0}, "M5":{s:8,  m:5.0}, "M6":{s:10, m:6.0},
+                "M8":{s:13, m:8.0}, "M10":{s:16,m:10.0},"M12":{s:18,m:12.0},"M16":{s:24,m:16.0},
+            },
+            nylock: { // 나일론 풀림방지너트 (전체 높이, 나일론 링 포함)
+                "M3":{s:5.5,m:5.0}, "M4":{s:7,  m:5.0}, "M5":{s:8,  m:6.7}, "M6":{s:10, m:8.0},
+                "M8":{s:13, m:9.5}, "M10":{s:16,m:12.5},"M12":{s:18,m:15.5},"M16":{s:24,m:19.5},
+            },
+        };
+        const pitchDB = { "M2":0.4,"M2.5":0.45,"M3":0.5,"M4":0.7,"M5":0.8,"M6":1.0,"M8":1.25,"M10":1.5,"M12":1.75,"M14":2.0,"M16":2.0,"M20":2.5 };
+
+        // ===== POP 너트(리벳너트) - 가공 홀 / 헤드 직경 / 그립범위(참고) =====
+        const popNutDB = {
+            "M3": { hole:4.2, headSmall:8.0,  headLarge:9.5,  grip:"0.5~3.0", len:9.5  },
+            "M4": { hole:5.2, headSmall:9.0,  headLarge:11.0, grip:"0.5~3.0", len:10.0 },
+            "M5": { hole:6.4, headSmall:10.4, headLarge:13.0, grip:"0.5~3.0", len:11.5 },
+            "M6": { hole:7.9, headSmall:12.2, headLarge:15.5, grip:"0.5~3.5", len:13.0 },
+            "M8": { hole:9.9, headSmall:15.6, headLarge:18.5, grip:"1.0~4.0", len:16.5 },
+            "M10":{ hole:12.4,headSmall:18.2, headLarge:22.0, grip:"1.0~4.5", len:19.5 },
+        };
+
+        // ===== 클린칭 너트 (PEM Type S 강판 기준 참고값) =====
+        const clinchNutDB = {
+            "M2":  { hole:3.18, minT:0.84, edge:4.0, height:3.2 },
+            "M2.5":{ hole:3.96, minT:0.84, edge:4.5, height:3.6 },
+            "M3":  { hole:4.34, minT:1.02, edge:5.0, height:4.1 },
+            "M3.5":{ hole:4.98, minT:1.27, edge:5.5, height:4.8 },
+            "M4":  { hole:5.74, minT:1.27, edge:6.0, height:5.6 },
+            "M5":  { hole:6.45, minT:1.52, edge:7.0, height:6.4 },
+            "M6":  { hole:8.05, minT:1.91, edge:8.5, height:8.0 },
+        };
+        const materialFactor = { steel: 1.0, al: 1.15, sus: 1.05 }; // 압입 시 모재 경도에 따른 권장 최소두께 보정(참고용 근사치)
+
+        function fillSelect(id, keys) {
+            const el = document.getElementById(id);
+            el.innerHTML = keys.map(k => `<option value="${k}">${k}</option>`).join("");
+        }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll(".tabs .tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById(id).classList.add("active");
+        }
+
+        function setVal(id, val, unit) { document.getElementById(id).innerHTML = val + ` <span>${unit || ""}</span>`; }
+
+        function renderHexDrawing(type, s, m) {
+            const scale = 6;
+            let apothem = Math.max(28, Math.min(70, (s / 2) * scale));
+            const R = apothem * 1.1547;
+            const cx1 = 90, cy1 = 100; // 정면(육각) 도면 중심
+            const hexPts = [
+                [R, 0], [0.5 * R, -apothem], [-0.5 * R, -apothem],
+                [-R, 0], [-0.5 * R, apothem], [0.5 * R, apothem]
+            ].map(([x, y]) => `${cx1 + x},${cy1 + y}`).join(" ");
+
+            // ---- 측면(높이) 도면: 타입별 형상 변경 ----
+            const bodyH = Math.max(24, Math.min(130, m * scale));
+            const bodyW = apothem * 1.6;
+            const cx2 = 260, baseY = 150;
+            let sideShape = "";
+            let dimTop = baseY - bodyH; // 치수선 상단 기준(기본: 본체 상단)
+
+            if (type === "flange") {
+                const flangeH = 14, flangeW = bodyW * 1.7;
+                sideShape += `<rect x="${cx2 - flangeW / 2}" y="${baseY - flangeH}" width="${flangeW}" height="${flangeH}" fill="#e2e8f0" stroke="#475569" stroke-width="2.5"/>`;
+                sideShape += `<rect x="${cx2 - bodyW / 2}" y="${baseY - bodyH}" width="${bodyW}" height="${bodyH - flangeH}" fill="#fff" stroke="#475569" stroke-width="2.5"/>`;
+            } else if (type === "nylock") {
+                const nylonH = Math.max(10, bodyH * 0.22);
+                sideShape += `<rect x="${cx2 - bodyW / 2}" y="${baseY - bodyH}" width="${bodyW}" height="${bodyH - nylonH}" fill="#fff" stroke="#475569" stroke-width="2.5"/>`;
+                sideShape += `<rect x="${cx2 - bodyW / 2}" y="${baseY - nylonH}" width="${bodyW}" height="${nylonH}" fill="#fde68a" stroke="#475569" stroke-width="2.5"/>`;
+                sideShape += `<text x="${cx2}" y="${baseY - nylonH / 2 + 4}" text-anchor="middle" font-size="9" fill="#92400e">나일론</text>`;
+            } else {
+                sideShape += `<rect x="${cx2 - bodyW / 2}" y="${baseY - bodyH}" width="${bodyW}" height="${bodyH}" fill="#fff" stroke="#475569" stroke-width="2.5"/>`;
+            }
+
+            const svg = `
+            <svg viewBox="0 0 340 200" style="width:100%; max-width:420px; height:auto;">
+                <defs><marker id="dimArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker></defs>
+
+                <!-- 정면 (육각) 도면 -->
+                <polygon points="${hexPts}" fill="#fff" stroke="#475569" stroke-width="2.5"/>
+                <circle cx="${cx1}" cy="${cy1}" r="${apothem * 0.4}" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="3 2"/>
+                <!-- s 치수선 (상단 평면 ~ 하단 평면) -->
+                <line x1="${cx1 + R + 14}" y1="${cy1 - apothem}" x2="${cx1 + R + 14}" y2="${cy1 + apothem}" stroke="#3b82f6" stroke-width="1.3" marker-start="url(#dimArrow)" marker-end="url(#dimArrow)"/>
+                <line x1="${cx1 - 0.5 * R}" y1="${cy1 - apothem}" x2="${cx1 + R + 20}" y2="${cy1 - apothem}" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2 2"/>
+                <line x1="${cx1 - 0.5 * R}" y1="${cy1 + apothem}" x2="${cx1 + R + 20}" y2="${cy1 + apothem}" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2 2"/>
+                <text x="${cx1 + R + 19}" y="${cy1 + 4}" font-size="13" font-weight="700" fill="#3b82f6">s</text>
+                <text x="${cx1}" y="190" text-anchor="middle" font-size="11" fill="#475569">정면(육각) - 렌치사이즈</text>
+
+                <!-- 측면(높이) 도면 -->
+                ${sideShape}
+                <line x1="${cx2 + bodyW / 2 + 14}" y1="${dimTop}" x2="${cx2 + bodyW / 2 + 14}" y2="${baseY}" stroke="#ef4444" stroke-width="1.3" marker-start="url(#dimArrow)" marker-end="url(#dimArrow)"/>
+                <line x1="${cx2 - bodyW / 2}" y1="${dimTop}" x2="${cx2 + bodyW / 2 + 20}" y2="${dimTop}" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2 2"/>
+                <line x1="${cx2 - bodyW / 2}" y1="${baseY}" x2="${cx2 + bodyW / 2 + 20}" y2="${baseY}" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="2 2"/>
+                <text x="${cx2 + bodyW / 2 + 19}" y="${(dimTop + baseY) / 2 + 4}" font-size="13" font-weight="700" fill="#ef4444">m</text>
+                <text x="${cx2}" y="190" text-anchor="middle" font-size="11" fill="#475569">측면 - 전체높이</text>
+            </svg>`;
+            document.getElementById("hexDrawing").innerHTML = svg;
+        }
+
+        function calcHex() {
+            const size = document.getElementById("hexSize").value;
+            const type = document.getElementById("hexType").value;
+            const d = hexNutDB[type][size] || hexNutDB[type][Object.keys(hexNutDB[type])[0]];
+            const sizeUsed = hexNutDB[type][size] ? size : Object.keys(hexNutDB[type])[0];
+            setVal("hexS", d.s, "mm");
+            setVal("hexM", d.m, "mm");
+            setVal("hexE", (d.s * 1.1547).toFixed(2), "mm"); // 정육각형 대각폭->외접원경 환산 (e = s / cos30°)
+            setVal("hexPitch", pitchDB[size] !== undefined ? pitchDB[size] : pitchDB[sizeUsed], "mm");
+            renderHexDrawing(type, d.s, d.m);
+        }
+
+        function renderPopDrawing(hole, headDia, isLarge, gripStr, len) {
+            // 단면도: 판재 + POP너트(리벳 전/후 압착)
+            const cx = 200, sheetY = 100, sheetH = 14;
+            const nutH = 80, nutW = 26;
+            const headW = isLarge ? 60 : 44;
+            const headH = 8;
+            const svg = `<svg viewBox="0 0 400 220" style="width:100%;max-width:480px;height:auto;">
+                <defs><marker id="pnArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker></defs>
+                <!-- 판재 -->
+                <rect x="60" y="${sheetY}" width="280" height="${sheetH}" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+                <!-- 드릴 홀 (판재 관통) -->
+                <rect x="${cx - nutW/2}" y="${sheetY}" width="${nutW}" height="${sheetH}" fill="#f8fafc" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2 1"/>
+                <!-- 너트 바디 (판재 아래로 돌출) -->
+                <rect x="${cx - nutW/2}" y="${sheetY + sheetH}" width="${nutW}" height="${nutH}" fill="#fff" stroke="#475569" stroke-width="2"/>
+                <!-- 암나사 표시 -->
+                <line x1="${cx-nutW/2+2}" y1="${sheetY+sheetH+20}" x2="${cx+nutW/2-2}" y2="${sheetY+sheetH+20}" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="${cx-nutW/2+2}" y1="${sheetY+sheetH+35}" x2="${cx+nutW/2-2}" y2="${sheetY+sheetH+35}" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="${cx-nutW/2+2}" y1="${sheetY+sheetH+50}" x2="${cx+nutW/2-2}" y2="${sheetY+sheetH+50}" stroke="#94a3b8" stroke-width="1"/>
+                <!-- 헤드(플랜지) - 판재 위 -->
+                <rect x="${cx - headW/2}" y="${sheetY - headH}" width="${headW}" height="${headH}" rx="2" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
+
+                <!-- D 치수선 (드릴홀) -->
+                <line x1="${cx - nutW/2}" y1="${sheetY - 28}" x2="${cx + nutW/2}" y2="${sheetY - 28}" stroke="#ef4444" stroke-width="1.3" marker-start="url(#pnArrow)" marker-end="url(#pnArrow)"/>
+                <text x="${cx}" y="${sheetY - 34}" text-anchor="middle" font-size="11" font-weight="700" fill="#ef4444">D (드릴홀)</text>
+
+                <!-- 헤드 치수선 -->
+                <line x1="${cx - headW/2}" y1="${sheetY - 48}" x2="${cx + headW/2}" y2="${sheetY - 48}" stroke="#3b82f6" stroke-width="1.3" marker-start="url(#pnArrow)" marker-end="url(#pnArrow)"/>
+                <text x="${cx}" y="${sheetY - 54}" text-anchor="middle" font-size="11" font-weight="700" fill="#3b82f6">헤드경${isLarge ? "(Large)" : "(Small)"}</text>
+
+                <!-- 그립(판재두께) 화살표 -->
+                <line x1="${cx + nutW/2 + 30}" y1="${sheetY}" x2="${cx + nutW/2 + 30}" y2="${sheetY + sheetH}" stroke="#16a34a" stroke-width="1.3" marker-start="url(#pnArrow)" marker-end="url(#pnArrow)"/>
+                <text x="${cx + nutW/2 + 37}" y="${sheetY + sheetH/2 + 3}" font-size="10" fill="#16a34a">그립</text>
+                <text x="${cx + nutW/2 + 37}" y="${sheetY + sheetH/2 + 14}" font-size="10" fill="#16a34a">${gripStr}</text>
+
+                <text x="${cx}" y="210" text-anchor="middle" font-size="11" fill="#94a3b8">POP너트(리벳너트) 단면 - 압착 전 상태</text>
+            </svg>`;
+            document.getElementById("popDrawing").innerHTML = svg;
+        }
+
+        function renderClinchDrawing(D, H, h, edge) {
+            const cx = 200, panelY = 90, panelH = 20;
+            const bodyW = 40, bodyH = 50;
+            const svg = `<svg viewBox="0 0 400 220" style="width:100%;max-width:480px;height:auto;">
+                <defs><marker id="cnArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker></defs>
+                <!-- 패널(판재) -->
+                <rect x="40" y="${panelY}" width="320" height="${panelH}" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+                <!-- 압입홀 -->
+                <rect x="${cx - bodyW/2}" y="${panelY}" width="${bodyW}" height="${panelH}" fill="#f8fafc" stroke="#ef4444" stroke-width="1.5"/>
+                <!-- 너트 바디 (패널 위로 돌출) -->
+                <rect x="${cx - bodyW/2}" y="${panelY - bodyH}" width="${bodyW}" height="${bodyH}" fill="#fff" stroke="#475569" stroke-width="2.5"/>
+                <!-- 암나사 표시 -->
+                <line x1="${cx-bodyW/2+3}" y1="${panelY - bodyH + 15}" x2="${cx+bodyW/2-3}" y2="${panelY - bodyH + 15}" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="${cx-bodyW/2+3}" y1="${panelY - bodyH + 28}" x2="${cx+bodyW/2-3}" y2="${panelY - bodyH + 28}" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="${cx-bodyW/2+3}" y1="${panelY - bodyH + 41}" x2="${cx+bodyW/2-3}" y2="${panelY - bodyH + 41}" stroke="#94a3b8" stroke-width="1"/>
+                <!-- 슬리브(하단 플랜지) -->
+                <rect x="${cx - bodyW/2 - 5}" y="${panelY + panelH - 10}" width="${bodyW + 10}" height="10" fill="#cbd5e1" stroke="#475569" stroke-width="1.5"/>
+
+                <!-- D(압입홀) 치수선 -->
+                <line x1="${cx - bodyW/2}" y1="${panelY + panelH + 28}" x2="${cx + bodyW/2}" y2="${panelY + panelH + 28}" stroke="#ef4444" stroke-width="1.3" marker-start="url(#cnArrow)" marker-end="url(#cnArrow)"/>
+                <text x="${cx}" y="${panelY + panelH + 43}" text-anchor="middle" font-size="12" font-weight="700" fill="#ef4444">D (압입홀경)</text>
+
+                <!-- H 치수선(너트 전체높이) -->
+                <line x1="${cx + bodyW/2 + 22}" y1="${panelY - bodyH}" x2="${cx + bodyW/2 + 22}" y2="${panelY + panelH}" stroke="#3b82f6" stroke-width="1.3" marker-start="url(#cnArrow)" marker-end="url(#cnArrow)"/>
+                <text x="${cx + bodyW/2 + 30}" y="${panelY - bodyH/2 + 4}" font-size="12" font-weight="700" fill="#3b82f6">H</text>
+
+                <!-- 판재두께 치수선 -->
+                <line x1="${cx - bodyW/2 - 22}" y1="${panelY}" x2="${cx - bodyW/2 - 22}" y2="${panelY + panelH}" stroke="#16a34a" stroke-width="1.3" marker-start="url(#cnArrow)" marker-end="url(#cnArrow)"/>
+                <text x="${cx - bodyW/2 - 35}" y="${panelY + panelH/2 + 3}" text-anchor="end" font-size="11" fill="#16a34a">t(판두께)</text>
+
+                <text x="${cx}" y="210" text-anchor="middle" font-size="11" fill="#94a3b8">클린칭 너트(PEM Type) 단면 - 압입 후 상태</text>
+            </svg>`;
+            document.getElementById("clinchDrawing").innerHTML = svg;
+        }
+
+        function calcPop() {
+            const size = document.getElementById("popSize").value;
+            const flange = document.getElementById("popFlange").value;
+            const d = popNutDB[size];
+            const isLarge = flange === "large";
+            setVal("popHole", d.hole, "mm");
+            setVal("popHeadDia", isLarge ? d.headLarge : d.headSmall, "mm");
+            setVal("popGrip", d.grip, "mm");
+            setVal("popLen", d.len, "mm");
+            renderPopDrawing(d.hole, isLarge ? d.headLarge : d.headSmall, isLarge, d.grip, d.len);
+        }
+
+        function calcClinch() {
+            const size = document.getElementById("clinchSize").value;
+            const mat = document.getElementById("clinchMaterial").value;
+            const d = clinchNutDB[size];
+            const minT = +(d.minT * materialFactor[mat]).toFixed(2);
+            setVal("clinchHole", d.hole, "mm");
+            setVal("clinchMinT", minT, "mm");
+            setVal("clinchEdge", d.edge, "mm");
+            setVal("clinchHeight", d.height, "mm");
+            renderClinchDrawing(d.hole, d.height, d.minT, d.edge);
+        }
+
+        function createSidebarMenu() {
+            const menuItems = [
+                { name: '🏠 메인 홈', href: 'index.html', status: '' },
+                { name: '1. 기계제도 & RF & EMI', href: 'javascript:void(0)', status: 'ready' },
+                { name: '2. Steel 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '3. Stainless 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '4. Aluminum 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '5. 수지/세라믹/기타', href: 'javascript:void(0)', status: 'ready' },
+                { name: '6. 기계가공 (구현됨) ⚡', href: 'index.html#machining-section', status: '' },
+                { name: '7. 기계요소 (구현됨) ⚡', href: 'index.html#elements-section', status: 'current' },
+                { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html', status: '' },
+                { name: '9. 진공부품', href: 'javascript:void(0)', status: 'ready' },
+                { name: '10. Vision Camera', href: 'javascript:void(0)', status: 'ready' },
+                { name: '11. Electricity & Control', href: 'javascript:void(0)', status: 'ready' },
+                { name: '12. Utility 선정 & 반응', href: 'javascript:void(0)', status: 'ready' },
+                { name: '13. 기판 & Vibration', href: 'javascript:void(0)', status: 'ready' },
+                { name: '14. Transportation & ETC', href: 'javascript:void(0)', status: 'ready' },
+            ];
+            const menuUl = document.getElementById('sidebarMenu');
+            menuUl.innerHTML = menuItems.map(item => `
+                <li class="${item.status === 'ready' ? 'ready' : ''} ${item.status === 'current' ? 'active' : ''}">
+                    <a href="${item.href}">${item.name}${item.status === 'ready' ? ' <span class="badge-ready">준비중</span>' : ''}</a>
+                </li>`).join('');
+        }
+
+        window.onload = function () {
+            createSidebarMenu();
+            fillSelect("hexSize", Object.keys(hexNutDB.standard));
+            fillSelect("popSize", Object.keys(popNutDB));
+            fillSelect("clinchSize", Object.keys(clinchNutDB));
+            calcHex();
+            calcPop();
+            calcClinch();
+        };
+    </script>
+</body>
+</html>

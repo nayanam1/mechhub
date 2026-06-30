@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - 표면거칠기 & Mesh Size</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand"><h1>mechhub</h1><span>기구설계 보조 포털 v1.0</span></div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>6. 기계가공 ✨ 표면거칠기 & 가공방법별 조도 / Mesh Size</h2>
+        </div>
+        <div class="content-body">
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('roughness')">Ra / Rz / Ry 변환</button>
+                    <button class="tab-btn" onclick="switchTab('method')">가공방법별 달성 조도</button>
+                    <button class="tab-btn" onclick="switchTab('mesh')">Mesh Size 변환표</button>
+                    <button class="tab-btn" onclick="switchTab('flatplate')">석정반 가공공차</button>
+                </div>
+
+                <!-- =========== Ra/Rz 변환 =========== -->
+                <div id="roughness" class="tab-content active">
+                    <p class="card-note">Ra (산술평균 거칠기) ↔ Rz (10점 평균, 구 Ry) 상호 환산 및 KS 삼각기호/N 등급과의 대응표입니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>Ra 값 (μm)</label>
+                            <div class="input-wrapper"><input type="number" id="raInput" step="0.001" value="1.6" oninput="calcFromRa()"><div class="unit">μm</div></div>
+                        </div>
+                        <div style="display:flex; align-items:flex-end; padding-bottom:2px; font-size:20px; color:#94a3b8;">⇄</div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>Rz 값 (μm)</label>
+                            <div class="input-wrapper"><input type="number" id="rzInput" step="0.001" value="10" oninput="calcFromRz()"><div class="unit">μm</div></div>
+                        </div>
+                    </div>
+                    <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+                        <div class="result-item highlight"><span>Ra (산술평균)</span><span class="value" id="resRa">1.6 <span>μm</span></span></div>
+                        <div class="result-item"><span>Rz / Ry (10점 평균)</span><span class="value" id="resRz">10 <span>μm</span></span></div>
+                        <div class="result-item"><span>N 등급 (ISO)</span><span class="value" id="resN">-</span></div>
+                        <div class="result-item"><span>KS 삼각기호</span><span class="value" id="resTriangle">-</span></div>
+                    </div>
+
+                    <h3 style="margin-top:20px;">Ra 기준 등급 대응표</h3>
+                    <table class="data-table" id="raTable">
+                        <thead><tr><th>N 등급</th><th>Ra (μm)</th><th>Rz (μm, 근사)</th><th>KS 삼각기호</th><th>도면 표기</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- =========== 가공방법별 조도 =========== -->
+                <div id="method" class="tab-content">
+                    <p class="card-note">각 가공 방법이 통상 달성할 수 있는 표면 거칠기(Ra) 범위입니다.</p>
+                    <table class="data-table">
+                        <thead><tr><th>가공방법</th><th>Ra 달성 범위 (μm)</th><th>N 등급</th><th>비고</th></tr></thead>
+                        <tbody>
+                            <tr><td>플레이닝(평삭)</td><td>1.6 ~ 12.5</td><td>N7 ~ N10</td><td>황삭, 대형 평면</td></tr>
+                            <tr><td>밀링(Milling)</td><td>0.8 ~ 6.3</td><td>N6 ~ N9</td><td>엔드밀 / 페이스밀</td></tr>
+                            <tr><td>선삭(Turning)</td><td>0.4 ~ 6.3</td><td>N5 ~ N9</td><td>이송속도·공구 R에 따라 변동</td></tr>
+                            <tr><td>드릴링(Drilling)</td><td>1.6 ~ 12.5</td><td>N7 ~ N10</td><td>내면 기준</td></tr>
+                            <tr><td>리머(Reaming)</td><td>0.4 ~ 1.6</td><td>N5 ~ N7</td><td>고정밀 구멍</td></tr>
+                            <tr><td>보링(Boring)</td><td>0.4 ~ 3.2</td><td>N5 ~ N8</td><td>정밀 내경</td></tr>
+                            <tr><td>원통연삭(Cylindrical Grind.)</td><td>0.1 ~ 0.8</td><td>N3 ~ N6</td><td>축 외경 정밀 연삭</td></tr>
+                            <tr><td>평면연삭(Surface Grind.)</td><td>0.2 ~ 1.6</td><td>N4 ~ N7</td><td>평면 정밀도</td></tr>
+                            <tr><td>래핑(Lapping)</td><td>0.008 ~ 0.4</td><td>N1 ~ N5</td><td>초고정밀 평면/구면</td></tr>
+                            <tr><td>호닝(Honing)</td><td>0.05 ~ 0.4</td><td>N2 ~ N5</td><td>실린더 내면</td></tr>
+                            <tr><td>연마(Polishing)</td><td>0.025 ~ 0.2</td><td>N2 ~ N4</td><td>광학/의료급</td></tr>
+                            <tr><td>방전가공(EDM)</td><td>0.4 ~ 6.3</td><td>N5 ~ N9</td><td>방전 조건에 따라 변동</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- =========== Mesh Size =========== -->
+                <div id="mesh" class="tab-content">
+                    <p class="card-note">메쉬 번호(Mesh No.)와 눈 크기(μm / mm), 와이어 직경의 상호 변환표입니다. JIS/ASTM 기준.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:180px; margin-bottom:0;">
+                            <label>Mesh 번호 또는 개구부(μm)</label>
+                            <div class="input-wrapper"><input type="number" id="meshInput" value="200" oninput="calcMesh()"><div class="unit">mesh or μm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:0.8; min-width:160px; margin-bottom:0;">
+                            <label>입력 기준</label>
+                            <div class="input-wrapper">
+                                <select id="meshBase" class="form-control" onchange="calcMesh()">
+                                    <option value="mesh">메쉬 번호</option>
+                                    <option value="um">개구부 크기 (μm)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-item highlight"><span>개구부 크기</span><span class="value" id="meshOpenSize">- <span>μm</span></span></div>
+                        <div class="result-item"><span>개구부 크기 (mm)</span><span class="value" id="meshOpenMm">- <span>mm</span></span></div>
+                        <div class="result-item"><span>해당 Mesh 번호</span><span class="value" id="meshNo">-</span></div>
+                    </div>
+                    <h3 style="margin-top:20px;">Mesh Size 참조표</h3>
+                    <table class="data-table">
+                        <thead><tr><th>Mesh No.</th><th>개구부 (μm)</th><th>개구부 (mm)</th><th>와이어경 참고 (mm)</th></tr></thead>
+                        <tbody>
+                            <tr><td>10</td><td>2000</td><td>2.000</td><td>0.9</td></tr>
+                            <tr><td>16</td><td>1180</td><td>1.180</td><td>0.65</td></tr>
+                            <tr><td>20</td><td>850</td><td>0.850</td><td>0.5</td></tr>
+                            <tr><td>30</td><td>600</td><td>0.600</td><td>0.4</td></tr>
+                            <tr><td>40</td><td>425</td><td>0.425</td><td>0.29</td></tr>
+                            <tr><td>50</td><td>300</td><td>0.300</td><td>0.22</td></tr>
+                            <tr><td>60</td><td>250</td><td>0.250</td><td>0.18</td></tr>
+                            <tr><td>80</td><td>180</td><td>0.180</td><td>0.14</td></tr>
+                            <tr><td>100</td><td>150</td><td>0.150</td><td>0.12</td></tr>
+                            <tr><td>120</td><td>125</td><td>0.125</td><td>0.10</td></tr>
+                            <tr><td>150</td><td>106</td><td>0.106</td><td>0.09</td></tr>
+                            <tr><td>200</td><td>75</td><td>0.075</td><td>0.06</td></tr>
+                            <tr><td>270</td><td>53</td><td>0.053</td><td>0.04</td></tr>
+                            <tr><td>400</td><td>38</td><td>0.038</td><td>0.03</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- =========== 석정반 =========== -->
+                <div id="flatplate" class="tab-content">
+                    <p class="card-note">정반(Surface Plate) 등급별 허용 평탄도 및 주요 규격입니다. KS B 5202 / JIS B 7513 기준.</p>
+                    <table class="data-table">
+                        <thead><tr><th>등급</th><th>용도</th><th>허용 평탄도 (대각 600mm 기준)</th><th>표면 거칠기 Ra</th></tr></thead>
+                        <tbody>
+                            <tr><td><b>0급</b></td><td>최고 기준정반, 측정 표준</td><td>2.5 μm 이하</td><td>0.05 μm 이하</td></tr>
+                            <tr><td><b>1급</b></td><td>정밀 측정, 검사정반</td><td>5 μm 이하</td><td>0.1 μm 이하</td></tr>
+                            <tr><td><b>2급</b></td><td>일반 검사, 조립 기준면</td><td>12 μm 이하</td><td>0.4 μm 이하</td></tr>
+                            <tr><td><b>3급</b></td><td>조립 / 가이드 기준</td><td>25 μm 이하</td><td>0.8 μm 이하</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="notice-banner info" style="margin-top:12px;">※ 석정반 허용 평탄도는 정반 크기에 따라 다릅니다. 위 수치는 600mm 대각 기준 대표값입니다. 실제 선정 시 KS/JIS 원본 규격 또는 제조사 카탈로그로 확인하세요.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ra ↔ N 등급 / 삼각기호 대응
+        const raTable = [
+            { n:"N12", ra:50,    rz:200,  tri:"▽",    mark:"~" },
+            { n:"N11", ra:25,    rz:100,  tri:"▽",    mark:"~" },
+            { n:"N10", ra:12.5,  rz:50,   tri:"▽",    mark:"▽" },
+            { n:"N9",  ra:6.3,   rz:25,   tri:"▽▽",   mark:"▽" },
+            { n:"N8",  ra:3.2,   rz:12.5, tri:"▽▽",   mark:"▽▽" },
+            { n:"N7",  ra:1.6,   rz:6.3,  tri:"▽▽▽",  mark:"▽▽" },
+            { n:"N6",  ra:0.8,   rz:3.2,  tri:"▽▽▽",  mark:"▽▽▽" },
+            { n:"N5",  ra:0.4,   rz:1.6,  tri:"▽▽▽▽", mark:"▽▽▽" },
+            { n:"N4",  ra:0.2,   rz:0.8,  tri:"▽▽▽▽", mark:"▽▽▽▽" },
+            { n:"N3",  ra:0.1,   rz:0.4,  tri:"▽▽▽▽", mark:"▽▽▽▽" },
+            { n:"N2",  ra:0.05,  rz:0.2,  tri:"▽▽▽▽", mark:"▽▽▽▽" },
+            { n:"N1",  ra:0.025, rz:0.1,  tri:"▽▽▽▽", mark:"▽▽▽▽" },
+        ];
+
+        // Mesh 참조 데이터
+        const meshData = [
+            { mesh:10, um:2000 }, { mesh:16, um:1180 }, { mesh:20, um:850 },
+            { mesh:30, um:600 }, { mesh:40, um:425 }, { mesh:50, um:300 },
+            { mesh:60, um:250 }, { mesh:80, um:180 }, { mesh:100, um:150 },
+            { mesh:120, um:125 }, { mesh:150, um:106 }, { mesh:200, um:75 },
+            { mesh:270, um:53 }, { mesh:400, um:38 },
+        ];
+
+        function findNGrade(ra) {
+            for (const r of raTable) {
+                if (ra >= r.ra * 0.8) return r;
+            }
+            return raTable[raTable.length-1];
+        }
+
+        function calcFromRa() {
+            const ra = parseFloat(document.getElementById("raInput").value);
+            if (!isFinite(ra)) return;
+            const rz = ra * 6.3;  // 근사 환산 (표면 상태에 따라 4~7배 편차)
+            document.getElementById("rzInput").value = rz.toFixed(3);
+            showRoughness(ra, rz);
+        }
+
+        function calcFromRz() {
+            const rz = parseFloat(document.getElementById("rzInput").value);
+            if (!isFinite(rz)) return;
+            const ra = rz / 6.3;
+            document.getElementById("raInput").value = ra.toFixed(4);
+            showRoughness(ra, rz);
+        }
+
+        function showRoughness(ra, rz) {
+            document.getElementById("resRa").innerHTML = `${ra.toFixed(4)} <span>μm</span>`;
+            document.getElementById("resRz").innerHTML = `${rz.toFixed(3)} <span>μm</span>`;
+            const g = findNGrade(ra);
+            document.getElementById("resN").innerHTML = g.n;
+            document.getElementById("resTriangle").innerHTML = g.tri;
+            // Highlight table row
+            document.querySelectorAll("#raTable tbody tr").forEach((tr, i) => {
+                tr.classList.toggle("row-active", raTable[i].n === g.n);
+            });
+        }
+
+        function buildRaTable() {
+            const tbody = document.querySelector("#raTable tbody");
+            tbody.innerHTML = raTable.map(r =>
+                `<tr><td>${r.n}</td><td>${r.ra}</td><td>${r.rz}</td><td>${r.tri}</td><td>${r.mark}</td></tr>`
+            ).join("");
+        }
+
+        function calcMesh() {
+            const val = parseFloat(document.getElementById("meshInput").value);
+            const base = document.getElementById("meshBase").value;
+            if (!isFinite(val) || val <= 0) return;
+
+            let um, mesh;
+            if (base === "mesh") {
+                const row = meshData.find(r => r.mesh === Math.round(val)) || meshData.reduce((a,b) => Math.abs(b.mesh-val) < Math.abs(a.mesh-val) ? b : a);
+                um = row.um; mesh = row.mesh;
+            } else {
+                const row = meshData.reduce((a,b) => Math.abs(b.um-val) < Math.abs(a.um-val) ? b : a);
+                um = val; mesh = row.mesh;
+            }
+            document.getElementById("meshOpenSize").innerHTML = `${um} <span>μm</span>`;
+            document.getElementById("meshOpenMm").innerHTML = `${(um/1000).toFixed(3)} <span>mm</span>`;
+            document.getElementById("meshNo").innerHTML = `# ${mesh}`;
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        function createSidebarMenu() {
+            const items = [
+                { name: '🏠 메인 홈', href: 'index.html' },
+                { name: '6. 기계가공 ⚡', href: 'index.html#machining-section', active: true },
+                { name: '7. 기계요소 ⚡', href: 'index.html#elements-section' },
+                { name: '8. 요소설계 & 계산', href: 'motion.html' },
+            ];
+            document.getElementById("sidebarMenu").innerHTML = items.map(i =>
+                `<li class="${i.active ? 'active' : ''}"><a href="${i.href}">${i.name}</a></li>`
+            ).join("");
+        }
+
+        window.onload = () => { createSidebarMenu(); buildRaTable(); calcFromRa(); calcMesh(); };
+    </script>
+</body>
+</html>

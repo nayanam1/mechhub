@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - 절곡 최소값 & Bending Radius</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand"><h1>mechhub</h1><span>기구설계 보조 포털 v1.0</span></div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>6. 기계가공 📐 절곡 최소값 & Bending Radius (판재 / 튜브)</h2>
+        </div>
+        <div class="content-body">
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('sheet')">판재 절곡 최소치수</button>
+                    <button class="tab-btn" onclick="switchTab('tube')">파이프 / 튜브 벤딩 반경</button>
+                </div>
+
+                <!-- =========== 판재 절곡 =========== -->
+                <div id="sheet" class="tab-content active">
+                    <p class="card-note">프레스브레이크(Press Brake) 에어벤딩 기준. 최소 절곡 반경(R)과 절곡 후 외측 최소치수(L)를 계산합니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>판재 두께 (t)</label>
+                            <div class="input-wrapper"><input type="number" id="sheetT" value="2" step="0.1" min="0.1" oninput="calcSheet()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>판재 재질</label>
+                            <div class="input-wrapper">
+                                <select id="sheetMat" class="form-control" onchange="calcSheet()">
+                                    <option value="spcc">SPCC / 일반 강판</option>
+                                    <option value="sus304">STS 304</option>
+                                    <option value="sus316">STS 316</option>
+                                    <option value="al5052">Al 5052</option>
+                                    <option value="al6061">Al 6061-T6</option>
+                                    <option value="cu">구리 (Cu)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>절곡 각도 (θ)</label>
+                            <div class="input-wrapper"><input type="number" id="sheetAngle" value="90" min="1" max="180" oninput="calcSheet()"><div class="unit">°</div></div>
+                        </div>
+                    </div>
+                    <div id="sheetDrawing" style="margin-bottom:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; text-align:center;"></div>
+                    <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+                        <div class="result-item highlight"><span>최소 내측 절곡 반경 (R_min)</span><span class="value" id="sheetRmin">- <span>mm</span></span></div>
+                        <div class="result-item"><span>절곡 보정량 (Bend Deduction)</span><span class="value" id="sheetBD">- <span>mm</span></span></div>
+                        <div class="result-item"><span>K-Factor (참고)</span><span class="value" id="sheetK">-</span></div>
+                        <div class="result-item"><span>절곡선~끝단 최소치수 (Flange Min)</span><span class="value" id="sheetFlangeMin">- <span>mm</span></span></div>
+                    </div>
+                    <div class="notice-banner info">※ 최소 절곡 반경은 에어벤딩 기준이며, 코이닝/보텀밴딩 방식, 공구 V폭, 판재 열처리 상태에 따라 달라집니다. SPCC는 t×0.5~1.0, SUS는 t×1.5~2.0이 일반 경험치입니다.</div>
+                </div>
+
+                <!-- =========== 튜브 벤딩 =========== -->
+                <div id="tube" class="tab-content">
+                    <p class="card-note">파이프/튜브 벤딩 시 최소 굽힘 반경(CLR, Center Line Radius)과 간섭 여부를 계산합니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>튜브 외경 (O.D)</label>
+                            <div class="input-wrapper"><input type="number" id="tubeOD" value="25.4" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>벽 두께 (t)</label>
+                            <div class="input-wrapper"><input type="number" id="tubeT" value="1.5" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>재질</label>
+                            <div class="input-wrapper">
+                                <select id="tubeMat" class="form-control" onchange="calcTube()">
+                                    <option value="sus">STS 304/316</option>
+                                    <option value="carbon">탄소강</option>
+                                    <option value="al">알루미늄</option>
+                                    <option value="cu">구리/황동</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>목표 CLR (Center Line Radius)</label>
+                            <div class="input-wrapper"><input type="number" id="tubeCLR" value="76.2" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
+                        </div>
+                    </div>
+                    <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+                        <div class="result-item highlight"><span>최소 권장 CLR (D×배수)</span><span class="value" id="tubeMinCLR">- <span>mm</span></span></div>
+                        <div class="result-item" id="clrCheckBox"><span>CLR 적정 여부</span><span class="value" id="clrCheck">-</span></div>
+                        <div class="result-item"><span>D/R 비율 (입력 CLR 기준)</span><span class="value" id="tubeDR">-</span></div>
+                        <div class="result-item"><span>D/t 비율 (Thinning 위험도)</span><span class="value" id="tubeDT">-</span></div>
+                        <div class="result-item"><span>벤딩 후 최소 벽두께 (추정)</span><span class="value" id="tubeMinWall">- <span>mm</span></span></div>
+                    </div>
+                    <div class="notice-banner" id="tubeWarning" style="display:none;"></div>
+                    <div class="notice-banner info">※ 최소 CLR은 재질 특성과 벤딩 방식(로터리, 프리폼, 맨드릴 유무)에 따라 크게 다릅니다. 상기 값은 일반 로터리 드로 벤딩(맨드릴 없음) 기준 경험치입니다.</div>
+
+                    <h3 style="margin-top:20px;">파이프 호칭 ↔ 외경 참조표</h3>
+                    <table class="data-table">
+                        <thead><tr><th>호칭 (A)</th><th>호칭 (B/inch)</th><th>외경 (mm)</th><th>스케줄 40 두께 (mm)</th></tr></thead>
+                        <tbody>
+                            <tr><td>6A</td><td>1/8"</td><td>10.5</td><td>2.0</td></tr>
+                            <tr><td>8A</td><td>1/4"</td><td>13.8</td><td>2.2</td></tr>
+                            <tr><td>10A</td><td>3/8"</td><td>17.3</td><td>2.3</td></tr>
+                            <tr><td>15A</td><td>1/2"</td><td>21.7</td><td>2.8</td></tr>
+                            <tr><td>20A</td><td>3/4"</td><td>27.2</td><td>2.9</td></tr>
+                            <tr><td>25A</td><td>1"</td><td>34.0</td><td>3.4</td></tr>
+                            <tr><td>32A</td><td>1-1/4"</td><td>42.7</td><td>3.6</td></tr>
+                            <tr><td>40A</td><td>1-1/2"</td><td>48.6</td><td>3.7</td></tr>
+                            <tr><td>50A</td><td>2"</td><td>60.5</td><td>3.9</td></tr>
+                            <tr><td>65A</td><td>2-1/2"</td><td>76.3</td><td>5.2</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 재질별 최소 R 배수 (R_min = k × t)
+        const sheetMatDB = {
+            spcc:   { kMin:0.5, kFactor:0.33, flangeK:4 },
+            sus304: { kMin:1.5, kFactor:0.40, flangeK:6 },
+            sus316: { kMin:2.0, kFactor:0.42, flangeK:6 },
+            al5052: { kMin:1.0, kFactor:0.35, flangeK:5 },
+            al6061: { kMin:2.0, kFactor:0.38, flangeK:7 },
+            cu:     { kMin:0.5, kFactor:0.30, flangeK:4 },
+        };
+
+        // 튜브 재질별 최소 CLR 배수 (CLR_min = k × OD)
+        const tubeMatDB = {
+            sus:    { kMin:3.0 },
+            carbon: { kMin:2.0 },
+            al:     { kMin:2.5 },
+            cu:     { kMin:1.5 },
+        };
+
+        function renderSheetDrawing(t, R, angle) {
+            const ang = Math.min(angle, 90); // 도식 각도
+            const rad = ang * Math.PI / 180;
+            const svg = `<svg viewBox="0 0 400 180" style="width:100%;max-width:500px;height:auto;">
+                <defs><marker id="bdArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker></defs>
+                <!-- 왼쪽 플랜지 -->
+                <rect x="20" y="80" width="120" height="${Math.max(8, t*6)}" fill="#fff" stroke="#475569" stroke-width="2.5"/>
+                <!-- 오른쪽 플랜지 (90도 꺾임) -->
+                <rect x="${140 + Math.max(8, R*3)}" y="${80 - 90}" width="${Math.max(8, t*6)}" height="90" fill="#fff" stroke="#475569" stroke-width="2.5"/>
+                <!-- R 표시 -->
+                <path d="M ${140} ${80 + Math.max(8,t*6)/2} A ${Math.max(8,R*3)},${Math.max(8,R*3)} 0 0 1 ${140+Math.max(8,R*3)} ${80 - 90 + Math.max(8,t*6)/2}"
+                    fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 3"/>
+                <text x="${140 + Math.max(8,R*3)/2 - 10}" y="${80 - 30}" font-size="13" font-weight="700" fill="#ef4444">R_min</text>
+                <!-- t 치수선 -->
+                <line x1="20" y1="${110 + 20}" x2="140" y2="${110 + 20}" stroke="#3b82f6" stroke-width="1.3" marker-start="url(#bdArrow)" marker-end="url(#bdArrow)"/>
+                <text x="80" y="${130 + 20}" text-anchor="middle" font-size="11" fill="#3b82f6">Flange Min ≥ 4t~7t</text>
+            </svg>`;
+            document.getElementById("sheetDrawing").innerHTML = svg;
+        }
+
+        function calcSheet() {
+            const t = parseFloat(document.getElementById("sheetT").value);
+            const mat = document.getElementById("sheetMat").value;
+            const angle = parseFloat(document.getElementById("sheetAngle").value);
+            if (!isFinite(t) || t <= 0) return;
+            const db = sheetMatDB[mat];
+            const Rmin = +(db.kMin * t).toFixed(2);
+            const K = db.kFactor;
+            const angRad = angle * Math.PI / 180;
+            const BA = (Rmin + K * t) * angRad;  // Bend Allowance
+            const BD = (2 * (Rmin + t) * Math.tan(angRad / 2)) - BA;  // Bend Deduction
+            const flangeMin = +(db.flangeK * t).toFixed(2);
+
+            document.getElementById("sheetRmin").innerHTML = `${Rmin} <span>mm</span>`;
+            document.getElementById("sheetBD").innerHTML = `${BD.toFixed(3)} <span>mm</span>`;
+            document.getElementById("sheetK").innerHTML = K;
+            document.getElementById("sheetFlangeMin").innerHTML = `${flangeMin} <span>mm (≈ ${db.flangeK}×t)</span>`;
+            renderSheetDrawing(t, Rmin, angle);
+        }
+
+        function calcTube() {
+            const OD = parseFloat(document.getElementById("tubeOD").value);
+            const t = parseFloat(document.getElementById("tubeT").value);
+            const mat = document.getElementById("tubeMat").value;
+            const CLR = parseFloat(document.getElementById("tubeCLR").value);
+            if (!isFinite(OD) || !isFinite(t) || OD <= 0 || t <= 0) return;
+            const db = tubeMatDB[mat];
+            const CLRmin = +(db.kMin * OD).toFixed(1);
+            const DR = +(CLR / OD * 2).toFixed(2);  // D/R = 2×R_cl/OD
+            const DT = +(OD / t).toFixed(1);
+            // 외측 벽 thinning 추정 (근사)
+            const thinningFactor = 1 - (OD / (2 * CLR));
+            const minWall = +(t * (1 - thinningFactor * 0.3)).toFixed(2);
+
+            document.getElementById("tubeMinCLR").innerHTML = `${CLRmin} <span>mm (${db.kMin}×OD)</span>`;
+            document.getElementById("tubeDR").innerHTML = DR;
+            document.getElementById("tubeDT").innerHTML = DT;
+            document.getElementById("tubeMinWall").innerHTML = `${minWall} <span>mm (추정)</span>`;
+
+            const clrBox = document.getElementById("clrCheckBox");
+            const warnBox = document.getElementById("tubeWarning");
+            if (CLR >= CLRmin) {
+                clrBox.className = "result-item ok";
+                document.getElementById("clrCheck").innerHTML = `✅ 적합 (${CLR} ≥ ${CLRmin})`;
+                warnBox.style.display = "none";
+            } else {
+                clrBox.className = "result-item highlight";
+                document.getElementById("clrCheck").innerHTML = `⚠️ 부족 (${CLR} < ${CLRmin})`;
+                warnBox.style.display = "block";
+                warnBox.className = "notice-banner";
+                warnBox.innerHTML = `⚠️ 목표 CLR(${CLR}mm)이 권장 최소값(${CLRmin}mm)보다 작습니다. 주름(ripple), 타원변형(ovality), 벽 파열 위험이 있습니다. 맨드릴 사용 또는 CLR을 늘리는 것을 권장합니다.`;
+            }
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        function createSidebarMenu() {
+            const items = [
+                { name: '🏠 메인 홈', href: 'index.html' },
+                { name: '6. 기계가공 ⚡', href: 'index.html#machining-section', active: true },
+                { name: '7. 기계요소 ⚡', href: 'index.html#elements-section' },
+                { name: '8. 요소설계 & 계산', href: 'motion.html' },
+            ];
+            document.getElementById("sidebarMenu").innerHTML = items.map(i =>
+                `<li class="${i.active ? 'active' : ''}"><a href="${i.href}">${i.name}</a></li>`
+            ).join("");
+        }
+
+        window.onload = () => { createSidebarMenu(); calcSheet(); calcTube(); };
+    </script>
+</body>
+</html>

@@ -7,38 +7,40 @@
     <title id="webTitle">mechhub</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="common.css">
+    <style>
+        /* 그래프 영역이 0으로 축소되는 것을 방지하기 위한 스타일 */
+        .chart-wrapper {
+            position: relative;
+            height: 380px; /* 고정 높이를 지정하여 canvas가 그려질 공간 확보 */
+        }
+
+        /* 2단 레이아웃을 위한 그리드 시스템 */
+        .page-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr; /* 좌측 고정, 우측 가변 */
+            gap: 20px;
+            align-items: start;
+        }
+        /* 화면이 좁아지면 1단으로 변경 */
+        @media (max-width: 1024px) {
+            .page-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-scroll">
+        <div>
             <div class="sidebar-brand">
-                <h1>mechhub</h1>
-                <span>기구설계 보조 포털 v1.0</span>
+                <h1 id="brandName">mechhub</h1>
+                <span id="brandSub">v1.0</span>
             </div>
-            <ul class="sidebar-menu">
-                <li><a href="index.html">🏠 메인 홈</a></li>
-                <li class="ready"><a href="#">1. 기계제도 & RF & EMI <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">2. Steel 소재 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">3. Stainless 소재 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">4. Aluminum 소재 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">5. 수지/세라믹/기타 <span class="badge-ready">준비중</span></a></li>
-                <li><a href="index.html#machining-section">6. 기계가공 (구현됨) ⚡</a></li>
-                <li><a href="index.html#elements-section">7. 기계요소 (구현됨) ⚡</a></li>
-                <li class="active"><a href="motion.html">8. 요소설계 & 계산 (구현중)</a></li>
-                <li class="ready"><a href="#">9. 진공부품 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">10. Vision Camera <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">11. Electricity & Control <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">12. Utility 선정 & 반응 <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">13. 기판 & Vibration <span class="badge-ready">준비중</span></a></li>
-                <li class="ready"><a href="#">14. Transportation & ETC <span class="badge-ready">준비중</span></a></li>
-            </ul>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
         </div>
         <div class="sidebar-footer">
-            <p>© 2026 장비설계팀 Asset</p>
+            <p id="footerText"></p>
         </div>
     </div>
-
     <div class="main-content">
         <div class="main-header">
             <h2 id="mainTitle">Tact Time 종합 계산</h2>
@@ -46,73 +48,91 @@
         </div>
 
         <div class="content-body">
-            <div class="multi-calc-container">
-                
-                <div class="card">
-                    <h3 id="card1Title">Tact Time 계산 <button class="btn-calc-sm" id="btnReset" onclick="location.reload()">Reset</button></h3>
-                    <div class="input-group"><label id="lblV">목표 속도 (Velocity)</label><div class="input-wrapper"><input type="number" id="targetV" value="500"><div class="unit">mm/sec</div></div></div>
-                    <div class="input-group"><label id="lblS">구동 거리 (Distance)</label><div class="input-wrapper"><input type="number" id="distance" value="500"><div class="unit">mm</div></div></div>
-                    <div class="input-group"><label id="lblA" style="color:var(--accent-color); font-weight:bold;">가속도 (Acc.)</label><div class="input-wrapper" style="border-color:var(--accent-color);"><input type="number" id="accG" value="0.55" step="0.01"><div class="unit">G</div></div></div>
-                    <button class="btn-calc-main" id="btnRun1" onclick="calculateTactTime()">Run</button>
-                </div>
+            <div class="page-grid">
+                <!-- 좌측: 입력부 -->
+                <div class="input-column">
+                    <div class="card">
+                        <h3 id="card1Title">Tact Time 계산 <button class="btn-calc-sm" id="btnReset" onclick="location.reload()">Reset</button></h3>
+                        <div class="input-group"><label id="lblV">목표 속도 (Velocity)</label><div class="input-wrapper"><input type="number" id="targetV" value="500"><div class="unit">mm/sec</div></div></div>
+                        <div class="input-group"><label id="lblS">구동 거리 (Distance)</label><div class="input-wrapper"><input type="number" id="distance" value="500"><div class="unit">mm</div></div></div>
+                        <div class="input-group"><label id="lblA" style="color:var(--accent-color); font-weight:bold;">가속도 (Acc.)</label><div class="input-wrapper" style="border-color:var(--accent-color);"><input type="number" id="accG" value="0.55" step="0.01"><div class="unit">G</div></div></div>
+                        <button class="btn-calc-main" id="btnRun1" onclick="calculateTactTime()">Run</button>
+                    </div>
 
-                <div class="card">
-                    <h3 id="card2Title">속도 계산</h3>
-                    <div class="input-group"><label>모터 회전수 (RPM)</label><div class="input-wrapper"><input type="number" id="inputRPM" value="3000"><div class="unit">rev/min</div></div></div>
-                    <div class="input-group"><label id="lblLead">볼스크류 Lead</label><div class="input-wrapper"><input type="number" id="inputLead" value="10"><div class="unit">mm</div></div></div>
-                    <div class="input-group"><label id="lblRatio">감속비 (Ratio)</label><div class="input-wrapper"><input type="number" id="inputRatio" value="1"><div class="unit">ratio</div></div></div>
-                    <div class="result-item" style="margin-top:10px; border:none; padding:0;"><span id="lblResSpeed">계산 결과:</span><span style="color:blue; font-weight: bold;" id="resCalculatedV">- mm/s</span></div>
-                    <button class="btn-calc-main" id="btnRun2" onclick="calculateSpeedFromMech()">Run</button>
-                </div>
+                    <div class="card">
+                        <h3 id="card2Title">속도 계산</h3>
+                        <div class="input-group"><label>모터 회전수 (RPM)</label><div class="input-wrapper"><input type="number" id="inputRPM" value="3000"><div class="unit">rev/min</div></div></div>
+                        <div class="input-group"><label id="lblLead">볼스크류 Lead</label><div class="input-wrapper"><input type="number" id="inputLead" value="10"><div class="unit">mm</div></div></div>
+                        <div class="input-group"><label id="lblRatio">감속비 (Ratio)</label><div class="input-wrapper"><input type="number" id="inputRatio" value="1"><div class="unit">ratio</div></div></div>
+                        <div class="result-item" style="margin-top:10px; border:none; padding:0;"><span id="lblResSpeed">계산 결과:</span><span style="color:blue; font-weight: bold;" id="resCalculatedV">- mm/s</span></div>
+                        <button class="btn-calc-main" id="btnRun2" onclick="calculateSpeedFromMech()">Run</button>
+                    </div>
 
-                <div class="card">
-                    <h3 id="card3Title">가속도 계산</h3>
-                    <div class="input-group"><label id="lblAccV">도달 속도 (V)</label><div class="input-wrapper"><input type="number" id="accInputV" value="500"><div class="unit">mm/s</div></div></div>
-                    <div class="input-group"><label id="lblAccT">가속 시간 (t)</label><div class="input-wrapper"><input type="number" id="accInputT" value="100"><div class="unit">msec</div></div></div>
-                    <div class="result-item" style="margin-top:10px; border:none; padding:0;"><span id="lblResAcc1">가속도:</span><span style="color:blue; font-weight: bold;" id="resAccSI">- m/s^2</span></div>
-                    <div class="result-item" style="border:none; padding:0;"><span id="lblResAcc2">가속도(G):</span><span style="color:var(--accent-color); font-weight: bold;" id="resAccG">- G</span></div>
-                    <button class="btn-calc-main" id="btnRun3" onclick="calculateAccFromTime()">Run</button>
-                </div>
-
-            </div>
-
-            <div class="result-graph-container">
-                <div class="card">
-                    <h3 id="cardResultTitle">계산 결과 값</h3>
-                    <div class="result-list">
-                        <div class="result-item"><span id="outMaxV">최고 도달 속도</span><span id="resMaxV">-</span></div>
-                        <div class="result-item"><span id="outTa">가속 시간 (ta)</span><span id="resTa">-</span></div>
-                        <div class="result-item"><span id="outTc">등속 시간 (tc)</span><span id="resTc">-</span></div>
-                        <div class="result-item"><span id="outTd">감속 시간 (td)</span><span id="resTd">-</span></div>
-                        <div class="result-item highlight"><span id="outTotalT">총 구동 시간 (Tact)</span><span id="resTotalT">-</span></div>
-                        <div class="result-item" style="margin-top:10px;"><span id="outDistA">가속 거리</span><span id="resDistA">-</span></div>
-                        <div class="result-item"><span id="outDistC">등속 거리</span><span id="resDistC">-</span></div>
-                        <div class="result-item"><span id="outDistD">감속 거리</span><span id="resDistD">-</span></div>
-                        <div class="result-item"><span id="outTotalDist">총 이동 거리</span><span id="resTotalDist">-</span></div>
+                    <div class="card">
+                        <h3 id="card3Title">가속도 계산</h3>
+                        <div class="input-group"><label id="lblAccV">도달 속도 (V)</label><div class="input-wrapper"><input type="number" id="accInputV" value="500"><div class="unit">mm/s</div></div></div>
+                        <div class="input-group"><label id="lblAccT">가속 시간 (t)</label><div class="input-wrapper"><input type="number" id="accInputT" value="100"><div class="unit">msec</div></div></div>
+                        <div class="result-item" style="margin-top:10px; border:none; padding:0;"><span id="lblResAcc1">가속도:</span><span style="color:blue; font-weight: bold;" id="resAccSI">- m/s^2</span></div>
+                        <div class="result-item" style="border:none; padding:0;"><span id="lblResAcc2">가속도(G):</span><span style="color:var(--accent-color); font-weight: bold;" id="resAccG">- G</span></div>
+                        <button class="btn-calc-main" id="btnRun3" onclick="calculateAccFromTime()">Run</button>
                     </div>
                 </div>
 
-                <div class="card chart-wrapper">
-                    <h3 id="cardChartTitle">모션 프로파일 그래프</h3>
-                    <canvas id="motionChart"></canvas>
+                <!-- 우측: 결과부 -->
+                <div class="output-column">
+                    <div class="card">
+                        <h3 id="cardResultTitle">계산 결과 값</h3>
+                        <div class="result-list">
+                            <div class="result-item"><span id="outMaxV">최고 도달 속도</span><span id="resMaxV">-</span></div>
+                            <div class="result-item"><span id="outTa">가속 시간 (ta)</span><span id="resTa">-</span></div>
+                            <div class="result-item"><span id="outTc">등속 시간 (tc)</span><span id="resTc">-</span></div>
+                            <div class="result-item"><span id="outTd">감속 시간 (td)</span><span id="resTd">-</span></div>
+                            <div class="result-item highlight"><span id="outTotalT">총 구동 시간 (Tact)</span><span id="resTotalT">-</span></div>
+                            <div class="result-item" style="margin-top:10px;"><span id="outDistA">가속 거리</span><span id="resDistA">-</span></div>
+                            <div class="result-item"><span id="outDistC">등속 거리</span><span id="resDistC">-</span></div>
+                            <div class="result-item"><span id="outDistD">감속 거리</span><span id="resDistD">-</span></div>
+                            <div class="result-item"><span id="outTotalDist">총 이동 거리</span><span id="resTotalDist">-</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-wrapper">
+                        <h3 id="cardChartTitle">모션 프로파일 그래프</h3>
+                        <canvas id="motionChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const menuItems = ["Tact Time 종합", "볼스크류 선정", "벨트 & 풀리", "공차 분석"];
-        const fileLinks = ["motion.html", "#", "belt.html", "#"];
-        const menuUl = document.getElementById('sideMenu');
-
-        menuItems.forEach((m, idx) => {
-            const li = document.createElement('li');
-            if(idx === 0) li.className = 'active';
-            li.innerHTML = '<a href="' + fileLinks[idx] + '" onclick="' + (idx > 0 ? "alert('준비 중입니다.'); return false;" : "") + '">' + m + '</a>';
-            menuUl.appendChild(li);
-        });
-
-        document.getElementById('footerText').innerText = "© 2026 장비설계팀 Asset";
+        // 사이드바 메뉴 동적 생성 (다른 페이지와 통일)
+        function createSidebarMenu() {
+            const menuItems = [
+                { name: '🏠 메인 홈', href: 'index.html', status: '' },
+                { name: '1. 기계제도 & RF & EMI', href: 'javascript:void(0)', status: 'ready' },
+                { name: '2. Steel 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '3. Stainless 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '4. Aluminum 소재', href: 'javascript:void(0)', status: 'ready' },
+                { name: '5. 수지/세라믹/기타', href: 'javascript:void(0)', status: 'ready' },
+                { name: '6. 기계가공 (구현됨) ⚡', href: 'index.html#machining-section', status: '' },
+                { name: '7. 기계요소 (구현됨) ⚡', href: 'index.html#elements-section', status: '' },
+                { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html', status: 'current' },
+                { name: '9. 진공부품', href: 'javascript:void(0)', status: 'ready' },
+                { name: '10. Vision Camera', href: 'javascript:void(0)', status: 'ready' },
+                { name: '11. Electricity & Control', href: 'javascript:void(0)', status: 'ready' },
+                { name: '12. Utility 선정 & 반응', href: 'javascript:void(0)', status: 'ready' },
+                { name: '13. 기판 & Vibration', href: 'javascript:void(0)', status: 'ready' },
+                { name: '14. Transportation & ETC', href: 'javascript:void(0)', status: 'ready' },
+            ];
+            const menuUl = document.getElementById('sidebarMenu');
+            menuUl.innerHTML = menuItems.map(item => `
+                <li class="${item.status === 'ready' ? 'ready' : ''} ${item.status === 'current' ? 'active' : ''}">
+                    <a href="${item.href}">${item.name}${item.status === 'ready' ? ' <span class="badge-ready">준비중</span>' : ''}</a>
+                </li>`).join('');
+            
+            // 푸터 텍스트 설정
+            document.getElementById('footerText').innerText = "© 2026 장비설계팀 Asset";
+        }
 
         let motionChart = null;
 
@@ -261,7 +281,10 @@
             });
         }
 
-        window.onload = calculateTactTime;
+        window.onload = function() {
+            createSidebarMenu();
+            calculateTactTime();
+        };
     </script>
 </body>
 </html>
