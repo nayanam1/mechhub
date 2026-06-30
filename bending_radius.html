@@ -5,6 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mechhub - 절곡 최소값 & Bending Radius</title>
     <link rel="stylesheet" href="common.css">
+    <style>
+        .bend-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+        @media (max-width: 1100px) { .bend-layout { grid-template-columns: 1fr; } }
+
+        /* 형상 카드 */
+        .shape-grid { display: flex; flex-direction: column; gap: 10px; }
+        .shape-card { display: flex; align-items: center; gap: 14px; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; cursor: pointer; transition: all 0.15s; background: white; }
+        .shape-card:hover { border-color: #94a3b8; background: #f8fafc; }
+        .shape-card.active { border-color: var(--accent-color); background: #fef2f2; }
+        .shape-svg-wrap { flex-shrink: 0; width: 90px; height: 64px; display: flex; align-items: center; justify-content: center; }
+        .shape-svg-wrap svg { width: 88px; height: 62px; }
+        .shape-table-wrap { flex: 1; overflow-x: auto; }
+
+        /* 형상별 치수 테이블 */
+        .shape-dim-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .shape-dim-table th { background: #1e293b; color: white; padding: 4px 8px; text-align: center; font-size: 11px; }
+        .shape-dim-table td { padding: 3px 8px; text-align: center; color: #334155; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+        .shape-dim-table tr.row-active td { background: #fef2f2; color: var(--accent-color); font-weight: 700; }
+        .shape-dim-table tr:hover td { background: #f8fafc; }
+
+        /* 우측 패널 */
+        .right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+        /* 최소 R 테이블 */
+        .bend-r-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .bend-r-table th { background: #1e293b; color: white; padding: 5px 8px; text-align: center; font-size: 11px; }
+        .bend-r-table td { padding: 4px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; color: #334155; }
+        .bend-r-table tr:hover td { background: #f8fafc; }
+        .mat-tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 600; margin: 1px; }
+        .mat-sus { background: #dbeafe; color: #1d4ed8; }
+        .mat-scp { background: #dcfce7; color: #15803d; }
+        .mat-egi { background: #fef9c3; color: #854d0e; }
+        .mat-cspt { background: #fce7f3; color: #be185d; }
+
+        /* Min Distance 테이블 */
+        .min-dist-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        /* 두께 선택기 (전역) */
+        .thickness-selector { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .t-chip { padding: 5px 10px; border: 1.5px solid #cbd5e1; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; background: white; color: #475569; transition: all 0.15s; }
+        .t-chip:hover { border-color: var(--accent-color); }
+        .t-chip.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+
+        /* 탭 */
+        .tabs-sm { display: flex; gap: 6px; margin-bottom: 14px; }
+        .tab-sm { padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; background: white; }
+        .tab-sm.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -21,205 +69,428 @@
         </div>
         <div class="content-body">
 
-            <div class="card">
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('sheet')">판재 절곡 최소치수</button>
-                    <button class="tab-btn" onclick="switchTab('tube')">파이프 / 튜브 벤딩 반경</button>
-                </div>
+            <!-- 탭: 판재절곡 / 파이프튜브 -->
+            <div class="tabs-sm">
+                <button class="tab-sm active" onclick="showMainTab('sheet', this)">📋 판재 절곡 (Sheet Metal Bending)</button>
+                <button class="tab-sm" onclick="showMainTab('tube', this)">🔩 파이프 / 튜브 벤딩</button>
+            </div>
 
-                <!-- =========== 판재 절곡 =========== -->
-                <div id="sheet" class="tab-content active">
-                    <p class="card-note">프레스브레이크(Press Brake) 에어벤딩 기준. 최소 절곡 반경(R)과 절곡 후 외측 최소치수(L)를 계산합니다.</p>
-                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
-                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
-                            <label>판재 두께 (t)</label>
-                            <div class="input-wrapper"><input type="number" id="sheetT" value="2" step="0.1" min="0.1" oninput="calcSheet()"><div class="unit">mm</div></div>
+            <!-- ========== 판재 절곡 ========== -->
+            <div id="sheetPanel">
+                <div class="bend-layout">
+
+                    <!-- 좌측: 절곡 형상 + 최소치수 -->
+                    <div class="card" style="padding:16px;">
+                        <h3>절곡 형상별 최소 치수</h3>
+                        <p class="card-note" style="margin-bottom:10px;">두께(t)와 형상에 따른 최소 절곡 치수(a, b, c)입니다. 클릭하여 형상을 선택하면 우측 계산기에 반영됩니다.</p>
+                        <div class="shape-grid">
+
+                            <!-- Shape 1: L형 (단일 절곡) -->
+                            <div class="shape-card active" onclick="selectShape(0, this)">
+                                <div class="shape-svg-wrap">
+                                    <svg viewBox="0 0 90 62">
+                                        <!-- L형 -->
+                                        <line x1="10" y1="16" x2="55" y2="16" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <line x1="55" y1="16" x2="55" y2="52" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <!-- a 치수 -->
+                                        <line x1="10" y1="8" x2="55" y2="8" stroke="#ef4444" stroke-width="1.2" marker-start="url(#arr)" marker-end="url(#arr)"/>
+                                        <text x="32" y="6" text-anchor="middle" font-size="9" fill="#ef4444" font-weight="700">a</text>
+                                        <defs><marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker></defs>
+                                    </svg>
+                                </div>
+                                <div class="shape-table-wrap">
+                                    <table class="shape-dim-table" id="tbl0">
+                                        <thead><tr><th>두께(t)</th><th style="color:#ef4444;">a (min)</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>1.0t</td><td>5.0</td></tr>
+                                            <tr><td>1.2t</td><td>5.0</td></tr>
+                                            <tr><td>1.6t</td><td>7.0</td></tr>
+                                            <tr><td>2.0t</td><td>9.0</td></tr>
+                                            <tr><td>2.3t</td><td>10.0</td></tr>
+                                            <tr><td>3.2t</td><td>12.0</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Shape 2: Z형 (오프셋) -->
+                            <div class="shape-card" onclick="selectShape(1, this)">
+                                <div class="shape-svg-wrap">
+                                    <svg viewBox="0 0 90 62">
+                                        <defs><marker id="arr2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker>
+                                        <marker id="arr2b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker></defs>
+                                        <line x1="10" y1="15" x2="48" y2="15" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <line x1="48" y1="15" x2="48" y2="40" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <line x1="48" y1="40" x2="80" y2="40" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <!-- a -->
+                                        <line x1="10" y1="7" x2="48" y2="7" stroke="#ef4444" stroke-width="1.2" marker-start="url(#arr2)" marker-end="url(#arr2)"/>
+                                        <text x="29" y="5" text-anchor="middle" font-size="9" fill="#ef4444" font-weight="700">a</text>
+                                        <!-- b -->
+                                        <line x1="82" y1="15" x2="82" y2="40" stroke="#3b82f6" stroke-width="1.2" marker-start="url(#arr2b)" marker-end="url(#arr2b)"/>
+                                        <text x="87" y="29" font-size="9" fill="#3b82f6" font-weight="700">b</text>
+                                    </svg>
+                                </div>
+                                <div class="shape-table-wrap">
+                                    <table class="shape-dim-table" id="tbl1">
+                                        <thead><tr><th>두께(t)</th><th style="color:#ef4444;">a</th><th style="color:#3b82f6;">b</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>1.0t</td><td>7.0</td><td>5.0</td></tr>
+                                            <tr><td>1.2t</td><td>7.0</td><td>5.0</td></tr>
+                                            <tr><td>1.6t</td><td>9.0</td><td>7.0</td></tr>
+                                            <tr><td>2.0t</td><td>11.0</td><td>9.0</td></tr>
+                                            <tr><td>2.3t</td><td>12.0</td><td>10.0</td></tr>
+                                            <tr><td>3.2t</td><td>15.0</td><td>12.0</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Shape 3: U형 (채널) -->
+                            <div class="shape-card" onclick="selectShape(2, this)">
+                                <div class="shape-svg-wrap">
+                                    <svg viewBox="0 0 90 62">
+                                        <defs><marker id="arr3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker>
+                                        <marker id="arr3b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker></defs>
+                                        <line x1="12" y1="12" x2="12" y2="48" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <line x1="12" y1="48" x2="78" y2="48" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <line x1="78" y1="48" x2="78" y2="12" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                                        <!-- a: 상단 전체폭 -->
+                                        <line x1="12" y1="6" x2="78" y2="6" stroke="#ef4444" stroke-width="1.2" marker-start="url(#arr3)" marker-end="url(#arr3)"/>
+                                        <text x="45" y="4" text-anchor="middle" font-size="9" fill="#ef4444" font-weight="700">a</text>
+                                        <!-- b: 세로 높이 -->
+                                        <line x1="82" y1="12" x2="82" y2="48" stroke="#3b82f6" stroke-width="1.2" marker-start="url(#arr3b)" marker-end="url(#arr3b)"/>
+                                        <text x="87" y="32" font-size="9" fill="#3b82f6" font-weight="700">b</text>
+                                    </svg>
+                                </div>
+                                <div class="shape-table-wrap">
+                                    <table class="shape-dim-table" id="tbl2">
+                                        <thead><tr><th>두께(t)</th><th style="color:#ef4444;">a</th><th style="color:#3b82f6;">b</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>1.0t</td><td>7.0</td><td>5.0</td></tr>
+                                            <tr><td>1.2t</td><td>7.0</td><td>5.0</td></tr>
+                                            <tr><td>1.6t</td><td>10.0</td><td>7.0</td></tr>
+                                            <tr><td>2.0t</td><td>12.0</td><td>8.0</td></tr>
+                                            <tr><td>2.3t</td><td>12.0</td><td>8.0</td></tr>
+                                            <tr><td>3.2t</td><td>18.0</td><td>12.0</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Shape 4: 복합형 (a, b, c) -->
+                            <div class="shape-card" onclick="selectShape(3, this)">
+                                <div class="shape-svg-wrap">
+                                    <svg viewBox="0 0 90 62">
+                                        <defs><marker id="arr4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker>
+                                        <marker id="arr4b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker>
+                                        <marker id="arr4c" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#16a34a"/></marker></defs>
+                                        <!-- 복합 형상: ㄷ+선반 -->
+                                        <line x1="8" y1="18" x2="30" y2="18" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                                        <line x1="30" y1="18" x2="30" y2="42" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                                        <line x1="30" y1="42" x2="70" y2="42" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                                        <line x1="70" y1="42" x2="70" y2="18" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                                        <line x1="70" y1="18" x2="83" y2="18" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                                        <!-- a -->
+                                        <line x1="8" y1="10" x2="30" y2="10" stroke="#ef4444" stroke-width="1" marker-start="url(#arr4)" marker-end="url(#arr4)"/>
+                                        <text x="19" y="8" text-anchor="middle" font-size="8" fill="#ef4444" font-weight="700">a</text>
+                                        <!-- b: 세로 -->
+                                        <line x1="83" y1="18" x2="83" y2="42" stroke="#3b82f6" stroke-width="1" marker-start="url(#arr4b)" marker-end="url(#arr4b)"/>
+                                        <text x="88" y="32" font-size="8" fill="#3b82f6" font-weight="700">b</text>
+                                        <!-- c: 우측 선반 아닌 중간 -->
+                                        <line x1="70" y1="10" x2="83" y2="10" stroke="#16a34a" stroke-width="1" marker-start="url(#arr4c)" marker-end="url(#arr4c)"/>
+                                        <text x="76" y="8" text-anchor="middle" font-size="8" fill="#16a34a" font-weight="700">c</text>
+                                    </svg>
+                                </div>
+                                <div class="shape-table-wrap">
+                                    <table class="shape-dim-table" id="tbl3">
+                                        <thead><tr><th>두께(t)</th><th style="color:#ef4444;">a</th><th style="color:#3b82f6;">b</th><th style="color:#16a34a;">c</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>1.0t</td><td>7.0</td><td>7.0</td><td>4.0</td></tr>
+                                            <tr><td>1.2t</td><td>7.0</td><td>7.0</td><td>4.0</td></tr>
+                                            <tr><td>1.6t</td><td>9.0</td><td>9.0</td><td>5.0</td></tr>
+                                            <tr><td>2.0t</td><td>11.0</td><td>11.0</td><td>7.0</td></tr>
+                                            <tr><td>2.3t</td><td>11.5</td><td>11.5</td><td>7.0</td></tr>
+                                            <tr><td>3.2t</td><td>18.0</td><td>18.0</td><td>9.0</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         </div>
-                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
-                            <label>판재 재질</label>
-                            <div class="input-wrapper">
-                                <select id="sheetMat" class="form-control" onchange="calcSheet()">
-                                    <option value="spcc">SPCC / 일반 강판</option>
-                                    <option value="sus304">STS 304</option>
-                                    <option value="sus316">STS 316</option>
-                                    <option value="al5052">Al 5052</option>
-                                    <option value="al6061">Al 6061-T6</option>
-                                    <option value="cu">구리 (Cu)</option>
-                                </select>
+                    </div>
+
+                    <!-- 우측: 최소 R 테이블 + 홀간거리 -->
+                    <div class="right-panel">
+
+                        <!-- 최소 Bending Radius -->
+                        <div class="card" style="padding:16px;">
+                            <h3>최소 Bending Radius (Min. R)</h3>
+                            <p class="card-note" style="margin-bottom:10px;">재질 및 두께(t)별 최소 내측 굽힘 반경(r)과 최소 플랜지 길이(a)입니다.</p>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;" id="matLegend">
+                                <span class="mat-tag mat-sus">SUS 스테인리스</span>
+                                <span class="mat-tag mat-scp">SCP 냉연강판</span>
+                                <span class="mat-tag mat-egi">EGI 아연도금</span>
+                                <span class="mat-tag mat-cspt">CSPt 주석도금</span>
+                            </div>
+                            <div style="text-align:center; margin-bottom:10px;">
+                                <svg viewBox="0 0 200 90" style="width:180px; height:80px;">
+                                    <defs><marker id="rArr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker>
+                                    <marker id="aArr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker></defs>
+                                    <!-- 판재 -->
+                                    <line x1="20" y1="40" x2="90" y2="40" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+                                    <path d="M90,40 A20,20 0 0 1 110,60" fill="none" stroke="#1e293b" stroke-width="4"/>
+                                    <line x1="110" y1="60" x2="110" y2="80" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+                                    <!-- r 치수 -->
+                                    <path d="M90,60 A20,20 0 0 1 110,60" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3 2"/>
+                                    <text x="78" y="68" font-size="10" fill="#3b82f6" font-weight="700">r</text>
+                                    <!-- a 치수 -->
+                                    <line x1="20" y1="30" x2="90" y2="30" stroke="#ef4444" stroke-width="1.2" marker-start="url(#aArr)" marker-end="url(#aArr)"/>
+                                    <text x="55" y="27" text-anchor="middle" font-size="10" fill="#ef4444" font-weight="700">a (min)</text>
+                                </svg>
+                            </div>
+                            <table class="bend-r-table">
+                                <thead>
+                                    <tr>
+                                        <th>재질</th>
+                                        <th>두께 (t)</th>
+                                        <th>Min. Radius (r)</th>
+                                        <th>Min. Length (a)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-scp">SCP</span><span class="mat-tag mat-egi">EGI</span></td><td>1.0</td><td>2.0 mm</td><td>5 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-scp">SCP</span><span class="mat-tag mat-egi">EGI</span></td><td>1.2</td><td>2.0 mm</td><td>7 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-scp">SCP</span><span class="mat-tag mat-egi">EGI</span></td><td>1.5</td><td>2.0 mm</td><td>8 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-cspt">CSPt</span></td><td>2.0</td><td>4.0 mm</td><td>8 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-scp">SCP</span></td><td>2.3</td><td>4.0 mm</td><td>10 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span></td><td>2.5</td><td>4.0 mm</td><td>10 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-scp">SCP</span></td><td>3.0</td><td>5.0 mm</td><td>12 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-scp">SCP</span></td><td>3.2</td><td>5.0 mm</td><td>15 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-scp">SCP</span></td><td>4.0</td><td>6.0 mm</td><td>15 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-scp">SCP</span></td><td>4.5</td><td>6.0 mm</td><td>18.5 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-scp">SCP</span></td><td>5.0</td><td>7.0 mm</td><td>23.0 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-scp">SCP</span></td><td>6.0</td><td>7.0 mm</td><td>28.5 mm</td></tr>
+                                    <tr><td><span class="mat-tag mat-sus">SUS</span><span class="mat-tag mat-scp">SCP</span></td><td>8.0</td><td>7.0 mm</td><td>35.5 mm</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 최소 홀간거리 (Min. Distance) -->
+                        <div class="card" style="padding:16px;">
+                            <h3>최소 홀간거리 (Min. Distance A)</h3>
+                            <p class="card-note" style="margin-bottom:10px;">절곡선~구멍 중심 간 최소 거리(A). 이 거리보다 가까우면 구멍이 변형됩니다.</p>
+                            <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+                                <svg viewBox="0 0 120 110" style="width:120px; height:110px; flex-shrink:0;">
+                                    <defs><marker id="dArr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker></defs>
+                                    <!-- 판재 평면 -->
+                                    <rect x="10" y="20" width="100" height="60" rx="3" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+                                    <!-- 절곡선 -->
+                                    <line x1="60" y1="20" x2="60" y2="80" stroke="#1e293b" stroke-width="2" stroke-dasharray="4 3"/>
+                                    <!-- 구멍 -->
+                                    <circle cx="28" cy="50" r="8" fill="white" stroke="#475569" stroke-width="1.5"/>
+                                    <line x1="28" y1="44" x2="28" y2="56" stroke="#94a3b8" stroke-width="1"/>
+                                    <line x1="22" y1="50" x2="34" y2="50" stroke="#94a3b8" stroke-width="1"/>
+                                    <!-- A 치수 -->
+                                    <line x1="28" y1="92" x2="60" y2="92" stroke="#ef4444" stroke-width="1.3" marker-start="url(#dArr)" marker-end="url(#dArr)"/>
+                                    <text x="44" y="104" text-anchor="middle" font-size="10" fill="#ef4444" font-weight="700">A (min)</text>
+                                    <!-- 절곡 방향 화살표 -->
+                                    <path d="M 62 50 L 80 50" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#dArr)"/>
+                                    <text x="75" y="45" font-size="9" fill="#3b82f6">절곡</text>
+                                </svg>
+                                <div style="flex:1; min-width:200px;">
+                                    <div class="min-dist-wrap">
+                                        <table class="bend-r-table" style="font-size:11px;">
+                                            <thead><tr><th>두께 (t)</th><th>Min. A</th></tr></thead>
+                                            <tbody>
+                                                <tr><td>0.3</td><td>3.5 mm</td></tr>
+                                                <tr><td>0.5</td><td>3.5 mm</td></tr>
+                                                <tr><td>0.8</td><td>4.0 mm</td></tr>
+                                                <tr><td>1.0</td><td>4.0 mm</td></tr>
+                                                <tr><td>1.2</td><td>4.5 mm</td></tr>
+                                                <tr><td>1.5</td><td>6.0 mm</td></tr>
+                                                <tr><td>1.6</td><td>7.0 mm</td></tr>
+                                                <tr><td>2.0</td><td>8.0 mm</td></tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="bend-r-table" style="font-size:11px;">
+                                            <thead><tr><th>두께 (t)</th><th>Min. A</th></tr></thead>
+                                            <tbody>
+                                                <tr><td>2.5</td><td>12.0 mm</td></tr>
+                                                <tr><td>3.0</td><td>12.0 mm</td></tr>
+                                                <tr><td>4.0</td><td>17.0 mm</td></tr>
+                                                <tr><td>5.0</td><td>26.0 mm</td></tr>
+                                                <tr><td>6.0</td><td>28.0 mm</td></tr>
+                                                <tr><td>8.0</td><td>29.0 mm</td></tr>
+                                                <tr><td>9.0</td><td>30.0 mm</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
-                            <label>절곡 각도 (θ)</label>
-                            <div class="input-wrapper"><input type="number" id="sheetAngle" value="90" min="1" max="180" oninput="calcSheet()"><div class="unit">°</div></div>
-                        </div>
-                    </div>
-                    <div id="sheetDrawing" style="margin-bottom:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; text-align:center;"></div>
-                    <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
-                        <div class="result-item highlight"><span>최소 내측 절곡 반경 (R_min)</span><span class="value" id="sheetRmin">- <span>mm</span></span></div>
-                        <div class="result-item"><span>절곡 보정량 (Bend Deduction)</span><span class="value" id="sheetBD">- <span>mm</span></span></div>
-                        <div class="result-item"><span>K-Factor (참고)</span><span class="value" id="sheetK">-</span></div>
-                        <div class="result-item"><span>절곡선~끝단 최소치수 (Flange Min)</span><span class="value" id="sheetFlangeMin">- <span>mm</span></span></div>
-                    </div>
-                    <div class="notice-banner info">※ 최소 절곡 반경은 에어벤딩 기준이며, 코이닝/보텀밴딩 방식, 공구 V폭, 판재 열처리 상태에 따라 달라집니다. SPCC는 t×0.5~1.0, SUS는 t×1.5~2.0이 일반 경험치입니다.</div>
-                </div>
 
-                <!-- =========== 튜브 벤딩 =========== -->
-                <div id="tube" class="tab-content">
-                    <p class="card-note">파이프/튜브 벤딩 시 최소 굽힘 반경(CLR, Center Line Radius)과 간섭 여부를 계산합니다.</p>
-                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
-                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
-                            <label>튜브 외경 (O.D)</label>
-                            <div class="input-wrapper"><input type="number" id="tubeOD" value="25.4" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
-                        </div>
-                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
-                            <label>벽 두께 (t)</label>
-                            <div class="input-wrapper"><input type="number" id="tubeT" value="1.5" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
-                        </div>
-                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
-                            <label>재질</label>
-                            <div class="input-wrapper">
-                                <select id="tubeMat" class="form-control" onchange="calcTube()">
-                                    <option value="sus">STS 304/316</option>
-                                    <option value="carbon">탄소강</option>
-                                    <option value="al">알루미늄</option>
-                                    <option value="cu">구리/황동</option>
-                                </select>
+                        <!-- 계산기 -->
+                        <div class="card" style="padding:16px;">
+                            <h3>⚙️ 절곡 보정량 계산기</h3>
+                            <p class="card-note" style="margin-bottom:10px;">선택된 재질과 두께로 Bend Allowance / Bend Deduction을 계산합니다.</p>
+                            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                                <div class="input-group" style="flex:1; min-width:130px; margin-bottom:0;">
+                                    <label>두께 (t)</label>
+                                    <div class="input-wrapper"><input type="number" id="calcT" value="2.0" step="0.1" oninput="calcBend()"><div class="unit">mm</div></div>
+                                </div>
+                                <div class="input-group" style="flex:1; min-width:130px; margin-bottom:0;">
+                                    <label>내측 굽힘 반경 (R)</label>
+                                    <div class="input-wrapper"><input type="number" id="calcR" value="4.0" step="0.1" oninput="calcBend()"><div class="unit">mm</div></div>
+                                </div>
+                                <div class="input-group" style="flex:1; min-width:100px; margin-bottom:0;">
+                                    <label>절곡 각도</label>
+                                    <div class="input-wrapper"><input type="number" id="calcAngle" value="90" oninput="calcBend()"><div class="unit">°</div></div>
+                                </div>
+                                <div class="input-group" style="flex:1; min-width:130px; margin-bottom:0;">
+                                    <label>재질</label>
+                                    <div class="input-wrapper">
+                                        <select id="calcMat" class="form-control" onchange="calcBend()">
+                                            <option value="0.33">SCP / 냉연강판 (K=0.33)</option>
+                                            <option value="0.38">SUS 304/316 (K=0.38)</option>
+                                            <option value="0.33">EGI / 아연도금 (K=0.33)</option>
+                                            <option value="0.40">Al 5052 (K=0.40)</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin-top:12px;">
+                                <div class="result-item highlight"><span>Bend Allowance (BA)</span><span class="value" id="reBA">- <span>mm</span></span></div>
+                                <div class="result-item"><span>Bend Deduction (BD)</span><span class="value" id="reBD">- <span>mm</span></span></div>
+                                <div class="result-item"><span>Outside Setback (OSSB)</span><span class="value" id="reOSSB">- <span>mm</span></span></div>
+                            </div>
+                            <div class="notice-banner info" style="margin-top:10px;">※ BA = (R + K×t) × θ(rad) / BD = 2×OSSB - BA / OSSB = tan(θ/2) × (R + t)</div>
                         </div>
-                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
-                            <label>목표 CLR (Center Line Radius)</label>
-                            <div class="input-wrapper"><input type="number" id="tubeCLR" value="76.2" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
-                        </div>
-                    </div>
-                    <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
-                        <div class="result-item highlight"><span>최소 권장 CLR (D×배수)</span><span class="value" id="tubeMinCLR">- <span>mm</span></span></div>
-                        <div class="result-item" id="clrCheckBox"><span>CLR 적정 여부</span><span class="value" id="clrCheck">-</span></div>
-                        <div class="result-item"><span>D/R 비율 (입력 CLR 기준)</span><span class="value" id="tubeDR">-</span></div>
-                        <div class="result-item"><span>D/t 비율 (Thinning 위험도)</span><span class="value" id="tubeDT">-</span></div>
-                        <div class="result-item"><span>벤딩 후 최소 벽두께 (추정)</span><span class="value" id="tubeMinWall">- <span>mm</span></span></div>
-                    </div>
-                    <div class="notice-banner" id="tubeWarning" style="display:none;"></div>
-                    <div class="notice-banner info">※ 최소 CLR은 재질 특성과 벤딩 방식(로터리, 프리폼, 맨드릴 유무)에 따라 크게 다릅니다. 상기 값은 일반 로터리 드로 벤딩(맨드릴 없음) 기준 경험치입니다.</div>
 
-                    <h3 style="margin-top:20px;">파이프 호칭 ↔ 외경 참조표</h3>
-                    <table class="data-table">
-                        <thead><tr><th>호칭 (A)</th><th>호칭 (B/inch)</th><th>외경 (mm)</th><th>스케줄 40 두께 (mm)</th></tr></thead>
-                        <tbody>
-                            <tr><td>6A</td><td>1/8"</td><td>10.5</td><td>2.0</td></tr>
-                            <tr><td>8A</td><td>1/4"</td><td>13.8</td><td>2.2</td></tr>
-                            <tr><td>10A</td><td>3/8"</td><td>17.3</td><td>2.3</td></tr>
-                            <tr><td>15A</td><td>1/2"</td><td>21.7</td><td>2.8</td></tr>
-                            <tr><td>20A</td><td>3/4"</td><td>27.2</td><td>2.9</td></tr>
-                            <tr><td>25A</td><td>1"</td><td>34.0</td><td>3.4</td></tr>
-                            <tr><td>32A</td><td>1-1/4"</td><td>42.7</td><td>3.6</td></tr>
-                            <tr><td>40A</td><td>1-1/2"</td><td>48.6</td><td>3.7</td></tr>
-                            <tr><td>50A</td><td>2"</td><td>60.5</td><td>3.9</td></tr>
-                            <tr><td>65A</td><td>2-1/2"</td><td>76.3</td><td>5.2</td></tr>
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>
+
+            <!-- ========== 파이프 / 튜브 벤딩 ========== -->
+            <div id="tubePanel" style="display:none;">
+                <div class="bend-layout">
+                    <div class="card" style="padding:16px;">
+                        <h3>파이프 / 튜브 벤딩 계산기</h3>
+                        <p class="card-note">튜브 외경(OD), 벽두께, 재질, 목표 CLR을 입력하면 최소 권장 CLR 및 적합 여부를 계산합니다.</p>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+                            <div class="input-group" style="margin-bottom:0;">
+                                <label>튜브 외경 (O.D)</label>
+                                <div class="input-wrapper"><input type="number" id="tubeOD" value="25.4" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
+                            </div>
+                            <div class="input-group" style="margin-bottom:0;">
+                                <label>벽 두께 (t)</label>
+                                <div class="input-wrapper"><input type="number" id="tubeT" value="1.5" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
+                            </div>
+                            <div class="input-group" style="margin-bottom:0;">
+                                <label>재질</label>
+                                <div class="input-wrapper">
+                                    <select id="tubeMat" class="form-control" onchange="calcTube()">
+                                        <option value="3.0">STS 304/316 (CLR ≥ 3D)</option>
+                                        <option value="2.0">탄소강 (CLR ≥ 2D)</option>
+                                        <option value="2.5">알루미늄 (CLR ≥ 2.5D)</option>
+                                        <option value="1.5">구리/황동 (CLR ≥ 1.5D)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group" style="margin-bottom:0;">
+                                <label>목표 CLR (Center Line Radius)</label>
+                                <div class="input-wrapper"><input type="number" id="tubeCLR" value="76.2" step="0.1" oninput="calcTube()"><div class="unit">mm</div></div>
+                            </div>
+                        </div>
+                        <div class="result-box" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin-top:14px;">
+                            <div class="result-item highlight"><span>최소 권장 CLR</span><span class="value" id="tubeMinCLR">-</span></div>
+                            <div class="result-item" id="clrCheckBox"><span>CLR 적정 여부</span><span class="value" id="clrCheck">-</span></div>
+                            <div class="result-item"><span>D/t 비율</span><span class="value" id="tubeDT">-</span></div>
+                            <div class="result-item"><span>벤딩 후 최소 벽두께 (추정)</span><span class="value" id="tubeMinWall">-</span></div>
+                        </div>
+                        <div class="notice-banner" id="tubeWarning" style="display:none; margin-top:10px;"></div>
+                    </div>
+
+                    <div class="card" style="padding:16px;">
+                        <h3>📋 파이프 호칭 ↔ 외경 참조표</h3>
+                        <table class="bend-r-table">
+                            <thead><tr><th>호칭 (A)</th><th>호칭 (B)</th><th>외경 (mm)</th><th>Sch.40 두께</th></tr></thead>
+                            <tbody>
+                                <tr><td>6A</td><td>1/8"</td><td>10.5</td><td>2.0 mm</td></tr>
+                                <tr><td>8A</td><td>1/4"</td><td>13.8</td><td>2.2 mm</td></tr>
+                                <tr><td>10A</td><td>3/8"</td><td>17.3</td><td>2.3 mm</td></tr>
+                                <tr><td>15A</td><td>1/2"</td><td>21.7</td><td>2.8 mm</td></tr>
+                                <tr><td>20A</td><td>3/4"</td><td>27.2</td><td>2.9 mm</td></tr>
+                                <tr><td>25A</td><td>1"</td><td>34.0</td><td>3.4 mm</td></tr>
+                                <tr><td>32A</td><td>1-1/4"</td><td>42.7</td><td>3.6 mm</td></tr>
+                                <tr><td>40A</td><td>1-1/2"</td><td>48.6</td><td>3.7 mm</td></tr>
+                                <tr><td>50A</td><td>2"</td><td>60.5</td><td>3.9 mm</td></tr>
+                                <tr><td>65A</td><td>2-1/2"</td><td>76.3</td><td>5.2 mm</td></tr>
+                                <tr><td>80A</td><td>3"</td><td>89.1</td><td>5.5 mm</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // 재질별 최소 R 배수 (R_min = k × t)
-        const sheetMatDB = {
-            spcc:   { kMin:0.5, kFactor:0.33, flangeK:4 },
-            sus304: { kMin:1.5, kFactor:0.40, flangeK:6 },
-            sus316: { kMin:2.0, kFactor:0.42, flangeK:6 },
-            al5052: { kMin:1.0, kFactor:0.35, flangeK:5 },
-            al6061: { kMin:2.0, kFactor:0.38, flangeK:7 },
-            cu:     { kMin:0.5, kFactor:0.30, flangeK:4 },
-        };
+        let selectedShape = 0;
 
-        // 튜브 재질별 최소 CLR 배수 (CLR_min = k × OD)
-        const tubeMatDB = {
-            sus:    { kMin:3.0 },
-            carbon: { kMin:2.0 },
-            al:     { kMin:2.5 },
-            cu:     { kMin:1.5 },
-        };
-
-        function renderSheetDrawing(t, R, angle) {
-            const ang = Math.min(angle, 90); // 도식 각도
-            const rad = ang * Math.PI / 180;
-            const svg = `<svg viewBox="0 0 400 180" style="width:100%;max-width:500px;height:auto;">
-                <defs><marker id="bdArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker></defs>
-                <!-- 왼쪽 플랜지 -->
-                <rect x="20" y="80" width="120" height="${Math.max(8, t*6)}" fill="#fff" stroke="#475569" stroke-width="2.5"/>
-                <!-- 오른쪽 플랜지 (90도 꺾임) -->
-                <rect x="${140 + Math.max(8, R*3)}" y="${80 - 90}" width="${Math.max(8, t*6)}" height="90" fill="#fff" stroke="#475569" stroke-width="2.5"/>
-                <!-- R 표시 -->
-                <path d="M ${140} ${80 + Math.max(8,t*6)/2} A ${Math.max(8,R*3)},${Math.max(8,R*3)} 0 0 1 ${140+Math.max(8,R*3)} ${80 - 90 + Math.max(8,t*6)/2}"
-                    fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="4 3"/>
-                <text x="${140 + Math.max(8,R*3)/2 - 10}" y="${80 - 30}" font-size="13" font-weight="700" fill="#ef4444">R_min</text>
-                <!-- t 치수선 -->
-                <line x1="20" y1="${110 + 20}" x2="140" y2="${110 + 20}" stroke="#3b82f6" stroke-width="1.3" marker-start="url(#bdArrow)" marker-end="url(#bdArrow)"/>
-                <text x="80" y="${130 + 20}" text-anchor="middle" font-size="11" fill="#3b82f6">Flange Min ≥ 4t~7t</text>
-            </svg>`;
-            document.getElementById("sheetDrawing").innerHTML = svg;
+        function selectShape(idx, el) {
+            selectedShape = idx;
+            document.querySelectorAll(".shape-card").forEach(c => c.classList.remove("active"));
+            el.classList.add("active");
         }
 
-        function calcSheet() {
-            const t = parseFloat(document.getElementById("sheetT").value);
-            const mat = document.getElementById("sheetMat").value;
-            const angle = parseFloat(document.getElementById("sheetAngle").value);
-            if (!isFinite(t) || t <= 0) return;
-            const db = sheetMatDB[mat];
-            const Rmin = +(db.kMin * t).toFixed(2);
-            const K = db.kFactor;
-            const angRad = angle * Math.PI / 180;
-            const BA = (Rmin + K * t) * angRad;  // Bend Allowance
-            const BD = (2 * (Rmin + t) * Math.tan(angRad / 2)) - BA;  // Bend Deduction
-            const flangeMin = +(db.flangeK * t).toFixed(2);
+        function showMainTab(tab, btn) {
+            document.querySelectorAll(".tab-sm").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("sheetPanel").style.display = tab === "sheet" ? "" : "none";
+            document.getElementById("tubePanel").style.display  = tab === "tube"  ? "" : "none";
+        }
 
-            document.getElementById("sheetRmin").innerHTML = `${Rmin} <span>mm</span>`;
-            document.getElementById("sheetBD").innerHTML = `${BD.toFixed(3)} <span>mm</span>`;
-            document.getElementById("sheetK").innerHTML = K;
-            document.getElementById("sheetFlangeMin").innerHTML = `${flangeMin} <span>mm (≈ ${db.flangeK}×t)</span>`;
-            renderSheetDrawing(t, Rmin, angle);
+        function calcBend() {
+            const t = parseFloat(document.getElementById("calcT").value);
+            const R = parseFloat(document.getElementById("calcR").value);
+            const angle = parseFloat(document.getElementById("calcAngle").value);
+            const K = parseFloat(document.getElementById("calcMat").value);
+            if (!isFinite(t) || !isFinite(R) || !isFinite(angle)) return;
+            const theta = angle * Math.PI / 180;
+            const BA   = (R + K * t) * theta;
+            const OSSB = Math.tan(theta / 2) * (R + t);
+            const BD   = 2 * OSSB - BA;
+            document.getElementById("reBA").innerHTML   = BA.toFixed(3)   + " <span>mm</span>";
+            document.getElementById("reBD").innerHTML   = BD.toFixed(3)   + " <span>mm</span>";
+            document.getElementById("reOSSB").innerHTML = OSSB.toFixed(3) + " <span>mm</span>";
         }
 
         function calcTube() {
-            const OD = parseFloat(document.getElementById("tubeOD").value);
-            const t = parseFloat(document.getElementById("tubeT").value);
-            const mat = document.getElementById("tubeMat").value;
+            const OD  = parseFloat(document.getElementById("tubeOD").value);
+            const t   = parseFloat(document.getElementById("tubeT").value);
+            const k   = parseFloat(document.getElementById("tubeMat").value);
             const CLR = parseFloat(document.getElementById("tubeCLR").value);
-            if (!isFinite(OD) || !isFinite(t) || OD <= 0 || t <= 0) return;
-            const db = tubeMatDB[mat];
-            const CLRmin = +(db.kMin * OD).toFixed(1);
-            const DR = +(CLR / OD * 2).toFixed(2);  // D/R = 2×R_cl/OD
+            if (!isFinite(OD) || !isFinite(t) || OD <= 0) return;
+            const CLRmin = +(k * OD).toFixed(1);
             const DT = +(OD / t).toFixed(1);
-            // 외측 벽 thinning 추정 (근사)
-            const thinningFactor = 1 - (OD / (2 * CLR));
-            const minWall = +(t * (1 - thinningFactor * 0.3)).toFixed(2);
-
-            document.getElementById("tubeMinCLR").innerHTML = `${CLRmin} <span>mm (${db.kMin}×OD)</span>`;
-            document.getElementById("tubeDR").innerHTML = DR;
+            const thinFactor = OD / (2 * CLR);
+            const minWall = +(t * (1 - thinFactor * 0.3)).toFixed(2);
+            document.getElementById("tubeMinCLR").innerHTML = `${CLRmin} <span>mm</span>`;
             document.getElementById("tubeDT").innerHTML = DT;
-            document.getElementById("tubeMinWall").innerHTML = `${minWall} <span>mm (추정)</span>`;
-
-            const clrBox = document.getElementById("clrCheckBox");
-            const warnBox = document.getElementById("tubeWarning");
+            document.getElementById("tubeMinWall").innerHTML = `${minWall} <span>mm</span>`;
+            const box = document.getElementById("clrCheckBox"), warn = document.getElementById("tubeWarning");
             if (CLR >= CLRmin) {
-                clrBox.className = "result-item ok";
-                document.getElementById("clrCheck").innerHTML = `✅ 적합 (${CLR} ≥ ${CLRmin})`;
-                warnBox.style.display = "none";
+                box.className = "result-item ok";
+                document.getElementById("clrCheck").innerHTML = `✅ 적합`;
+                warn.style.display = "none";
             } else {
-                clrBox.className = "result-item highlight";
-                document.getElementById("clrCheck").innerHTML = `⚠️ 부족 (${CLR} < ${CLRmin})`;
-                warnBox.style.display = "block";
-                warnBox.className = "notice-banner";
-                warnBox.innerHTML = `⚠️ 목표 CLR(${CLR}mm)이 권장 최소값(${CLRmin}mm)보다 작습니다. 주름(ripple), 타원변형(ovality), 벽 파열 위험이 있습니다. 맨드릴 사용 또는 CLR을 늘리는 것을 권장합니다.`;
+                box.className = "result-item highlight";
+                document.getElementById("clrCheck").innerHTML = `⚠️ 부족`;
+                warn.style.display = "block";
+                warn.className = "notice-banner";
+                warn.innerHTML = `⚠️ 목표 CLR(${CLR}mm) < 권장 최소(${CLRmin}mm). 주름/타원변형/파열 위험. 맨드릴 사용 또는 CLR 증가 권장.`;
             }
-        }
-
-        function switchTab(id) {
-            document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
-            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-            document.getElementById(id).classList.add("active");
-            event.currentTarget.classList.add("active");
         }
 
         function createSidebarMenu() {
@@ -234,7 +505,7 @@
             ).join("");
         }
 
-        window.onload = () => { createSidebarMenu(); calcSheet(); calcTube(); };
+        window.onload = () => { createSidebarMenu(); calcBend(); calcTube(); };
     </script>
 </body>
 </html>
