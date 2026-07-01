@@ -56,6 +56,8 @@
                         <div class="input-group"><label id="lblV">목표 속도 (Velocity)</label><div class="input-wrapper"><input type="number" id="targetV" value="500"><div class="unit">mm/sec</div></div></div>
                         <div class="input-group"><label id="lblS">구동 거리 (Distance)</label><div class="input-wrapper"><input type="number" id="distance" value="500"><div class="unit">mm</div></div></div>
                         <div class="input-group"><label id="lblA" style="color:var(--accent-color); font-weight:bold;">가속도 (Acc.)</label><div class="input-wrapper" style="border-color:var(--accent-color);"><input type="number" id="accG" value="0.55" step="0.01"><div class="unit">G</div></div></div>
+                        <div class="input-group"><label id="lblAt">가속 시간 (ta) <span style="font-weight:400; color:#94a3b8;">- 선택입력</span></label><div class="input-wrapper"><input type="number" id="accTinput" placeholder="비워두면 위 가속도(G) 값 사용" step="1"><div class="unit">msec</div></div></div>
+                        <div class="notice-banner info" style="margin:-6px 0 10px;">※ 가속도(G) 또는 가속 시간(ta) 중 하나만 입력해도 계산됩니다. 둘 다 입력 시 가속도(G) 값이 우선 적용됩니다.</div>
                         <button class="btn-calc-main" id="btnRun1" onclick="calculateTactTime()">Run</button>
                     </div>
 
@@ -70,10 +72,13 @@
 
                     <div class="card">
                         <h3 id="card3Title">가속도 계산</h3>
+                        <p class="card-note">속도(V) / 가속 시간(t) / 가속도(a) 중 2개를 입력하면 나머지 1개를 계산합니다.</p>
                         <div class="input-group"><label id="lblAccV">도달 속도 (V)</label><div class="input-wrapper"><input type="number" id="accInputV" value="500"><div class="unit">mm/s</div></div></div>
                         <div class="input-group"><label id="lblAccT">가속 시간 (t)</label><div class="input-wrapper"><input type="number" id="accInputT" value="100"><div class="unit">msec</div></div></div>
+                        <div class="input-group"><label id="lblAccA">가속도 (a) <span style="font-weight:400; color:#94a3b8;">- 선택입력</span></label><div class="input-wrapper"><input type="number" id="accInputG" placeholder="비워두면 V,t로 계산" step="0.01"><div class="unit">G</div></div></div>
                         <div class="result-item" style="margin-top:10px; border:none; padding:0;"><span id="lblResAcc1">가속도:</span><span style="color:blue; font-weight: bold;" id="resAccSI">- m/s^2</span></div>
                         <div class="result-item" style="border:none; padding:0;"><span id="lblResAcc2">가속도(G):</span><span style="color:var(--accent-color); font-weight: bold;" id="resAccG">- G</span></div>
+                        <div class="result-item" style="border:none; padding:0;"><span id="lblResAcc3">가속 시간:</span><span style="color:#16a34a; font-weight: bold;" id="resAccT">- msec</span></div>
                         <button class="btn-calc-main" id="btnRun3" onclick="calculateAccFromTime()">Run</button>
                     </div>
                 </div>
@@ -140,9 +145,25 @@
         function calculateTactTime() {
             const V_target = parseFloat(document.getElementById('targetV').value);
             const S_total = parseFloat(document.getElementById('distance').value);
-            const G = parseFloat(document.getElementById('accG').value);
-            
-            const g_acc = G * 9806.65; 
+
+            const accGRaw = document.getElementById('accG').value;
+            const accTRaw = document.getElementById('accTinput').value;
+            let G;
+            if (accGRaw !== '' && parseFloat(accGRaw) > 0) {
+                // 가속도(G)가 입력된 경우 우선 사용
+                G = parseFloat(accGRaw);
+            } else if (accTRaw !== '' && parseFloat(accTRaw) > 0) {
+                // 가속도가 비어있고 가속 시간만 입력된 경우, 목표 속도 도달 기준으로 가속도 역산
+                const tSec = parseFloat(accTRaw) / 1000;
+                const accSI = (V_target / tSec) / 1000; // m/s^2
+                G = accSI / 9.80665;
+                document.getElementById('accG').value = G.toFixed(3);
+            } else {
+                alert('가속도(G) 또는 가속 시간(ta) 중 하나를 입력하세요.');
+                return;
+            }
+
+            const g_acc = G * 9806.65;
             const V_peak_tri = Math.sqrt(g_acc * S_total);
             
             let V_max, t_a, t_c, t_d, S_a, S_c, S_d;
@@ -200,23 +221,44 @@
             document.getElementById('targetV').value = calculatedV.toFixed(1);
         }
 
-        // 3. 가속 시간 기반 가속도 계산 로직
+        // 3. 속도(V) / 가속시간(t) / 가속도(a) 중 2개로 나머지 1개를 구하는 로직
         function calculateAccFromTime() {
-            const velocity = parseFloat(document.getElementById('accInputV').value);
-            const timeMs = parseFloat(document.getElementById('accInputT').value);
+            const vRaw = document.getElementById('accInputV').value;
+            const tRaw = document.getElementById('accInputT').value;
+            const gRaw = document.getElementById('accInputG').value;
 
-            if (timeMs <= 0) {
-                alert("가속 시간은 0보다 커야 합니다.");
+            const hasV = vRaw !== '' && !isNaN(parseFloat(vRaw));
+            const hasT = tRaw !== '' && parseFloat(tRaw) > 0;
+            const hasG = gRaw !== '' && parseFloat(gRaw) > 0;
+
+            let V = hasV ? parseFloat(vRaw) : null;
+            let timeMs = hasT ? parseFloat(tRaw) : null;
+            let accG = hasG ? parseFloat(gRaw) : null;
+            let accSI; // m/s^2
+
+            if (hasV && hasT) {
+                // mm/s와 msec 단위를 매칭하면 바로 mm/s^2 단위가 됨. 이를 m/s^2로 환산하기 위해 1000으로 나눔.
+                accSI = (V / (timeMs / 1000)) / 1000;
+                accG = accSI / 9.80665;
+            } else if (hasV && hasG) {
+                accSI = accG * 9.80665;
+                timeMs = (V / (accSI * 1000)) * 1000;
+            } else if (hasT && hasG) {
+                accSI = accG * 9.80665;
+                V = (accSI * 1000) * (timeMs / 1000);
+            } else {
+                alert("속도(V), 가속 시간(t), 가속도(a) 중 2개를 입력하세요.");
                 return;
             }
 
-            // mm/s와 msec 단위를 매칭하면 바로 mm/s^2 단위가 됨. 이를 m/s^2로 환산하기 위해 1000으로 나눔.
-            const accSI = (velocity / (timeMs / 1000)) / 1000; 
-            // 중력 가속도 G 단위 환산 (1G = 9.80665 m/s^2)
-            const accG = accSI / 9.80665;
-
             document.getElementById('resAccSI').innerText = accSI.toFixed(2) + " m/s^2";
             document.getElementById('resAccG').innerText = accG.toFixed(3) + " G";
+            document.getElementById('resAccT').innerText = timeMs.toFixed(1) + " msec";
+
+            // 계산된 값으로 입력창들을 동기화 (역산된 항목 채우기)
+            document.getElementById('accInputV').value = V.toFixed(1);
+            document.getElementById('accInputT').value = timeMs.toFixed(1);
+            document.getElementById('accInputG').value = accG.toFixed(3);
 
             // 편의 기능: 계산된 가속도(G)를 바로 왼쪽 Tact Time 입력값에 동기화
             document.getElementById('accG').value = accG.toFixed(2);
