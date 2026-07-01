@@ -16,6 +16,10 @@ mechhub/
 ├── index.html              # 메인 랜딩 페이지 (카드형 메뉴, 섹션 앵커 포함)
 ├── common.css               # 전체 공통 스타일 (레이아웃, 사이드바, 카드, 폼, 결과박스 등)
 │
+├── steel_material.html      # 2. Steel 소재 스펙 조회 & 비교
+├── stainless_material.html  # 3. Stainless 소재 스펙 조회 & 비교
+├── aluminum_material.html   # 4. Aluminum 소재 스펙 조회 & 비교
+│
 ├── machining_allowance.html # 6. 일반형상 공차 / 허용차 계산
 ├── fit_clearance.html       # 6. 끼워맞춤 공차 (H7/g6 등) & Hole/Shaft 조회
 ├── roughness_mesh.html      # 6. 표면거칠기 & Mesh Size 변환
@@ -32,7 +36,7 @@ mechhub/
 ```
 
 카테고리 체계는 `index.html`의 사이드바 메뉴(1~14) 기준을 따릅니다.
-현재 구현된 것은 **6. 기계가공**, **7. 기계요소**, **8. 요소설계 & 계산** 세 카테고리이고, 나머지는 `준비중` 뱃지로 표시된 플레이스홀더 상태입니다.
+현재 구현된 것은 **2. Steel 소재**, **3. Stainless 소재**, **4. Aluminum 소재**, **6. 기계가공**, **7. 기계요소**, **8. 요소설계 & 계산** 여섯 카테고리이고, 나머지는 `준비중` 뱃지로 표시된 플레이스홀더 상태입니다.
 
 ---
 
@@ -42,6 +46,9 @@ mechhub/
 
 | 카테고리 | 페이지 | 파일 |
 |---|---|---|
+| 2. Steel 소재 | 소재 스펙 비교 / 중량 계산기 / 등가재질 변환표 | `steel_material.html` |
+| 3. Stainless 소재 | 소재 스펙 비교 / 중량 계산기 / 등가재질 변환표 | `stainless_material.html` |
+| 4. Aluminum 소재 | 소재 스펙 비교 / 중량 계산기 / 등가재질 변환표 | `aluminum_material.html` |
 | 6. 기계가공 | 일반형상 공차 / 허용차 계산 | `machining_allowance.html` |
 | 6. 기계가공 | 끼워맞춤 공차 & Hole/Shaft 조회 | `fit_clearance.html` |
 | 6. 기계가공 | 표면거칠기 & Mesh Size | `roughness_mesh.html` |
@@ -60,7 +67,7 @@ mechhub/
 - 7. 널링 / 쉴드 링 (Knurling / EMI)
 - 8. 볼스크류 선정 검토
 - 8. 공차 누적(Tolerance stack-up) 분석 — Worst Case & RSS
-- 1, 2, 3, 4, 5, 9~14 카테고리 전체 (기계제도/RF/EMI, 소재 3종, 진공부품, Vision Camera, 전장, 유틸리티, 기판/진동, 이송 등)
+- 1, 5, 9~14 카테고리 전체 (기계제도/RF/EMI, 수지/세라믹/기타 소재, 진공부품, Vision Camera, 전장, 유틸리티, 기판/진동, 이송 등)
 
 ---
 

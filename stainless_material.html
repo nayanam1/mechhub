@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - Stainless 소재 스펙 조회</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand">
+                <h1>mechhub</h1>
+                <span>기구설계 보조 포털 v1.0</span>
+            </div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>3. Stainless 소재 ⚙️ 재질 스펙 조회 & 비교</h2>
+            <span style="font-size: 13px; color:#64748b; margin-left:auto;">Home > Stainless 소재</span>
+        </div>
+
+        <div class="content-body">
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('spec', this)">재질 스펙 비교표</button>
+                    <button class="tab-btn" onclick="switchTab('weight', this)">중량(비중) 계산기</button>
+                    <button class="tab-btn" onclick="switchTab('equiv', this)">등가재질 / 규격 변환표</button>
+                </div>
+
+                <!-- ============ 재질 스펙 비교표 ============ -->
+                <div id="spec" class="tab-content active">
+                    <p class="card-note">반도체 테스트 장비 설계에서 자주 쓰이는 Stainless 등급의 대표 물성치입니다. 실제 재질증명서(Mill Sheet) 및 KS D 규격 원문 수치와 차이가 있을 수 있으니 참고용으로만 사용하고, 정밀 설계 시 원문 규격을 확인하세요.</p>
+                    <div class="input-group" style="max-width:320px;">
+                        <label>재질 등급 선택</label>
+                        <div class="input-wrapper"><select id="materialGrade" class="form-control" onchange="calcSpec()"></select></div>
+                    </div>
+                    <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin-top:10px;">
+                        <div class="result-item highlight"><span>밀도</span><span class="value" id="spDensity">- <span>g/cm³</span></span></div>
+                        <div class="result-item"><span>인장강도</span><span class="value" id="spTensile">- <span>MPa</span></span></div>
+                        <div class="result-item"><span>항복강도</span><span class="value" id="spYield">- <span>MPa</span></span></div>
+                        <div class="result-item"><span>경도</span><span class="value" id="spHardness">- <span></span></span></div>
+                        <div class="result-item"><span>탄성계수 (E)</span><span class="value" id="spE">- <span>GPa</span></span></div>
+                        <div class="result-item"><span>열전도율</span><span class="value" id="spK">- <span>W/m·K</span></span></div>
+                        <div class="result-item"><span>선팽창계수</span><span class="value" id="spCte">- <span>×10⁻⁶/K</span></span></div>
+                        <div class="result-item"><span>자성</span><span class="value" id="spMag">- <span></span></span></div>
+                    </div>
+                    <div class="notice-banner info" id="spUse" style="margin-top:14px;"></div>
+                    <div class="notice-banner" id="spTreat" style="margin-top:10px;"></div>
+
+                    <h3 style="margin-top:24px; font-size:14px; padding-bottom:8px; border-bottom:2px solid #f1f5f9;">전체 등급 비교표</h3>
+                    <table class="data-table" id="specTable">
+                        <thead><tr><th>등급</th><th>밀도(g/cm³)</th><th>인장강도(MPa)</th><th>항복강도(MPa)</th><th>경도</th><th>열전도율(W/m·K)</th><th>자성</th><th>대표 용도</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- ============ 중량(비중) 계산기 ============ -->
+                <div id="weight" class="tab-content">
+                    <p class="card-note">재질과 형상, 치수를 입력하면 부피와 중량을 계산합니다. 지그/프레임 무게 산정, 리프팅 포인트 설계, 배송 중량 산출 등에 활용하세요.</p>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:15px;">
+                        <div class="input-group">
+                            <label>재질 등급</label>
+                            <div class="input-wrapper"><select id="wtGrade" class="form-control" onchange="calcWeight()"></select></div>
+                        </div>
+                        <div class="input-group">
+                            <label>형상</label>
+                            <div class="input-wrapper">
+                                <select id="wtShape" class="form-control" onchange="onShapeChange()">
+                                    <option value="round">환봉 (Round Bar)</option>
+                                    <option value="rect">사각봉 / 판재 (Rect Bar / Plate)</option>
+                                    <option value="pipe">파이프 (원형관)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>수량</label>
+                            <div class="input-wrapper"><input type="number" id="wtQty" value="1" min="1" oninput="calcWeight()"><div class="unit">EA</div></div>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:15px; margin-top:6px;">
+                        <div class="input-group" id="wtDia_group">
+                            <label>지름 (D)</label>
+                            <div class="input-wrapper"><input type="number" id="wtDia" value="20" oninput="calcWeight()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" id="wtW_group" style="display:none;">
+                            <label>가로 (W)</label>
+                            <div class="input-wrapper"><input type="number" id="wtW" value="100" oninput="calcWeight()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" id="wtH_group" style="display:none;">
+                            <label>세로 / 두께 (H)</label>
+                            <div class="input-wrapper"><input type="number" id="wtH" value="20" oninput="calcWeight()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" id="wtOD_group" style="display:none;">
+                            <label>외경 (D)</label>
+                            <div class="input-wrapper"><input type="number" id="wtOD" value="30" oninput="calcWeight()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" id="wtT_group" style="display:none;">
+                            <label>두께 (t)</label>
+                            <div class="input-wrapper"><input type="number" id="wtT" value="3" oninput="calcWeight()"><div class="unit">mm</div></div>
+                        </div>
+                        <div class="input-group" id="wtL_group">
+                            <label>길이 (L)</label>
+                            <div class="input-wrapper"><input type="number" id="wtL" value="500" oninput="calcWeight()"><div class="unit">mm</div></div>
+                        </div>
+                    </div>
+                    <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin-top:16px;">
+                        <div class="result-item"><span>부피 (1개)</span><span class="value" id="wtVolume">- <span>cm³</span></span></div>
+                        <div class="result-item"><span>단중 (1개)</span><span class="value" id="wtUnit">- <span>kg</span></span></div>
+                        <div class="result-item highlight"><span>총 중량 (수량 반영)</span><span class="value" id="wtTotal">- <span>kg</span></span></div>
+                    </div>
+                </div>
+
+                <!-- ============ 등가재질 / 규격 변환표 ============ -->
+                <div id="equiv" class="tab-content">
+                    <p class="card-note">국내(KS/JIS) 표기와 해외(AISI/SAE, EN/DIN) 규격 표기 간 근사 대응표입니다. 화학성분/물성이 100% 동일하지 않을 수 있어 발주 시 최종 도면·재질증명서 기준으로 재확인하세요.</p>
+                    <table class="data-table" id="equivTable">
+                        <thead><tr><th>국내 (KS/JIS)</th><th>AISI/SAE (UNS)</th><th>EN/DIN</th><th>비고</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ===== Stainless 등급별 물성 DB (참고치, 실측/규격 원문과 차이 있을 수 있음) =====
+        const materialDB = {
+            "SUS303":   { density:8.0,  tensile:"≥520", yield:"≥205", hardness:"≤HB223", E:193, k:16.2, cte:17.3, magnetic:"비자성(냉간가공 시 약자성)", use:"쾌삭성이 필요한 축, 나사 가공품, 커넥터 부품", treat:"S(황) 첨가로 쾌삭성이 우수하나 내식성은 SUS304 대비 다소 낮음." },
+            "SUS304":   { density:8.0,  tensile:"≥520", yield:"≥205", hardness:"≤HB187", E:193, k:16.2, cte:17.3, magnetic:"비자성(냉간가공 시 약자성)", use:"챔버, 배관, 브라켓 등 범용 내식 부품", treat:"고용화 열처리(1000~1100℃ 급냉) 외 경화 열처리 불가. 전해연마로 표면 내식성/파티클 특성 향상 가능." },
+            "SUS316":   { density:8.0,  tensile:"≥520", yield:"≥205", hardness:"≤HB187", E:193, k:16.3, cte:16.0, magnetic:"비자성(냉간가공 시 약자성)", use:"약액/화학 접촉부, 부식 환경 부품", treat:"Mo 2~3% 첨가로 공식·틈부식 저항성 향상. 열처리 특성은 SUS304와 동일." },
+            "SUS316L":  { density:8.0,  tensile:"≥480", yield:"≥175", hardness:"≤HB187", E:193, k:16.3, cte:16.0, magnetic:"비자성(냉간가공 시 약자성)", use:"반도체 약액/가스 배관, 용접 구조물", treat:"저탄소(C≤0.03%)로 용접 후 입계부식(카바이드 석출) 저항성 우수." },
+            "SUS420J2": { density:7.75, tensile:"≥740(담금질템퍼)", yield:"≥540", hardness:"HRC50~55(담금질 후)", E:200, k:24.9, cte:10.4, magnetic:"강자성", use:"내마모 축, 나이프, 베어링용 부품", treat:"담금질+템퍼링으로 고경도 확보 가능(마르텐사이트계). 내식성은 SUS304 대비 낮음." },
+            "SUS630":   { density:7.8,  tensile:"1030~1230(H900)", yield:"900~1170(H900)", hardness:"HRC35~44(H900)", E:196, k:18.0, cte:10.8, magnetic:"강자성", use:"고강도+내식 동시 요구 축/샤프트/볼트", treat:"석출경화(시효처리, H900/H1025 등)로 고강도화. 17-4PH로도 불림." },
+        };
+
+        const materialEquiv = [
+            { kr:"SUS303",   aisi:"303 (UNS S30300)",     en:"1.4305",         note:"쾌삭 스테인리스. S(황) 첨가로 절삭성 향상, 용접성은 저하." },
+            { kr:"SUS304",   aisi:"304 (UNS S30400)",     en:"1.4301",         note:"범용 오스테나이트계 스테인리스. KS 표기로는 STS304." },
+            { kr:"SUS316",   aisi:"316 (UNS S31600)",     en:"1.4401",         note:"Mo 첨가로 내식성 강화. KS 표기로는 STS316." },
+            { kr:"SUS316L",  aisi:"316L (UNS S31603)",    en:"1.4404",         note:"저탄소형 316. 용접 후 내식성 저하가 적음." },
+            { kr:"SUS420J2", aisi:"420 (근사)",           en:"1.4028 (근사)",   note:"마르텐사이트계. 열처리로 경화 가능한 대표 강종." },
+            { kr:"SUS630",   aisi:"17-4PH (UNS S17400)",  en:"1.4542",         note:"석출경화형 스테인리스. 고강도+내식 동시 요구 시 사용." },
+        ];
+
+        function calcSpec() {
+            const g = document.getElementById("materialGrade").value;
+            const d = materialDB[g];
+            setVal("spDensity", d.density, "g/cm³");
+            setVal("spTensile", d.tensile, "MPa");
+            setVal("spYield", d.yield, "MPa");
+            setVal("spHardness", d.hardness, "");
+            setVal("spE", d.E, "GPa");
+            setVal("spK", d.k, "W/m·K");
+            setVal("spCte", d.cte, "×10⁻⁶/K");
+            setVal("spMag", d.magnetic, "");
+            document.getElementById("spUse").innerHTML = `🔧 <b>대표 용도:</b> ${d.use}`;
+            document.getElementById("spTreat").innerHTML = `🧪 <b>가공성 / 열처리 참고:</b> ${d.treat} 도금·아노다이징 등 표면처리 세부 옵션은 <a href="surface_treatment.html" style="color:var(--accent-color); font-weight:700;">표면처리/열처리 페이지</a>에서 확인하세요.`;
+            document.querySelectorAll("#specTable tbody tr").forEach(r => r.classList.remove("row-active"));
+            const row = document.getElementById("srow-" + g);
+            if (row) row.classList.add("row-active");
+        }
+
+        function renderSpecTable() {
+            const tbody = document.querySelector("#specTable tbody");
+            tbody.innerHTML = Object.entries(materialDB).map(([k, d]) =>
+                `<tr id="srow-${k}"><td>${k}</td><td>${d.density}</td><td>${d.tensile}</td><td>${d.yield}</td><td>${d.hardness}</td><td>${d.k}</td><td>${d.magnetic}</td><td>${d.use}</td></tr>`
+            ).join("");
+        }
+
+        function renderEquivTable() {
+            const tbody = document.querySelector("#equivTable tbody");
+            tbody.innerHTML = materialEquiv.map(e => `<tr><td>${e.kr}</td><td>${e.aisi}</td><td>${e.en}</td><td>${e.note}</td></tr>`).join("");
+        }
+
+        function onShapeChange() {
+            const shape = document.getElementById("wtShape").value;
+            document.getElementById("wtDia_group").style.display = shape === "round" ? "flex" : "none";
+            document.getElementById("wtW_group").style.display = shape === "rect" ? "flex" : "none";
+            document.getElementById("wtH_group").style.display = shape === "rect" ? "flex" : "none";
+            document.getElementById("wtOD_group").style.display = shape === "pipe" ? "flex" : "none";
+            document.getElementById("wtT_group").style.display = shape === "pipe" ? "flex" : "none";
+            calcWeight();
+        }
+
+        function calcWeight() {
+            const g = document.getElementById("wtGrade").value;
+            const density = materialDB[g].density; // g/cm3
+            const shape = document.getElementById("wtShape").value;
+            const L = parseFloat(document.getElementById("wtL").value);
+            let volumeMm3 = 0;
+
+            if (shape === "round") {
+                const D = parseFloat(document.getElementById("wtDia").value);
+                if (!(D > 0) || !(L > 0)) return;
+                volumeMm3 = Math.PI / 4 * D * D * L;
+            } else if (shape === "rect") {
+                const W = parseFloat(document.getElementById("wtW").value);
+                const H = parseFloat(document.getElementById("wtH").value);
+                if (!(W > 0) || !(H > 0) || !(L > 0)) return;
+                volumeMm3 = W * H * L;
+            } else if (shape === "pipe") {
+                const OD = parseFloat(document.getElementById("wtOD").value);
+                const t = parseFloat(document.getElementById("wtT").value);
+                if (!(OD > 0) || !(t > 0) || !(L > 0)) return;
+                const ID = OD - 2 * t;
+                if (ID < 0) { alert("두께가 외경의 절반보다 큽니다."); return; }
+                volumeMm3 = Math.PI / 4 * (OD * OD - ID * ID) * L;
+            }
+
+            const volumeCm3 = volumeMm3 / 1000;
+            const unitWeightKg = volumeCm3 * density / 1000;
+            const qty = parseFloat(document.getElementById("wtQty").value) || 1;
+            const totalWeightKg = unitWeightKg * qty;
+
+            setVal("wtVolume", volumeCm3.toFixed(2), "cm³");
+            setVal("wtUnit", unitWeightKg.toFixed(3), "kg");
+            setVal("wtTotal", totalWeightKg.toFixed(3), "kg");
+        }
+
+        function setVal(id, val, unit) { document.getElementById(id).innerHTML = val + ` <span>${unit || ""}</span>`; }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll(".tabs .tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById(id).classList.add("active");
+        }
+
+        function fillSelect(id, keys) {
+            document.getElementById(id).innerHTML = keys.map(k => `<option value="${k}">${k}</option>`).join("");
+        }
+
+        function createSidebarMenu() {
+            const menuItems = [
+                { name: '🏠 메인 홈', href: 'index.html', status: '' },
+                { name: '1. 기계제도 & RF & EMI', href: 'javascript:void(0)', status: 'ready' },
+                { name: '2. Steel 소재 (구현됨) ⚡', href: 'steel_material.html', status: '' },
+                { name: '3. Stainless 소재 (구현됨) ⚡', href: 'stainless_material.html', status: 'current' },
+                { name: '4. Aluminum 소재 (구현됨) ⚡', href: 'aluminum_material.html', status: '' },
+                { name: '5. 수지/세라믹/기타', href: 'javascript:void(0)', status: 'ready' },
+                { name: '6. 기계가공 (구현됨) ⚡', href: 'index.html#machining-section', status: '' },
+                { name: '7. 기계요소 (구현됨) ⚡', href: 'index.html#elements-section', status: '' },
+                { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html', status: '' },
+                { name: '9. 진공부품', href: 'javascript:void(0)', status: 'ready' },
+                { name: '10. Vision Camera', href: 'javascript:void(0)', status: 'ready' },
+                { name: '11. Electricity & Control', href: 'javascript:void(0)', status: 'ready' },
+                { name: '12. Utility 선정 & 반응', href: 'javascript:void(0)', status: 'ready' },
+                { name: '13. 기판 & Vibration', href: 'javascript:void(0)', status: 'ready' },
+                { name: '14. Transportation & ETC', href: 'javascript:void(0)', status: 'ready' },
+            ];
+            const menuUl = document.getElementById('sidebarMenu');
+            menuUl.innerHTML = menuItems.map(item => `
+                <li class="${item.status === 'ready' ? 'ready' : ''} ${item.status === 'current' ? 'active' : ''}">
+                    <a href="${item.href}">${item.name}${item.status === 'ready' ? ' <span class="badge-ready">준비중</span>' : ''}</a>
+                </li>`).join('');
+        }
+
+        window.onload = function () {
+            createSidebarMenu();
+            fillSelect("materialGrade", Object.keys(materialDB));
+            fillSelect("wtGrade", Object.keys(materialDB));
+            renderSpecTable();
+            renderEquivTable();
+            calcSpec();
+            calcWeight();
+        };
+    </script>
+</body>
+</html>
