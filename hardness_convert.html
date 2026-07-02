@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - 경도 환산 & 측정방식 가이드</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand"><h1>mechhub</h1><span>기구설계 보조 포털 v1.0</span></div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>6. 기계가공 🔨 경도 환산 & 측정방식 가이드</h2>
+        </div>
+        <div class="content-body">
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('guide')">재질군별 경도 스케일 가이드</button>
+                    <button class="tab-btn" onclick="switchTab('steel')">철강 경도 환산표 (HB/HRB/HRC/HV/HRA)</button>
+                </div>
+
+                <!-- =========== 재질군별 가이드 =========== -->
+                <div id="guide" class="tab-content active">
+                    <p class="card-note">경도는 측정 원리(압흔 형상, 하중)가 스케일마다 달라 재질군에 따라 통용되는 표기 방식이 다릅니다. 도면/데이터시트에서 경도값을 볼 때 어떤 스케일이 적용됐는지 먼저 확인하세요.</p>
+                    <table class="data-table">
+                        <thead><tr><th>재질군</th><th>대표 측정법</th><th>스케일 범위 (참고)</th><th>비고</th></tr></thead>
+                        <tbody>
+                            <tr><td>연질금속 / 비철(알루미늄, 동합금, 열처리 전 강재)</td><td>브리넬 (HB)</td><td>HB 20 ~ 450</td><td>압흔 면적이 넓어 표면이 거친 재료에도 적용 가능</td></tr>
+                            <tr><td>연질강 / 박판 / 도금층</td><td>로크웰 B (HRB)</td><td>HRB 0 ~ 100</td><td>HRC보다 낮은 하중, 얇은 시편에 적합</td></tr>
+                            <tr><td>열처리강 / 공구강(경질)</td><td>로크웰 C (HRC)</td><td>HRC 20 ~ 70</td><td>담금질·템퍼링 강재의 표준 표기</td></tr>
+                            <tr><td>초경합금 / 세라믹 / 코팅층</td><td>비커스 (HV)</td><td>HV 100 ~ 2000 이상</td><td>미세 압흔, 얇은 시편·국부 경도 측정에 적합</td></tr>
+                            <tr><td>엔지니어링 플라스틱(경질)</td><td>쇼어 D / 로크웰 R,M,L</td><td>Shore D 50 ~ 90</td><td>POM, PC, PEEK 등 경질 수지 (<a href="resin_material.html" style="color:var(--accent-color); font-weight:700;">수지/세라믹 소재 페이지</a> 참고)</td></tr>
+                            <tr><td>고무 / 엘라스토머</td><td>쇼어 A (Shore A)</td><td>Shore A 10 ~ 95</td><td>O-Ring 등 씰링 고무 (<a href="oring_selection.html" style="color:var(--accent-color); font-weight:700;">오링 선정 페이지</a> 참고)</td></tr>
+                            <tr><td>초연질 스펀지 / 발포체</td><td>쇼어 00 (Shore OO)</td><td>Shore 00 0 ~ 80</td><td>발포실리콘고무 등 저압축력 패킹재 (<a href="resin_material.html" style="color:var(--accent-color); font-weight:700;">패킹/단열/접착재 탭</a> 참고)</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="notice-banner" style="margin-top:14px;">⚠️ 서로 다른 재질군의 경도 스케일은 직접 비교할 수 없습니다 (측정 원리·압흔 형상이 다름). 예를 들어 고무 Shore A 60과 플라스틱 Shore D 60은 전혀 다른 경도 수준입니다. 아래 환산표는 <b>철강(동일 재질군)</b> 내에서만 사용하세요.</div>
+                </div>
+
+                <!-- =========== 철강 경도 환산표 =========== -->
+                <div id="steel" class="tab-content">
+                    <p class="card-note">ASTM E140 기반 근사 대응표입니다. 실제 값은 강종·열처리·측정조건에 따라 차이가 있을 수 있어 참고용으로만 사용하세요. HRB는 연질강(HRB 60~100), HRC는 경질강(HRC 20~65) 영역에서 주로 사용합니다.</p>
+                    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>입력 스케일</label>
+                            <div class="input-wrapper">
+                                <select id="hScale" class="form-control" onchange="calcHardness()">
+                                    <option value="hrb">HRB (로크웰 B)</option>
+                                    <option value="hrc">HRC (로크웰 C)</option>
+                                    <option value="hb">HB (브리넬)</option>
+                                    <option value="hv">HV (비커스)</option>
+                                    <option value="hra">HRA (로크웰 A)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex:1; min-width:160px; margin-bottom:0;">
+                            <label>측정값</label>
+                            <div class="input-wrapper"><input type="number" id="hInput" value="30" oninput="calcHardness()"><div class="unit">-</div></div>
+                        </div>
+                    </div>
+                    <p class="card-note" style="margin-top:-6px;">※ 입력값에 가장 가까운 참조표 행을 찾아 근사 환산합니다 (보간 없음, 표에 없는 값은 가장 가까운 값으로 대체).</p>
+                    <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); margin-top:10px;">
+                        <div class="result-item"><span>HRB</span><span class="value" id="resHRB">-</span></div>
+                        <div class="result-item highlight"><span>HRC</span><span class="value" id="resHRC">-</span></div>
+                        <div class="result-item"><span>HB</span><span class="value" id="resHB">-</span></div>
+                        <div class="result-item"><span>HV</span><span class="value" id="resHV">-</span></div>
+                        <div class="result-item"><span>HRA</span><span class="value" id="resHRA">-</span></div>
+                    </div>
+
+                    <h3 style="margin-top:24px; font-size:14px; padding-bottom:8px; border-bottom:2px solid #f1f5f9;">철강 경도 상호 환산 참조표 (근사치)</h3>
+                    <table class="data-table" id="steelTable">
+                        <thead><tr><th>HRB</th><th>HRC</th><th>HB</th><th>HV</th><th>HRA</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 철강 경도 상호 환산 참조표 (ASTM E140 기반 근사치, 실측/원문 규격과 차이 있을 수 있음)
+        const steelHardnessTable = [
+            { hrb:60,  hrc:null, hb:105, hv:105, hra:null },
+            { hrb:65,  hrc:null, hb:114, hv:114, hra:null },
+            { hrb:70,  hrc:null, hb:124, hv:124, hra:null },
+            { hrb:75,  hrc:null, hb:135, hv:135, hra:null },
+            { hrb:80,  hrc:null, hb:148, hv:148, hra:null },
+            { hrb:85,  hrc:null, hb:163, hv:163, hra:null },
+            { hrb:90,  hrc:null, hb:179, hv:179, hra:null },
+            { hrb:95,  hrc:null, hb:199, hv:199, hra:null },
+            { hrb:100, hrc:20,   hb:226, hv:238, hra:60.7 },
+            { hrb:null, hrc:25,  hb:253, hv:266, hra:63.3 },
+            { hrb:null, hrc:30,  hb:286, hv:302, hra:65.8 },
+            { hrb:null, hrc:35,  hb:327, hv:345, hra:68.3 },
+            { hrb:null, hrc:40,  hb:371, hv:392, hra:70.8 },
+            { hrb:null, hrc:45,  hb:421, hv:446, hra:73.3 },
+            { hrb:null, hrc:50,  hb:481, hv:513, hra:75.9 },
+            { hrb:null, hrc:55,  hb:538, hv:590, hra:78.5 },
+            { hrb:null, hrc:60,  hb:null, hv:697, hra:81.2 },
+            { hrb:null, hrc:65,  hb:null, hv:831, hra:83.9 },
+        ];
+
+        function calcHardness() {
+            const scale = document.getElementById("hScale").value;
+            const val = parseFloat(document.getElementById("hInput").value);
+            if (!isFinite(val)) return;
+            const candidates = steelHardnessTable.filter(r => r[scale] != null);
+            if (!candidates.length) return;
+            const row = candidates.reduce((a, b) => Math.abs(b[scale] - val) < Math.abs(a[scale] - val) ? b : a);
+            document.getElementById("resHRB").innerHTML = row.hrb ?? "-";
+            document.getElementById("resHRC").innerHTML = row.hrc ?? "-";
+            document.getElementById("resHB").innerHTML = row.hb ?? "-";
+            document.getElementById("resHV").innerHTML = row.hv ?? "-";
+            document.getElementById("resHRA").innerHTML = row.hra ?? "-";
+            document.querySelectorAll("#steelTable tbody tr").forEach((tr, i) => {
+                tr.classList.toggle("row-active", steelHardnessTable[i] === row);
+            });
+        }
+
+        function buildSteelTable() {
+            const tbody = document.querySelector("#steelTable tbody");
+            tbody.innerHTML = steelHardnessTable.map(r =>
+                `<tr><td>${r.hrb ?? "-"}</td><td>${r.hrc ?? "-"}</td><td>${r.hb ?? "-"}</td><td>${r.hv ?? "-"}</td><td>${r.hra ?? "-"}</td></tr>`
+            ).join("");
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        function createSidebarMenu() {
+            const items = [
+                { name: '🏠 메인 홈', href: 'index.html' },
+                { name: '6. 기계가공 ⚡', href: 'index.html#machining-section', active: true },
+                { name: '7. 기계요소 ⚡', href: 'index.html#elements-section' },
+                { name: '8. 요소설계 & 계산', href: 'motion.html' },
+            ];
+            document.getElementById("sidebarMenu").innerHTML = items.map(i =>
+                `<li class="${i.active ? 'active' : ''}"><a href="${i.href}">${i.name}</a></li>`
+            ).join("");
+        }
+
+        window.onload = () => { createSidebarMenu(); buildSteelTable(); calcHardness(); };
+    </script>
+</body>
+</html>

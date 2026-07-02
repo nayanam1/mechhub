@@ -19,12 +19,14 @@ mechhub/
 ├── steel_material.html      # 2. Steel 소재 스펙 조회 & 비교
 ├── stainless_material.html  # 3. Stainless 소재 스펙 조회 & 비교
 ├── aluminum_material.html   # 4. Aluminum 소재 스펙 조회 & 비교
+├── resin_material.html      # 5. 수지/세라믹/기타 소재 스펙 조회 & 비교
 │
 ├── machining_allowance.html # 6. 일반형상 공차 / 허용차 계산
 ├── fit_clearance.html       # 6. 끼워맞춤 공차 (H7/g6 등) & Hole/Shaft 조회
 ├── roughness_mesh.html      # 6. 표면거칠기 & Mesh Size 변환
 ├── bending_radius.html      # 6. 절곡 최소값 & 튜브 Bending Radius
 ├── surface_treatment.html   # 6. 아노다이징/도금 피막두께 & 열처리 사양
+├── hardness_convert.html    # 6. 경도 환산 & 측정방식 가이드 (HB/HRB/HRC/HV/HRA, 재질군별 스케일)
 │
 ├── bolt_torque.html         # 7. 볼트 규격 & 체결 토크 & 자리파기
 ├── nut_pop.html             # 7. 너트 규격 (육각/POP/클린칭)
@@ -36,7 +38,7 @@ mechhub/
 ```
 
 카테고리 체계는 `index.html`의 사이드바 메뉴(1~14) 기준을 따릅니다.
-현재 구현된 것은 **2. Steel 소재**, **3. Stainless 소재**, **4. Aluminum 소재**, **6. 기계가공**, **7. 기계요소**, **8. 요소설계 & 계산** 여섯 카테고리이고, 나머지는 `준비중` 뱃지로 표시된 플레이스홀더 상태입니다.
+현재 구현된 것은 **2. Steel 소재**, **3. Stainless 소재**, **4. Aluminum 소재**, **5. 수지/세라믹/기타**, **6. 기계가공**, **7. 기계요소**, **8. 요소설계 & 계산** 일곱 카테고리이고, 나머지는 `준비중` 뱃지로 표시된 플레이스홀더 상태입니다.
 
 ---
 
@@ -49,11 +51,13 @@ mechhub/
 | 2. Steel 소재 | 소재 스펙 비교 / 중량 계산기 / 등가재질 변환표 | `steel_material.html` |
 | 3. Stainless 소재 | 소재 스펙 비교 / 중량 계산기 / 등가재질 변환표 | `stainless_material.html` |
 | 4. Aluminum 소재 | 소재 스펙 비교 / 중량 계산기 / 등가재질 변환표 | `aluminum_material.html` |
+| 5. 수지/세라믹/기타 | 소재 스펙 비교 / 중량 계산기 / 등가재질 변환표 / 패킹·단열·접착재 | `resin_material.html` |
 | 6. 기계가공 | 일반형상 공차 / 허용차 계산 | `machining_allowance.html` |
 | 6. 기계가공 | 끼워맞춤 공차 & Hole/Shaft 조회 | `fit_clearance.html` |
 | 6. 기계가공 | 표면거칠기 & Mesh Size | `roughness_mesh.html` |
 | 6. 기계가공 | 절곡 R & Bending Radius (Tube) | `bending_radius.html` |
 | 6. 기계가공 | 아노다이징/도금 피막두께 & 열처리 | `surface_treatment.html` |
+| 6. 기계가공 | 경도 환산 & 측정방식 가이드 (HB/HRB/HRC/HV/Shore) | `hardness_convert.html` |
 | 7. 기계요소 | 볼트 규격 & 체결 토크 & 자리파기 | `bolt_torque.html` |
 | 7. 기계요소 | 너트 규격 (육각/POP/클린칭) | `nut_pop.html` |
 | 7. 기계요소 | Key홈 / 스냅링 / Dowel Pin | `snap_ring.html` |
@@ -67,7 +71,7 @@ mechhub/
 - 7. 널링 / 쉴드 링 (Knurling / EMI)
 - 8. 볼스크류 선정 검토
 - 8. 공차 누적(Tolerance stack-up) 분석 — Worst Case & RSS
-- 1, 5, 9~14 카테고리 전체 (기계제도/RF/EMI, 수지/세라믹/기타 소재, 진공부품, Vision Camera, 전장, 유틸리티, 기판/진동, 이송 등)
+- 1, 9~14 카테고리 전체 (기계제도/RF/EMI, 진공부품, Vision Camera, 전장, 유틸리티, 기판/진동, 이송 등)
 
 ---
 

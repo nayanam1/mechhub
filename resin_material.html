@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mechhub - Aluminum 소재 스펙 조회</title>
+    <title>mechhub - 수지/세라믹/기타 소재 스펙 조회</title>
     <link rel="stylesheet" href="common.css">
     <style>
     </style>
@@ -23,8 +23,8 @@
 
     <div class="main-content">
         <div class="main-header">
-            <h2>4. Aluminum 소재 🧊 재질 스펙 조회 & 비교</h2>
-            <span style="font-size: 13px; color:#64748b; margin-left:auto;">Home > Aluminum 소재</span>
+            <h2>5. 수지/세라믹/기타 🧪 재질 스펙 조회 & 비교</h2>
+            <span style="font-size: 13px; color:#64748b; margin-left:auto;">Home > 수지/세라믹/기타 소재</span>
         </div>
 
         <div class="content-body">
@@ -34,38 +34,39 @@
                     <button class="tab-btn active" onclick="switchTab('spec', this)">재질 스펙 비교표</button>
                     <button class="tab-btn" onclick="switchTab('weight', this)">중량(비중) 계산기</button>
                     <button class="tab-btn" onclick="switchTab('equiv', this)">등가재질 / 규격 변환표</button>
+                    <button class="tab-btn" onclick="switchTab('packing', this)">패킹/단열/접착재</button>
                 </div>
 
                 <!-- ============ 재질 스펙 비교표 ============ -->
                 <div id="spec" class="tab-content active">
-                    <p class="card-note">반도체 테스트 장비 설계에서 자주 쓰이는 Aluminum 합금 등급의 대표 물성치입니다. 실제 재질증명서(Mill Sheet) 및 KS D 규격 원문 수치와 차이가 있을 수 있으니 참고용으로만 사용하고, 정밀 설계 시 원문 규격을 확인하세요.</p>
+                    <p class="card-note">반도체 테스트 장비 설계에서 자주 쓰이는 엔지니어링 플라스틱 및 산업용 세라믹의 대표 물성치입니다. 실제 재질증명서(Mill Sheet) 및 제조사 데이터시트 수치와 차이가 있을 수 있으니 참고용으로만 사용하고, 정밀 설계 시 원문 규격을 확인하세요.</p>
                     <div class="input-group" style="max-width:320px;">
                         <label>재질 등급 선택</label>
                         <div class="input-wrapper"><select id="materialGrade" class="form-control" onchange="calcSpec()"></select></div>
                     </div>
                     <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin-top:10px;">
                         <div class="result-item highlight"><span>밀도</span><span class="value" id="spDensity">- <span>g/cm³</span></span></div>
-                        <div class="result-item"><span>인장강도</span><span class="value" id="spTensile">- <span>MPa</span></span></div>
-                        <div class="result-item"><span>항복강도</span><span class="value" id="spYield">- <span>MPa</span></span></div>
+                        <div class="result-item"><span>인장/굴곡강도</span><span class="value" id="spTensile">- <span>MPa</span></span></div>
+                        <div class="result-item"><span>연신율</span><span class="value" id="spElong">- <span>%</span></span></div>
                         <div class="result-item"><span>경도</span><span class="value" id="spHardness">- <span></span></span></div>
                         <div class="result-item"><span>탄성계수 (E)</span><span class="value" id="spE">- <span>GPa</span></span></div>
                         <div class="result-item"><span>열전도율</span><span class="value" id="spK">- <span>W/m·K</span></span></div>
                         <div class="result-item"><span>선팽창계수</span><span class="value" id="spCte">- <span>×10⁻⁶/K</span></span></div>
-                        <div class="result-item"><span>자성</span><span class="value" id="spMag">- <span></span></span></div>
+                        <div class="result-item"><span>최고사용온도</span><span class="value" id="spMaxTemp">- <span>℃</span></span></div>
                     </div>
                     <div class="notice-banner info" id="spUse" style="margin-top:14px;"></div>
                     <div class="notice-banner" id="spTreat" style="margin-top:10px;"></div>
 
                     <h3 style="margin-top:24px; font-size:14px; padding-bottom:8px; border-bottom:2px solid #f1f5f9;">전체 등급 비교표</h3>
                     <table class="data-table" id="specTable">
-                        <thead><tr><th>등급</th><th>밀도(g/cm³)</th><th>인장강도(MPa)</th><th>항복강도(MPa)</th><th>경도</th><th>열전도율(W/m·K)</th><th>자성</th><th>대표 용도</th></tr></thead>
+                        <thead><tr><th>등급</th><th>밀도(g/cm³)</th><th>인장/굴곡강도(MPa)</th><th>연신율(%)</th><th>경도</th><th>열전도율(W/m·K)</th><th>최고사용온도(℃)</th><th>대표 용도</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
 
                 <!-- ============ 중량(비중) 계산기 ============ -->
                 <div id="weight" class="tab-content">
-                    <p class="card-note">재질과 형상, 치수를 입력하면 부피와 중량을 계산합니다. 지그/프레임 무게 산정, 리프팅 포인트 설계, 배송 중량 산출 등에 활용하세요.</p>
+                    <p class="card-note">재질과 형상, 치수를 입력하면 부피와 중량을 계산합니다. 지그/커버 무게 산정, 배송 중량 산출 등에 활용하세요.</p>
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:15px;">
                         <div class="input-group">
                             <label>재질 등급</label>
@@ -121,9 +122,32 @@
 
                 <!-- ============ 등가재질 / 규격 변환표 ============ -->
                 <div id="equiv" class="tab-content">
-                    <p class="card-note">국내(KS/JIS) 표기와 해외(AA/UNS, EN) 규격 표기 간 근사 대응표입니다. 화학성분/물성이 100% 동일하지 않을 수 있어 발주 시 최종 도면·재질증명서 기준으로 재확인하세요.</p>
+                    <p class="card-note">소재별 일반 명칭과 표준 규격, 대표 상용 브랜드명 대응표입니다. 제조사·등급에 따라 물성이 달라질 수 있어 발주 시 최종 데이터시트 기준으로 재확인하세요.</p>
                     <table class="data-table" id="equivTable">
-                        <thead><tr><th>국내 (KS/JIS)</th><th>AA/SAE (UNS)</th><th>EN</th><th>비고</th></tr></thead>
+                        <thead><tr><th>소재 (일반명칭)</th><th>표준 규격</th><th>상용 브랜드명</th><th>비고</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- ============ 패킹/단열/접착재 ============ -->
+                <div id="packing" class="tab-content">
+                    <p class="card-note">위 구조용 소재(밀도/인장강도 기준)와 달리, 패킹·단열·접착 목적 소재는 사용온도범위·열전도율·압축특성이 핵심 스펙입니다. 제조사 데이터시트 기준으로 최종 확인하세요.</p>
+                    <div class="input-group" style="max-width:320px;">
+                        <label>소재 선택</label>
+                        <div class="input-wrapper"><select id="pkGrade" class="form-control" onchange="calcPacking()"></select></div>
+                    </div>
+                    <div class="result-box" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); margin-top:10px;">
+                        <div class="result-item highlight"><span>밀도</span><span class="value" id="pkDensity">- <span>g/cm³</span></span></div>
+                        <div class="result-item"><span>경도</span><span class="value" id="pkHardness">- <span></span></span></div>
+                        <div class="result-item"><span>사용온도범위</span><span class="value" id="pkTemp">- <span>℃</span></span></div>
+                        <div class="result-item"><span>열전도율</span><span class="value" id="pkK">- <span>W/m·K</span></span></div>
+                    </div>
+                    <div class="notice-banner info" id="pkUse" style="margin-top:14px;"></div>
+                    <div class="notice-banner" id="pkNote" style="margin-top:10px;"></div>
+
+                    <h3 style="margin-top:24px; font-size:14px; padding-bottom:8px; border-bottom:2px solid #f1f5f9;">전체 소재 비교표</h3>
+                    <table class="data-table" id="packingTable">
+                        <thead><tr><th>소재</th><th>밀도(g/cm³)</th><th>경도</th><th>사용온도범위(℃)</th><th>열전도율(W/m·K)</th><th>대표 용도</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -133,38 +157,70 @@
     </div>
 
     <script>
-        // ===== Aluminum 등급별 물성 DB (참고치, 실측/규격 원문과 차이 있을 수 있음) =====
+        // ===== 수지/세라믹/기타 등급별 물성 DB (참고치, 실측/데이터시트 원문과 차이 있을 수 있음) =====
         const materialDB = {
-            "A1050": { density:2.71, tensile:"65~105",     yield:"15~90",   hardness:"HB19~32",  E:69, k:230, cte:23.5, magnetic:"비자성", use:"전기/화학용 순알루미늄 부품, 반사판", treat:"순도 99.5%↑, 비열처리형(열처리로 강화 불가). 알루마이트(아노다이징) 발색성 우수." },
-            "A5052": { density:2.68, tensile:"170~260",     yield:"65~215",  hardness:"HB47~68",  E:70, k:138, cte:23.8, magnetic:"비자성", use:"일반 판금 부품, 내식 필요 구조물, 케이스", treat:"비열처리형(가공경화 O~H34). 내식성 우수, 아노다이징 처리가 표준." },
-            "A6061": { density:2.70, tensile:"124(O)~310(T6)", yield:"55(O)~276(T6)", hardness:"HB30(O)~95(T6)", E:69, k:167, cte:23.6, magnetic:"비자성", use:"구조 프레임, 지그베이스, 정밀가공 부품", treat:"열처리형(T6 시효경화). 용접 후 강도 저하가 있어 재열처리가 필요할 수 있음." },
-            "A6063": { density:2.70, tensile:"90(O)~245(T6)",  yield:"48(O)~215(T6)", hardness:"HB25(O)~73(T6)", E:69, k:200, cte:23.4, magnetic:"비자성", use:"알루미늄 압출 프로파일 프레임, 방열판", treat:"압출성 최우수. T5/T6 조질로 강도 확보, 아노다이징 마감이 표준." },
-            "A2017": { density:2.79, tensile:"380~425(T4)", yield:"215~275(T4)", hardness:"HB105~120", E:72, k:134, cte:23.6, magnetic:"비자성", use:"고강도 경량 구조부품 (두랄루민)", treat:"열처리형(T4). 내식성이 낮아 도장/알로딘(Alodine) 처리 필수." },
-            "A7075": { density:2.81, tensile:"570~580(T6)", yield:"500~505(T6)", hardness:"HB150",     E:72, k:130, cte:23.4, magnetic:"비자성", use:"초고강도 경량 부품, 정밀 지그, 항공용 부품", treat:"열처리형(T6) 알루미늄 중 최고강도. 내식성이 낮아 표면처리 권장, 용접성은 나쁨." },
+            "POM (아세탈)":     { density:1.41, tensile:"60~70",       elong:"15~60",  hardness:"R120 / M80",     E:2.8,  k:0.31, cte:110, maxTemp:"100(연속)/140(단시간)", use:"정밀기어, 캠, 베어링부시, 저마찰 슬라이딩부품, 벨트가이드", treat:"흡습률이 낮아 치수안정성이 플라스틱 중 최상급. 절삭가공성이 우수해 정밀부품에 널리 사용. 코폴리머(POM-C)는 내가수분해성 우수, 호모폴리머(POM-H)는 강도·강성이 소폭 우수." },
+            "PA6 (나일론/MC나일론)": { density:1.14, tensile:"70~85",   elong:"50~150", hardness:"R119 / M85",     E:2.9,  k:0.25, cte:90,  maxTemp:"90~120",              use:"기어, 롤러, 부시, 슬라이드 가이드, 대형 캐스팅 부품", treat:"흡습에 따른 치수변화가 커(포화흡습 시 최대 +2~3%) 정밀공차부는 주의 필요. MC Nylon은 대형 캐스트 성형용으로 내마모성·내충격성이 우수." },
+            "PTFE (테프론)":     { density:2.2,  tensile:"20~35",       elong:"200~400", hardness:"Shore D50~65",  E:0.5,  k:0.25, cte:130, maxTemp:"260(연속)/300(단시간)", use:"씰, 가스켓, 저마찰 라이닝, 반도체/화학 내약품 부품", treat:"마찰계수(0.05~0.1)가 플라스틱 중 최저 수준이며 내약품성 최고. 강도·강성·내크리프성이 낮아 구조재로는 부적합, 하중지지부는 유리섬유/카본 충전재 추가 필요." },
+            "PEEK":            { density:1.32, tensile:"90~100",       elong:"20~60",  hardness:"M99 / R126",     E:3.6,  k:0.25, cte:47,  maxTemp:"250(연속)/310(단시간)", use:"고온·화학 환경 정밀부품, 반도체 웨이퍼캐리어, 베어링/씰 부품", treat:"내열·내약품·기계강도·내마모성이 모두 우수한 슈퍼엔지니어링 플라스틱. 고가이나 금속 대체용으로 반도체·의료 분야 채택 증가." },
+            "PC (폴리카보네이트)": { density:1.2,  tensile:"60~70",       elong:"80~150", hardness:"R118 / M70",     E:2.3,  k:0.20, cte:68,  maxTemp:"115~130",             use:"투명 비전 윈도우, 안전커버, 충격보호판", treat:"내충격성이 우수(아크릴 대비 10배 이상)하며 투명도가 높음. 유기용제 접촉 시 응력균열(Stress Crack) 발생 가능, 알코올류 세정 권장." },
+            "UHMW-PE":         { density:0.94, tensile:"20~40",        elong:"200~400", hardness:"Shore D60~65", E:0.8,  k:0.40, cte:200, maxTemp:"80(연속)/100(단시간)", use:"컨베이어 가이드, 내마모 라이너, 저마찰 슬라이드 패드", treat:"내마모성·내충격성이 플라스틱 중 최상급이며 자기윤활성으로 저마찰. 절삭가공 시 열팽창이 커 치수관리(여유공차)가 필요." },
+            "Al2O3 (알루미나)":  { density:3.9,  tensile:"280~350(굴곡)", elong:"-",      hardness:"HV1300~1500",   E:300,  k:25,   cte:8,   maxTemp:"1500 이상",           use:"전기절연 부품, 내마모 부시/노즐, 고온·내약품 지그", treat:"전기절연성과 내마모성이 최상급이며 내약품성도 우수. 취성재료로 충격·굽힘 하중에 취약해 금속과 조립 시 응력집중부 설계에 유의." },
+            "ZrO2 (지르코니아)": { density:6.0,  tensile:"900~1200(굴곡)", elong:"-",     hardness:"HV1200~1300",   E:205,  k:2.5,  cte:10,  maxTemp:"1000",                use:"정밀 세라믹 축/핀, 내마모 부품, 절단날/노즐", treat:"세라믹 중 파괴인성(내충격성)이 가장 우수해 정밀 축/핀류에 사용. 알루미나 대비 고가이며 열전도율이 낮아 급격한 온도변화 시 열충격 균열에 유의." },
         };
 
         const materialEquiv = [
-            { kr:"A1050", aisi:"1050 (UNS A91050)", en:"EN AW-1050A", note:"순도 99.5% 이상 순알루미늄. 전기전도성 우수." },
-            { kr:"A5052", aisi:"5052 (UNS A95052)", en:"EN AW-5052",  note:"Mg계 비열처리형. 내식성/성형성 우수한 범용 합금." },
-            { kr:"A6061", aisi:"6061 (UNS A96061)", en:"EN AW-6061",  note:"Mg-Si계 열처리형. 구조용으로 가장 널리 사용." },
-            { kr:"A6063", aisi:"6063 (UNS A96063)", en:"EN AW-6063",  note:"Mg-Si계 열처리형. 압출성이 뛰어나 프로파일에 주로 사용." },
-            { kr:"A2017", aisi:"2017 (UNS A92017)", en:"EN AW-2017A", note:"Cu계 열처리형(두랄루민). 고강도이나 내식성 낮음." },
-            { kr:"A7075", aisi:"7075 (UNS A97075)", en:"EN AW-7075",  note:"Zn계 열처리형(초두랄루민). 알루미늄 중 최고강도." },
+            { kr:"아세탈(폴리아세탈, POM)", aisi:"ASTM D6100", en:"델린(Delrin®, Dupont) · 두라콘(Duracon®, Polyplastics)", note:"코폴리머(POM-C)/호모폴리머(POM-H) 구분 존재" },
+            { kr:"나일론6 / MC나일론(PA6)", aisi:"ASTM D5989", en:"MC901(DSM) · Nylatron(Quadrant)", note:"흡습에 의한 치수변화 고려 필요" },
+            { kr:"폴리테트라플루오르에틸렌(PTFE)", aisi:"ASTM D1710", en:"테프론(Teflon®, Chemours)", note:"충전재 추가 시 강성/내크리프성 향상" },
+            { kr:"폴리에테르에테르케톤(PEEK)", aisi:"ASTM D6262", en:"빅트렉스(Victrex® PEEK)", note:"반도체/의료 등 고신뢰성 부품에 사용" },
+            { kr:"폴리카보네이트(PC)", aisi:"ASTM D3935", en:"레산(Lexan®, SABIC) · 마크로론(Makrolon®, Covestro)", note:"UV 장기노출 시 황변 가능" },
+            { kr:"초고분자량 폴리에틸렌(UHMW-PE)", aisi:"ASTM D4020", en:"타이버(Tivar®) · 하이젝스(Hizex®)", note:"매우 낮은 마찰계수, 가공열에 의한 치수변화 주의" },
+            { kr:"알루미나(산화알루미늄, 세라믹)", aisi:"KS L 1591 / ASTM C799", en:"순도 92~99.7% 등급 구분", note:"고순도일수록 절연성/내마모성 향상" },
+            { kr:"지르코니아(산화지르코늄, 세라믹)", aisi:"ASTM F1873", en:"YTZP(이트리아 안정화 지르코니아)", note:"세라믹 중 파괴인성 최고 수준" },
         ];
+
+        // ===== 패킹/단열/접착재 DB (참고치, 실측/데이터시트 원문과 차이 있을 수 있음) =====
+        const packingDB = {
+            "발포실리콘고무 (Silicone Sponge)": { density:0.35, hardness:"Shore 00 35~55 (Sponge)", temp:"-60~200(연속)/230(단시간)", k:"0.06~0.10", use:"챔버 도어/커버 씰링 패킹, 방진·완충 패드, 클린룸 가스켓", note:"내열성·내오존성·전기절연성이 우수하고 무독성(식품/FDA 등급 대응 가능). 저압축력으로도 밀폐가 가능해 정밀 씰링에 적합하나, Solid 고무 대비 압축영구줄음율은 다소 큰 편." },
+            "에어로플렉스 (Elastomeric Foam Insulation)": { density:0.06, hardness:"-", temp:"-40~105(연속)", k:"0.033~0.040", use:"냉각배관/칠러라인 결로방지 보온재, 진공챔버 배관 단열, 방음·방진 라이닝", note:"NBR/PVC계 독립기포(Closed-cell) 발포 단열재로 흡습률이 낮아 별도 방습층 없이 결로 방지가 가능. 난연등급 보유 제품이 일반적이나 정확한 등급은 제조사 확인 필요." },
+            "에폭시수지 (2액형 포팅/접착용)": { density:1.4, hardness:"Shore D80~90 (경화 후)", temp:"-40~120(일반형)/~200(내열형)", k:"0.2~0.9(충전재 유무에 따라 상이)", use:"전자부품 포팅/캡슐화, 이종재질 접착, 미세 갭 충전 및 고정", note:"주제·경화제 2액형으로 상온 또는 가열경화(제품별 상이). 경화수축률 0.5~2%, 접착전단강도 15~30MPa(피착재에 따라 상이). 경화 후 재가공(탈거)이 어려워 설계 단계에서 위치 확정이 필요하며, 열전도성 충전재(실리카/알루미나) 첨가 시 방열 포팅재로도 사용." },
+        };
+
+        function calcPacking() {
+            const g = document.getElementById("pkGrade").value;
+            const d = packingDB[g];
+            setVal("pkDensity", d.density, "g/cm³");
+            setVal("pkHardness", d.hardness, "");
+            setVal("pkTemp", d.temp, "℃");
+            setVal("pkK", d.k, "W/m·K");
+            document.getElementById("pkUse").innerHTML = `🔧 <b>대표 용도:</b> ${d.use}`;
+            document.getElementById("pkNote").innerHTML = `🧪 <b>특징 / 취급 참고:</b> ${d.note}`;
+            document.querySelectorAll("#packingTable tbody tr").forEach(r => r.classList.remove("row-active"));
+            const row = document.getElementById("prow-" + g);
+            if (row) row.classList.add("row-active");
+        }
+
+        function renderPackingTable() {
+            const tbody = document.querySelector("#packingTable tbody");
+            tbody.innerHTML = Object.entries(packingDB).map(([k, d]) =>
+                `<tr id="prow-${k}"><td>${k}</td><td>${d.density}</td><td>${d.hardness}</td><td>${d.temp}</td><td>${d.k}</td><td>${d.use}</td></tr>`
+            ).join("");
+        }
 
         function calcSpec() {
             const g = document.getElementById("materialGrade").value;
             const d = materialDB[g];
             setVal("spDensity", d.density, "g/cm³");
             setVal("spTensile", d.tensile, "MPa");
-            setVal("spYield", d.yield, "MPa");
+            setVal("spElong", d.elong, "%");
             setVal("spHardness", d.hardness, "");
             setVal("spE", d.E, "GPa");
             setVal("spK", d.k, "W/m·K");
             setVal("spCte", d.cte, "×10⁻⁶/K");
-            setVal("spMag", d.magnetic, "");
+            setVal("spMaxTemp", d.maxTemp, "℃");
             document.getElementById("spUse").innerHTML = `🔧 <b>대표 용도:</b> ${d.use}`;
-            document.getElementById("spTreat").innerHTML = `🧪 <b>가공성 / 열처리 참고:</b> ${d.treat} 도금·아노다이징 등 표면처리 세부 옵션은 <a href="surface_treatment.html" style="color:var(--accent-color); font-weight:700;">표면처리/열처리 페이지</a>에서 확인하세요.`;
+            document.getElementById("spTreat").innerHTML = `🧪 <b>가공성 / 취급 참고:</b> ${d.treat} 표면처리·열처리가 필요한 금속 부품은 <a href="surface_treatment.html" style="color:var(--accent-color); font-weight:700;">표면처리/열처리 페이지</a>에서 확인하세요.`;
             document.querySelectorAll("#specTable tbody tr").forEach(r => r.classList.remove("row-active"));
             const row = document.getElementById("srow-" + g);
             if (row) row.classList.add("row-active");
@@ -173,7 +229,7 @@
         function renderSpecTable() {
             const tbody = document.querySelector("#specTable tbody");
             tbody.innerHTML = Object.entries(materialDB).map(([k, d]) =>
-                `<tr id="srow-${k}"><td>${k}</td><td>${d.density}</td><td>${d.tensile}</td><td>${d.yield}</td><td>${d.hardness}</td><td>${d.k}</td><td>${d.magnetic}</td><td>${d.use}</td></tr>`
+                `<tr id="srow-${k}"><td>${k}</td><td>${d.density}</td><td>${d.tensile}</td><td>${d.elong}</td><td>${d.hardness}</td><td>${d.k}</td><td>${d.maxTemp}</td><td>${d.use}</td></tr>`
             ).join("");
         }
 
@@ -246,8 +302,8 @@
                 { name: '1. 기계제도 & RF & EMI', href: 'javascript:void(0)', status: 'ready' },
                 { name: '2. Steel 소재 (구현됨) ⚡', href: 'steel_material.html', status: '' },
                 { name: '3. Stainless 소재 (구현됨) ⚡', href: 'stainless_material.html', status: '' },
-                { name: '4. Aluminum 소재 (구현됨) ⚡', href: 'aluminum_material.html', status: 'current' },
-                { name: '5. 수지/세라믹/기타 (구현됨) ⚡', href: 'resin_material.html', status: '' },
+                { name: '4. Aluminum 소재 (구현됨) ⚡', href: 'aluminum_material.html', status: '' },
+                { name: '5. 수지/세라믹/기타 (구현됨) ⚡', href: 'resin_material.html', status: 'current' },
                 { name: '6. 기계가공 (구현됨) ⚡', href: 'index.html#machining-section', status: '' },
                 { name: '7. 기계요소 (구현됨) ⚡', href: 'index.html#elements-section', status: '' },
                 { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html', status: '' },
@@ -269,10 +325,13 @@
             createSidebarMenu();
             fillSelect("materialGrade", Object.keys(materialDB));
             fillSelect("wtGrade", Object.keys(materialDB));
+            fillSelect("pkGrade", Object.keys(packingDB));
             renderSpecTable();
             renderEquivTable();
+            renderPackingTable();
             calcSpec();
             calcWeight();
+            calcPacking();
         };
     </script>
 </body>
