@@ -179,6 +179,49 @@
                 <div class="verdict-box" id="verdictBox" style="display:none;"></div>
             </div>
 
+            <!-- STEP 7 -->
+            <div class="card" style="margin-top:20px;">
+                <h3><span class="step-badge">7</span>인버터 출력(%) 제한 대응 — Hz별 펌프 동작점(유량/압력) 프로파일</h3>
+                <p class="card-note">HTF-7500과 같은 고밀도·고점도 쿨란트는 축동력이 Hz³에 비례해 증가하여, 정격 60Hz까지 올리면 인버터/모터 과부하(Overload) 트립이 발생할 수 있습니다. 이를 피하기 위해 실제 운전에서는 <b>46.8Hz(정격 대비 약 78%)를 상한(=100%)으로 하는 자체 제한 범위(37~100%)</b>에서만 인버터를 사용합니다. 아래 표는 각 출력(%) 단계에서 펌프 상사법칙(Affinity Law)과 배관 마찰손실(달시-바이스바흐)이 만나는 <b>실제 동작점(Operating Point)</b>을 자동 계산합니다.</p>
+
+                <div class="prop-table-wrap" style="max-height:none;">
+                    <table class="data-table" id="pumpProfileRefTable">
+                        <thead><tr><th colspan="9">Pump 출력 (인버터 상한 46.8Hz = 100% 기준)</th></tr></thead>
+                        <tbody>
+                            <tr id="pctRow"></tr>
+                            <tr id="hzRow"></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:16px;">
+                    <div class="input-group" style="flex:1; min-width:150px;"><label>펌프 60Hz 정격유량 (Qr)</label><div class="input-wrapper"><input type="number" id="qr60_7" value="30" step="1"><div class="unit">LPM</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:150px;"><label>펌프 60Hz 정격양정 (Hr)</label><div class="input-wrapper"><input type="number" id="hr60_7" value="50" step="1"><div class="unit">m</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:150px;"><label>펌프 체절양정 (H0, 유량=0)</label><div class="input-wrapper"><input type="number" id="h0_7" value="60" step="1"><div class="unit">m</div></div></div>
+                </div>
+                <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                    <div class="input-group" style="flex:1; min-width:130px;"><label>배관 내경 (D) <span class="apply-flag" id="flagD7">3단계 적용됨</span></label><div class="input-wrapper"><input type="number" id="d7" value="10.22" step="0.01"><div class="unit">mm</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:130px;"><label>배관 길이 (L) <span class="apply-flag" id="flagL7">5단계 적용됨</span></label><div class="input-wrapper"><input type="number" id="l7" value="6" step="0.1"><div class="unit">m</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:110px;"><label>국소손실계수 합 (ΣK) <span class="apply-flag" id="flagK7">5단계 적용됨</span></label><div class="input-wrapper"><input type="number" id="k7" value="0" step="0.1"><div class="unit">-</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:120px;"><label>밀도 (ρ) <span class="apply-flag" id="flagRho7">1단계 적용됨</span></label><div class="input-wrapper"><input type="number" id="rho7" value="1.7159" step="0.0001"><div class="unit">kg/L</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:120px;"><label>동점도 (ν) <span class="apply-flag" id="flagNu7">1단계 적용됨</span></label><div class="input-wrapper"><input type="number" id="nu7" value="0.919" step="0.001"><div class="unit">cSt</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:110px;"><label>배관 조도 (ε)</label><div class="input-wrapper"><input type="number" id="eps7" value="0.015" step="0.001"><div class="unit">mm</div></div></div>
+                    <div class="input-group" style="flex:1; min-width:140px;"><label>필요 유량 (라인당) <span class="apply-flag" id="flagVreq7">2단계 적용됨</span></label><div class="input-wrapper"><input type="number" id="vreq7" value="26.9" step="0.1"><div class="unit">LPM</div></div></div>
+                </div>
+
+                <button class="btn-calc-main" onclick="calcPumpProfile()">⑦ Hz 프로파일 계산 & 동작점 산출</button>
+
+                <div class="prop-table-wrap" style="max-height:none; margin-top:14px;">
+                    <table class="data-table" id="pumpProfileTable">
+                        <thead><tr>
+                            <th>Pump 출력</th><th>Hz</th><th>동작유량(Q)</th><th>유속(v)</th><th>Re / 유동상태</th><th>f</th><th class="num">동작압력(ΔP=펌프토출압, bar)</th><th class="num">여유유량(LPM)</th><th>판정</th>
+                        </tr></thead>
+                        <tbody id="pumpProfileBody"><tr><td colspan="9" style="color:#94a3b8;">[⑦ Hz 프로파일 계산] 버튼을 클릭하세요.</td></tr></tbody>
+                    </table>
+                </div>
+                <div class="mini-note">※ 펌프 곡선은 체절양정(H0)과 정격점(Qr, Hr)을 지나는 2차 근사식 H=H0-(H0-Hr)×(Q/Qr)²을 상사법칙(Q∝f, H∝f²)으로 각 Hz에 스케일링한 뒤, 배관 마찰손실 곡선(4·5단계와 동일 로직)과 교차하는 지점을 이분법으로 구한 근사 동작점입니다("동작압력"은 그 교차점에서 펌프토출압=배관ΔP가 같아지는 값). "여유유량"은 각 Hz 동작유량에서 2단계 필요 유량을 뺀 값으로, 음수면 해당 출력(%)에서는 유량이 부족합니다. 실제 값은 제조사 실측 P-Q 성능곡선으로 재검증하시고, 100%(46.8Hz)를 초과해 운전하지 마세요 (과부하 트립 위험).</div>
+            </div>
+
             <!-- SUMMARY -->
             <div class="card" style="margin-top:20px;">
                 <h3>📋 종합 결과 요약</h3>
@@ -325,10 +368,11 @@
             document.getElementById('resVp').innerHTML = fmt(vp, 4) + '<span>kPa</span>';
             document.getElementById('resK').innerHTML = fmt(k, 4) + '<span>W/m·℃</span>';
 
-            ['rho2','rho5','rho6'].forEach(id => document.getElementById(id).value = rho.toFixed(4));
+            ['rho2','rho5','rho6','rho7'].forEach(id => document.getElementById(id).value = rho.toFixed(4));
             document.getElementById('cp2').value = cp.toFixed(3);
             document.getElementById('nu4').value = nu.toFixed(3);
-            ['flagRho2'].forEach(id => document.getElementById(id).style.display = 'inline');
+            document.getElementById('nu7').value = nu.toFixed(3);
+            ['flagRho2','flagRho7','flagNu7'].forEach(id => document.getElementById(id).style.display = 'inline');
 
             calcFlow();
         }
@@ -349,6 +393,9 @@
 
             document.getElementById('vdot3').value = vdotLine.toFixed(2);
             document.getElementById('flagVdot3').style.display = 'inline';
+
+            document.getElementById('vreq7').value = vdotLine.toFixed(2);
+            document.getElementById('flagVreq7').style.display = 'inline';
 
             calcVelocity();
         }
@@ -371,7 +418,9 @@
             document.getElementById('d4').value = D;
             document.getElementById('v5').value = v.toFixed(3);
             document.getElementById('d5').value = D;
+            document.getElementById('d7').value = D;
             document.getElementById('flagV4').style.display = 'inline';
+            document.getElementById('flagD7').style.display = 'inline';
 
             calcReynolds();
         }
@@ -467,6 +516,12 @@
             document.getElementById('dp6').value = dPtotalBar.toFixed(3);
             document.getElementById('flagDP6').style.display = 'inline';
 
+            document.getElementById('l7').value = L;
+            document.getElementById('k7').value = K;
+            document.getElementById('flagL7').style.display = 'inline';
+            document.getElementById('flagK7').style.display = 'inline';
+            calcPumpProfile();
+
             calcPump();
         }
 
@@ -559,6 +614,100 @@
                 </tr>`).join('');
         }
 
+        // ============ STEP 7 : Hz 프로파일(펌프 동작점) ============
+        const PUMP_PCT = [37, 40, 50, 60, 70, 80, 90, 100];
+        const PUMP_HZ = PUMP_PCT.map(p => Math.round(46.8 * p / 100 * 100) / 100);
+
+        function buildPumpProfileRef() {
+            document.getElementById('pctRow').innerHTML = '<td style="font-weight:700; text-align:left;">출력 (%)</td>' +
+                PUMP_PCT.map(p => `<td>${p}%</td>`).join('');
+            document.getElementById('hzRow').innerHTML = '<td style="font-weight:700; text-align:left;">주파수 (Hz)</td>' +
+                PUMP_HZ.map(h => `<td>${h.toFixed(2)}Hz</td>`).join('');
+        }
+
+        function frictionFactor7(Re, eps, D) {
+            if (Re < 2300) return 64 / Re;
+            const fTurb = (ReVal) => {
+                const term = (eps / (3.7 * D)) + (5.74 / Math.pow(ReVal, 0.9));
+                return 0.25 / Math.pow(Math.log10(term), 2);
+            };
+            if (Re < 4000) {
+                const fLam = 64 / 2300;
+                const fTur = fTurb(4000);
+                const ratio = (Re - 2300) / (4000 - 2300);
+                return fLam + ratio * (fTur - fLam);
+            }
+            return fTurb(Re);
+        }
+
+        function systemHeadM(Q, D, L, K, rhoKgL, nuCst, eps) {
+            const Dm = D / 1000;
+            const v = (4 * Q) / (60000 * Math.PI * Dm * Dm);
+            const Re = (v * D * 1000) / nuCst;
+            const f = frictionFactor7(Re, eps, D);
+            const rho = rhoKgL * 1000;
+            const dPfricPa = f * (L / Dm) * (rho * v * v / 2);
+            const dPlocPa = K * (rho * v * v / 2);
+            const dPtotalPa = dPfricPa + dPlocPa;
+            return { v, Re, f, dPtotalBar: dPtotalPa / 100000, headM: dPtotalPa / (rho * 9.81) };
+        }
+
+        // 상사법칙 기반 펌프 곡선: 60Hz 곡선 H60(Q)=H0-(H0-Hr)*(Q/Qr)^2 를 Hz f로 스케일링
+        function pumpHeadM(Q, f, Qr, Hr, H0) {
+            if (f <= 0 || Q < 0) return Math.max(H0 * Math.pow(f / 60, 2), 0);
+            const Qref = Q * (60 / f);
+            let H60 = H0 - (H0 - Hr) * Math.pow(Qref / Qr, 2);
+            if (H60 < 0) H60 = 0;
+            return H60 * Math.pow(f / 60, 2);
+        }
+
+        // 펌프곡선(감소)과 배관 손실곡선(증가)의 교차점을 이분법으로 탐색
+        function solveOperatingPoint(f, Qr, Hr, H0, D, L, K, rhoKgL, nuCst, eps) {
+            let lo = 0.01, hi = Math.max(Qr * (f / 60) * 3, 5);
+            for (let iter = 0; iter < 40; iter++) {
+                const mid = (lo + hi) / 2;
+                const pH = pumpHeadM(mid, f, Qr, Hr, H0);
+                const sysH = systemHeadM(mid, D, L, K, rhoKgL, nuCst, eps).headM;
+                if (pH > sysH) lo = mid; else hi = mid;
+            }
+            const Qsol = (lo + hi) / 2;
+            const sys = systemHeadM(Qsol, D, L, K, rhoKgL, nuCst, eps);
+            const pumpBar = (rhoKgL * 1000 * 9.81 * pumpHeadM(Qsol, f, Qr, Hr, H0)) / 100000;
+            return { Q: Qsol, v: sys.v, Re: sys.Re, f: sys.f, dPbar: sys.dPtotalBar, pumpBar, margin: pumpBar - sys.dPtotalBar };
+        }
+
+        function calcPumpProfile() {
+            const Qr = parseFloat(document.getElementById('qr60_7').value);
+            const Hr = parseFloat(document.getElementById('hr60_7').value);
+            const H0 = parseFloat(document.getElementById('h0_7').value);
+            const D = parseFloat(document.getElementById('d7').value);
+            const L = parseFloat(document.getElementById('l7').value);
+            const K = parseFloat(document.getElementById('k7').value) || 0;
+            const rho = parseFloat(document.getElementById('rho7').value);
+            const nu = parseFloat(document.getElementById('nu7').value);
+            const eps = parseFloat(document.getElementById('eps7').value);
+            const vreq = parseFloat(document.getElementById('vreq7').value) || 0;
+
+            const rows = PUMP_HZ.map((f, i) => {
+                const r = solveOperatingPoint(f, Qr, Hr, H0, D, L, K, rho, nu, eps);
+                const regime = r.Re < 2300 ? '층류' : (r.Re < 4000 ? '천이' : '난류');
+                const flowMargin = r.Q - vreq;
+                const ok = flowMargin >= 0;
+                return `<tr class="${PUMP_PCT[i] === 100 ? 'row-active' : ''}">
+                    <td>${PUMP_PCT[i]}%</td>
+                    <td>${f.toFixed(2)}</td>
+                    <td class="num">${fmt(r.Q, 1)} LPM</td>
+                    <td class="num">${fmt(r.v, 2)} m/s</td>
+                    <td>${isFinite(r.Re) ? Math.round(r.Re).toLocaleString() : '-'} (${regime})</td>
+                    <td>${fmt(r.f, 4)}</td>
+                    <td class="num">${fmt(r.dPbar, 3)}</td>
+                    <td class="num" style="color:${ok ? '#16a34a' : '#dc2626'}; font-weight:700;">${fmt(flowMargin, 1)}</td>
+                    <td style="color:${ok ? '#16a34a' : '#dc2626'}; font-weight:700;">${ok ? '충족' : '부족'}</td>
+                </tr>`;
+            }).join('');
+            document.getElementById('pumpProfileBody').innerHTML = rows;
+        }
+
         // ============ 참고자료 탭 ============
         function switchRefTab(name, btn) {
             document.querySelectorAll('#ref-prop, #ref-pump').forEach(el => el.classList.remove('active'));
@@ -582,6 +731,7 @@
         window.onload = function() {
             createSidebarMenu();
             buildPropTable();
+            buildPumpProfileRef();
             lookupFluid();
         };
     </script>
