@@ -7,6 +7,7 @@
     <title id="webTitle">mechhub</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="common.css">
+    <script src="sidebar.js"></script>
     <style>
         /* 그래프 영역이 0으로 축소되는 것을 방지하기 위한 스타일 */
         .chart-wrapper {
@@ -38,7 +39,7 @@
             <ul class="sidebar-menu" id="sidebarMenu"></ul>
         </div>
         <div class="sidebar-footer">
-            <p id="footerText"></p>
+            <p>© 2026 장비설계팀 Asset</p>
         </div>
     </div>
     <div class="main-content">
@@ -110,34 +111,6 @@
     </div>
 
     <script>
-        // 사이드바 메뉴 동적 생성 (다른 페이지와 통일)
-        function createSidebarMenu() {
-            const menuItems = [
-                { name: '🏠 메인 홈', href: 'index.html', status: '' },
-                { name: '1. 기계제도 & RF & EMI', href: 'javascript:void(0)', status: 'ready' },
-                { name: '2. Steel 소재 (구현됨) ⚡', href: 'steel_material.html', status: '' },
-                { name: '3. Stainless 소재 (구현됨) ⚡', href: 'stainless_material.html', status: '' },
-                { name: '4. Aluminum 소재 (구현됨) ⚡', href: 'aluminum_material.html', status: '' },
-                { name: '5. 수지/세라믹/기타 (구현됨) ⚡', href: 'resin_material.html', status: '' },
-                { name: '6. 기계가공 (구현됨) ⚡', href: 'index.html#machining-section', status: '' },
-                { name: '7. 기계요소 (구현됨) ⚡', href: 'index.html#elements-section', status: '' },
-                { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html', status: 'current' },
-                { name: '9. 진공부품', href: 'javascript:void(0)', status: 'ready' },
-                { name: '10. Vision Camera', href: 'javascript:void(0)', status: 'ready' },
-                { name: '11. Electricity & Control', href: 'javascript:void(0)', status: 'ready' },
-                { name: '12. Utility 선정 & 반응', href: 'javascript:void(0)', status: 'ready' },
-                { name: '13. 기판 & Vibration', href: 'javascript:void(0)', status: 'ready' },
-                { name: '14. Transportation & ETC', href: 'javascript:void(0)', status: 'ready' },
-            ];
-            const menuUl = document.getElementById('sidebarMenu');
-            menuUl.innerHTML = menuItems.map(item => `
-                <li class="${item.status === 'ready' ? 'ready' : ''} ${item.status === 'current' ? 'active' : ''}">
-                    <a href="${item.href}">${item.name}${item.status === 'ready' ? ' <span class="badge-ready">준비중</span>' : ''}</a>
-                </li>`).join('');
-            
-            // 푸터 텍스트 설정
-            document.getElementById('footerText').innerText = "© 2026 장비설계팀 Asset";
-        }
 
         let motionChart = null;
 
@@ -324,7 +297,7 @@
         }
 
         window.onload = function() {
-            createSidebarMenu();
+            renderSidebar('mecha');
             calculateTactTime();
         };
     </script>

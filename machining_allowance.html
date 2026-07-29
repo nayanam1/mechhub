@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mechhub - 일반형상 공차 / 허용차 계산</title>
     <link rel="stylesheet" href="common.css">
+    <script src="sidebar.js"></script>
 </head>
 <body>
     <div class="sidebar">
@@ -322,23 +323,8 @@
             event.currentTarget.classList.add("active");
         }
 
-        function createSidebarMenu() {
-            const menuItems = [
-                { name: '🏠 메인 홈', href: 'index.html' },
-                { name: '6. 기계가공 (구현됨) ⚡', href: 'index.html#machining-section', active: true },
-                { name: '7. 기계요소 (구현됨) ⚡', href: 'index.html#elements-section' },
-                { name: '8. 요소설계 & 계산 (구현중)', href: 'motion.html' },
-                { name: '1~5. 소재 데이터', href: 'javascript:void(0)', ready: true },
-                { name: '9. 진공부품', href: 'javascript:void(0)', ready: true },
-                { name: '10. Vision Camera', href: 'javascript:void(0)', ready: true },
-                { name: '11. Electricity & Control', href: 'javascript:void(0)', ready: true },
-            ];
-            document.getElementById("sidebarMenu").innerHTML = menuItems.map(i =>
-                `<li class="${i.active ? 'active' : ''} ${i.ready ? 'ready' : ''}"><a href="${i.href}">${i.name}${i.ready ? ' <span class="badge-ready">준비중</span>' : ''}</a></li>`
-            ).join("");
-        }
 
-        window.onload = () => { createSidebarMenu(); buildLinearTable(); calcLinear(); calcAngular(); calcCenter(); calcGeo(); };
+        window.onload = () => { renderSidebar('machining'); buildLinearTable(); calcLinear(); calcAngular(); calcCenter(); calcGeo(); };
     </script>
 </body>
 </html>

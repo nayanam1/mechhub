@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mechhub - 배관/튜브 규격 (SUS · Teflon · PU)</title>
+    <link rel="stylesheet" href="common.css">
+    <script src="sidebar.js"></script>
+    <style>
+        .spec-table td.common-size, .spec-table tr.common-row td { background: #fef9c3; }
+        .spec-table tr.common-row:hover td { background: #fef08a; }
+        .spec-table td.chk { color: #ca8a04; font-weight: 700; }
+        .mat-icon { font-size: 15px; }
+        .search-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+        .search-wrap input { flex: 1; max-width: 320px; }
+        .legend-row { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: #64748b; margin-top: 6px; }
+        .legend-row span.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #fef9c3; border: 1px solid #eab308; margin-right: 4px; vertical-align: -1px; }
+        .diagram-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .mat-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+        .badge-sus { background: #dbeafe; color: #1d4ed8; }
+        .badge-ptfe { background: #f3e8ff; color: #7e22ce; }
+        .badge-pu { background: #dcfce7; color: #15803d; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-scroll">
+            <div class="sidebar-brand"><h1>mechhub</h1><span>기구설계 보조 포털 v1.0</span></div>
+            <ul class="sidebar-menu" id="sidebarMenu"></ul>
+        </div>
+        <div class="sidebar-footer"><p>© 2026 장비설계팀 Asset</p></div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h2>6. 기계가공 🧵 배관/튜브 규격 (SUS · Teflon · PU)</h2>
+        </div>
+        <div class="content-body">
+
+            <div class="card" style="padding:16px; margin-bottom:20px;">
+                <h3>규격 읽는 법</h3>
+                <div class="diagram-wrap">
+                    <svg viewBox="0 0 160 130" style="width:150px; height:120px; flex-shrink:0;">
+                        <defs>
+                            <marker id="dimArr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker>
+                            <marker id="dimArrB" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3b82f6"/></marker>
+                        </defs>
+                        <circle cx="80" cy="60" r="48" fill="#f1f5f9" stroke="#1e293b" stroke-width="3"/>
+                        <circle cx="80" cy="60" r="28" fill="white" stroke="#1e293b" stroke-width="2"/>
+                        <line x1="80" y1="60" x2="80" y2="12" stroke="#ef4444" stroke-width="1.2" marker-end="url(#dimArr)"/>
+                        <text x="84" y="30" font-size="10" fill="#ef4444" font-weight="700">OD</text>
+                        <line x1="80" y1="60" x2="80" y2="32" stroke="#3b82f6" stroke-width="1.2" marker-end="url(#dimArrB)"/>
+                        <text x="55" y="45" font-size="10" fill="#3b82f6" font-weight="700">ID</text>
+                        <path d="M80,60 L108,60" stroke="#16a34a" stroke-width="4"/>
+                        <text x="108" y="75" font-size="10" fill="#16a34a" font-weight="700">t</text>
+                    </svg>
+                    <div style="flex:1; min-width:260px; font-size:13px; color:#475569; line-height:1.9;">
+                        <b>외경 (O.D)</b> : 배관/튜브 바깥지름 &nbsp;|&nbsp; <b>두께 (t)</b> : 관 벽 두께<br>
+                        <b>내경 (I.D)</b> = 외경 − 2×두께 &nbsp;|&nbsp; <b>넓이</b> = π/4 × 내경² (유효 단면적, mm²)<br>
+                        <b>최소 R반경</b> : 꺾임/변형·유량저항 없이 굽힐 수 있는 최소 곡률반경(mm)<br>
+                        <span class="legend-row" style="margin-top:8px;"><span><span class="swatch"></span>일반규격 = 국내 유통·상용 재고로 가장 흔하게 쓰이는 사이즈</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-wrap">
+                <div class="input-wrapper" style="flex:1; max-width:320px;">
+                    <input type="text" id="specSearch" placeholder="호칭 검색 (예: 1/2, 6mm, 8x5)" oninput="filterSpec()">
+                </div>
+                <span class="helper-text" id="searchResultInfo" style="margin-top:0;"></span>
+            </div>
+
+            <!-- SUS 배관 -->
+            <div class="card" style="padding:16px; margin-bottom:20px;">
+                <h3><span class="mat-badge badge-sus">SUS</span>&nbsp;STS304/316 배관</h3>
+                <p class="card-note">스테인리스 튜빙(용접관 기준). Sch. 지정이 없는 계장/배관용 박육 SUS 튜브 규격입니다.</p>
+                <div style="overflow-x:auto;">
+                <table class="data-table spec-table">
+                    <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm)</th><th>일반규격</th></tr></thead>
+                    <tbody id="susBody"></tbody>
+                </table>
+                </div>
+            </div>
+
+            <!-- 테프론 튜브 -->
+            <div class="card" style="padding:16px; margin-bottom:20px;">
+                <h3><span class="mat-badge badge-ptfe">PTFE</span>&nbsp;테프론 튜브</h3>
+                <p class="card-note">내열·내약품성이 필요한 배관에 사용. 재질 특성상 곡률반경이 SUS 대비 크게 요구됩니다.</p>
+                <div style="overflow-x:auto;">
+                <table class="data-table spec-table">
+                    <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm)</th><th>일반규격</th></tr></thead>
+                    <tbody id="ptfeBody"></tbody>
+                </table>
+                </div>
+            </div>
+
+            <!-- PU 튜브 -->
+            <div class="card" style="padding:16px; margin-bottom:20px;">
+                <h3><span class="mat-badge badge-pu">PU</span>&nbsp;폴리우레탄(PU) 공압 튜브</h3>
+                <p class="card-note">SMC TU/TIUB 계열과 동일한 통용 호칭(외경x내경)의 공압용 우레탄 튜브 규격입니다. 굵게 표시된 규격이 각 외경의 표준(1차) 규격입니다.</p>
+                <div style="overflow-x:auto;">
+                <table class="data-table spec-table">
+                    <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm, 참고)</th><th>일반규격</th></tr></thead>
+                    <tbody id="puBody"></tbody>
+                </table>
+                </div>
+                <div class="notice-banner info">
+                    ※ PU 튜브의 최소 곡률반경은 경도(Shore A)·제조사(SMC/Pisco/Festo 등)에 따라 편차가 있어, 위 값은 <b>외경 × 약 4배</b>를 적용한 설계 참고값(≈)입니다. 고사이클 굴곡·정밀설계 용도는 반드시 사용 튜브 제조사 데이터시트로 재확인하세요.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ID = OD - 2t, area = pi/4 * ID^2 (모두 검산 완료된 값)
+        const susData = [
+            ["1/8\"", 3.175, 0.71, 1.755, 2.4, "~10", false],
+            ["1/4\"", 6.35, 0.89, 4.57, 16.4, "19 (3/4\")", true],
+            ["1/4\"", 6.35, 1.24, 3.87, 11.8, "19 (3/4\")", false],
+            ["3/8\"", 9.525, 0.89, 7.745, 47.1, "24 (15/16\")", true],
+            ["3/8\"", 9.525, 1.24, 7.045, 39.0, "24 (15/16\")", false],
+            ["1/2\"", 12.7, 0.89, 10.92, 93.7, "38 (1-1/2\")", false],
+            ["1/2\"", 12.7, 1.24, 10.22, 82.0, "38 (1-1/2\")", true],
+            ["1/2\"", 12.7, 1.65, 9.4, 69.4, "38 (1-1/2\")", false],
+            ["5/8\"", 15.88, 1.24, 13.4, 141.0, "63.5 (2-1/2\")", false],
+            ["3/4\"", 19.05, 1.24, 16.57, 215.6, "76.2 (3\")", true],
+            ["3/4\"", 19.05, 1.65, 15.75, 194.8, "76.2 (3\")", false],
+            ["1\"", 25.4, 1.65, 22.1, 383.6, "101.6 (4\")", true],
+            ["1\"", 25.4, 2.11, 21.18, 352.3, "101.6 (4\")", false],
+        ];
+
+        const ptfeData = [
+            ["1/8\"", 3.18, 0.79, 1.6, 2.0, 14, false],
+            ["1/4\"", 6.35, 1.0, 4.35, 14.9, 25, false],
+            ["1/4\"", 6.35, 1.27, 3.81, 11.4, 20, true],
+            ["3/8\"", 9.53, 1.0, 7.53, 44.5, 50, false],
+            ["3/8\"", 9.53, 1.27, 6.99, 38.4, 40, true],
+            ["1/2\"", 12.7, 1.0, 10.7, 89.9, 65, false],
+            ["1/2\"", 12.7, 1.27, 10.16, 81.1, 55, false],
+            ["1/2\"", 12.7, 1.59, 9.52, 71.2, 80, true],
+            ["3/4\"", 19.05, 1.27, 16.51, 214.1, 140, false],
+            ["3/4\"", 19.05, 1.59, 15.87, 197.8, 110, true],
+            ["1\"", 25.4, 1.59, 22.22, 387.8, 200, true],
+            ["1\"", 25.4, 1.98, 21.44, 361.0, 180, false],
+            ["2 mm", 2, 0.5, 1, 0.8, 7, false],
+            ["3 mm", 3, 0.5, 2, 3.1, 12, false],
+            ["4 mm", 4, 1.0, 2, 3.1, 10, true],
+            ["6 mm", 6, 1.0, 4, 12.6, 20, true],
+            ["8 mm", 8, 1.0, 6, 28.3, 50, true],
+            ["10 mm", 10, 1.0, 8, 50.3, 50, true],
+            ["12 mm", 12, 1.0, 10, 78.5, 75, true],
+            ["12 mm", 12, 1.5, 9, 63.6, 60, false],
+            ["14 mm", 14, 1.0, 12, 113.1, 100, false],
+            ["16 mm", 16, 1.0, 14, 153.9, 130, false],
+            ["18 mm", 18, 1.5, 15, 176.7, 140, false],
+            ["20 mm", 20, 1.5, 17, 227.0, 170, false],
+        ];
+
+        // PU: SMC TU/TIUB 표준 호칭(외경x내경) 기준. 최소R = 외경x4 참고값(가이드).
+        const puData = [
+            ["3x2", 3, 0.5, 2, 3.1, 12, true],
+            ["4x2.5", 4, 0.75, 2.5, 4.9, 16, true],
+            ["4x2", 4, 1.0, 2, 3.1, 16, false],
+            ["6x4", 6, 1.0, 4, 12.6, 24, true],
+            ["8x5", 8, 1.5, 5, 19.6, 32, true],
+            ["8x6", 8, 1.0, 6, 28.3, 32, false],
+            ["10x6.5", 10, 1.75, 6.5, 33.2, 40, true],
+            ["10x7.5", 10, 1.25, 7.5, 44.2, 40, false],
+            ["12x8", 12, 2.0, 8, 50.3, 48, true],
+            ["12x9", 12, 1.5, 9, 63.6, 48, false],
+            ["16x11", 16, 2.5, 11, 95.0, 64, false],
+            ["16x12", 16, 2.0, 12, 113.1, 64, true],
+        ];
+
+        function renderTable(data, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = data.map(r => {
+                const [label, od, t, id, area, rmin, common] = r;
+                return `<tr class="${common ? 'common-row' : ''}" data-label="${label.toLowerCase()}">
+                    <td>${label}</td><td>${od}</td><td>${t}</td><td>${id}</td><td>${area}</td><td>${rmin}</td>
+                    <td class="chk">${common ? 'O' : ''}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filterSpec() {
+            const q = document.getElementById('specSearch').value.trim().toLowerCase();
+            let visible = 0, total = 0;
+            document.querySelectorAll('.spec-table tbody tr').forEach(tr => {
+                total++;
+                const match = !q || tr.dataset.label.includes(q);
+                tr.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            document.getElementById('searchResultInfo').textContent = q ? `${visible} / ${total}건 표시` : '';
+        }
+
+
+        window.onload = () => {
+            renderSidebar('machining');
+            renderTable(susData, 'susBody');
+            renderTable(ptfeData, 'ptfeBody');
+            renderTable(puData, 'puBody');
+        };
+    </script>
+</body>
+</html>

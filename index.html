@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mechhub - 기구설계 보조 시스템</title>
     <link rel="stylesheet" href="common.css">
+    <script src="sidebar.js"></script>
 </head>
 <body>
 
@@ -110,6 +111,15 @@
                     </div>
                     <div class="tag-container">
                         <span class="tag">표면거칠기</span><span class="tag">Mesh Size</span><span class="tag">석정반</span>
+                    </div>
+                </a>
+                <a href="tube_spec.html" class="card">
+                    <div>
+                        <h4>🧵 배관/튜브 규격 (SUS·Teflon·PU)</h4>
+                        <p>SUS 배관, 테프론(PTFE), 폴리우레탄(PU) 공압 튜브의 외경/두께/내경/단면적/최소 곡률반경을 호칭별로 비교 조회합니다.</p>
+                    </div>
+                    <div class="tag-container">
+                        <span class="tag">SUS 배관</span><span class="tag">테프론 튜브</span><span class="tag">PU 튜브</span>
                     </div>
                 </a>
                 <a href="bending_radius.html" class="card">
@@ -243,29 +253,7 @@
     </div>
 
     <script>
-        // 사이드바 메뉴 동적 생성
-        function createSidebarMenu() {
-            const menuItems = [
-                { name: '🏠 메인 홈', href: 'index.html', status: 'active' },
-                { name: '1. 기계제도 & RF & EMI', href: 'javascript:void(0)', status: 'ready' },
-                { name: '2. Steel 소재 (구현됨) ⚡', href: 'steel_material.html', status: '' },
-                { name: '3. Stainless 소재 (구현됨) ⚡', href: 'stainless_material.html', status: '' },
-                { name: '4. Aluminum 소재 (구현됨) ⚡', href: 'aluminum_material.html', status: '' },
-                { name: '5. 수지/세라믹/기타 (구현됨) ⚡', href: 'resin_material.html', status: '' },
-                { name: '6. 기계가공 (구현됨) ⚡', href: '#machining-section', status: '' },
-                { name: '7. 기계요소 (구현됨) ⚡', href: '#elements-section', status: '' },
-                { name: '8. 요소설계 & 계산 (구현됨) ⚡', href: '#mecha-section', status: '' },
-                { name: '9. 진공부품', href: 'javascript:void(0)', status: 'ready' },
-                { name: '10. Vision Camera', href: 'javascript:void(0)', status: 'ready' },
-                { name: '11. Electricity & Control', href: 'javascript:void(0)', status: 'ready' },
-                { name: '12. Utility 선정 & 반응', href: 'javascript:void(0)', status: 'ready' },
-                { name: '13. 기판 & Vibration', href: 'javascript:void(0)', status: 'ready' },
-                { name: '14. Transportation & ETC', href: 'javascript:void(0)', status: 'ready' },
-            ];
-            const menuUl = document.getElementById('sidebarMenu');
-            menuUl.innerHTML = menuItems.map(item => `<li class="${item.status === 'ready' ? 'ready' : ''} ${item.status === 'active' ? 'active' : ''}"><a href="${item.href}">${item.name}${item.status === 'ready' ? ' <span class="badge-ready">준비중</span>' : ''}</a></li>`).join('');
-        }
-        window.onload = createSidebarMenu;
+        window.onload = () => renderSidebar('home');
     </script>
 </body>
 </html>

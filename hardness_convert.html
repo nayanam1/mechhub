@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mechhub - 경도 환산 & 측정방식 가이드</title>
     <link rel="stylesheet" href="common.css">
+    <script src="sidebar.js"></script>
 </head>
 <body>
     <div class="sidebar">
@@ -139,19 +140,8 @@
             event.currentTarget.classList.add("active");
         }
 
-        function createSidebarMenu() {
-            const items = [
-                { name: '🏠 메인 홈', href: 'index.html' },
-                { name: '6. 기계가공 ⚡', href: 'index.html#machining-section', active: true },
-                { name: '7. 기계요소 ⚡', href: 'index.html#elements-section' },
-                { name: '8. 요소설계 & 계산', href: 'motion.html' },
-            ];
-            document.getElementById("sidebarMenu").innerHTML = items.map(i =>
-                `<li class="${i.active ? 'active' : ''}"><a href="${i.href}">${i.name}</a></li>`
-            ).join("");
-        }
 
-        window.onload = () => { createSidebarMenu(); buildSteelTable(); calcHardness(); };
+        window.onload = () => { renderSidebar('machining'); buildSteelTable(); calcHardness(); };
     </script>
 </body>
 </html>
