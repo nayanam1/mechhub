@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mechhub - 배관/튜브 규격 (SUS · Teflon · PU)</title>
+    <title>mechhub - 배관/튜브 규격 (SUS · Teflon(PFA) · PU)</title>
     <link rel="stylesheet" href="common.css">
     <script src="sidebar.js"></script>
     <style>
@@ -15,7 +15,7 @@
         .search-wrap input { flex: 1; max-width: 320px; }
         .legend-row { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: #64748b; margin-top: 6px; }
         .legend-row span.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: #fef9c3; border: 1px solid #eab308; margin-right: 4px; vertical-align: -1px; }
-        .diagram-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .diagram-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin-bottom: 10px; }
         .mat-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
         .badge-sus { background: #dbeafe; color: #1d4ed8; }
         .badge-ptfe { background: #f3e8ff; color: #7e22ce; }
@@ -33,7 +33,7 @@
 
     <div class="main-content">
         <div class="main-header">
-            <h2>6. 기계가공 🧵 배관/튜브 규격 (SUS · Teflon · PU)</h2>
+            <h2>6. 기계가공 🧵 배관/튜브 규격 (SUS · Teflon(PFA) · PU)</h2>
         </div>
         <div class="content-body">
 
@@ -84,8 +84,8 @@
 
             <!-- 테프론 튜브 -->
             <div class="card" style="padding:16px; margin-bottom:20px;">
-                <h3><span class="mat-badge badge-ptfe">PTFE</span>&nbsp;테프론 튜브</h3>
-                <p class="card-note">내열·내약품성이 필요한 배관에 사용. 재질 특성상 곡률반경이 SUS 대비 크게 요구됩니다.</p>
+                <h3><span class="mat-badge badge-ptfe">PFA</span>&nbsp;테프론(PFA) 튜브</h3>
+                <p class="card-note">내열·내약품성이 필요한 배관에 사용. PTFE 대비 투명하고 기계적 특성이 우수합니다. <b>사용온도: -60 ~ 260℃</b></p>
                 <div style="overflow-x:auto;">
                 <table class="data-table spec-table">
                     <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm)</th><th>일반규격</th></tr></thead>
@@ -96,8 +96,8 @@
 
             <!-- PU 튜브 -->
             <div class="card" style="padding:16px; margin-bottom:20px;">
-                <h3><span class="mat-badge badge-pu">PU</span>&nbsp;폴리우레탄(PU) 공압 튜브</h3>
-                <p class="card-note">SMC TU/TIUB 계열과 동일한 통용 호칭(외경x내경)의 공압용 우레탄 튜브 규격입니다. 굵게 표시된 규격이 각 외경의 표준(1차) 규격입니다.</p>
+                <h3><span class="mat-badge badge-pu">PU</span>&nbsp;폴리우레탄 공압 튜브</h3>
+                <p class="card-note">SMC TU/TIUB 계열과 동일한 통용 호칭(외경x내경)의 공압용 우레탄 튜브 규격입니다. 굵게 표시된 규격이 각 외경의 표준(1차) 규격입니다. <b>사용온도: -20 ~ 60℃</b></p>
                 <div style="overflow-x:auto;">
                 <table class="data-table spec-table">
                     <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm, 참고)</th><th>일반규격</th></tr></thead>
@@ -131,30 +131,30 @@
         ];
 
         const ptfeData = [
-            ["1/8\"", 3.18, 0.79, 1.6, 2.0, 14, false],
+            ["1/8\"", 3.18, 0.79, 1.6, 2.0, 13, false],
             ["1/4\"", 6.35, 1.0, 4.35, 14.9, 25, false],
             ["1/4\"", 6.35, 1.27, 3.81, 11.4, 20, true],
             ["3/8\"", 9.53, 1.0, 7.53, 44.5, 50, false],
-            ["3/8\"", 9.53, 1.27, 6.99, 38.4, 40, true],
+            ["3/8\"", 9.53, 1.27, 6.99, 38.4, 38, true],
             ["1/2\"", 12.7, 1.0, 10.7, 89.9, 65, false],
-            ["1/2\"", 12.7, 1.27, 10.16, 81.1, 55, false],
-            ["1/2\"", 12.7, 1.59, 9.52, 71.2, 80, true],
+            ["1/2\"", 12.7, 1.27, 10.16, 81.1, 51, false],
+            ["1/2\"", 12.7, 1.59, 9.52, 71.2, 76, true],
             ["3/4\"", 19.05, 1.27, 16.51, 214.1, 140, false],
-            ["3/4\"", 19.05, 1.59, 15.87, 197.8, 110, true],
-            ["1\"", 25.4, 1.59, 22.22, 387.8, 200, true],
-            ["1\"", 25.4, 1.98, 21.44, 361.0, 180, false],
-            ["2 mm", 2, 0.5, 1, 0.8, 7, false],
+            ["3/4\"", 19.05, 1.59, 15.87, 197.8, 114, true],
+            ["1\"", 25.4, 1.59, 22.22, 387.8, 203, true],
+            ["1\"", 25.4, 1.98, 21.44, 361.0, 178, false],
+            ["2 mm", 2, 0.5, 1, 0.8, 6, false],
             ["3 mm", 3, 0.5, 2, 3.1, 12, false],
             ["4 mm", 4, 1.0, 2, 3.1, 10, true],
-            ["6 mm", 6, 1.0, 4, 12.6, 20, true],
-            ["8 mm", 8, 1.0, 6, 28.3, 50, true],
-            ["10 mm", 10, 1.0, 8, 50.3, 50, true],
-            ["12 mm", 12, 1.0, 10, 78.5, 75, true],
-            ["12 mm", 12, 1.5, 9, 63.6, 60, false],
-            ["14 mm", 14, 1.0, 12, 113.1, 100, false],
-            ["16 mm", 16, 1.0, 14, 153.9, 130, false],
-            ["18 mm", 18, 1.5, 15, 176.7, 140, false],
-            ["20 mm", 20, 1.5, 17, 227.0, 170, false],
+            ["6 mm", 6, 1.0, 4, 12.6, 18, true],
+            ["8 mm", 8, 1.0, 6, 28.3, 32, true],
+            ["10 mm", 10, 1.0, 8, 50.3, 40, true],
+            ["12 mm", 12, 1.0, 10, 78.5, 60, true],
+            ["12 mm", 12, 1.5, 9, 63.6, 54, false],
+            ["14 mm", 14, 1.0, 12, 113.1, 84, false],
+            ["16 mm", 16, 1.0, 14, 153.9, 112, false],
+            ["18 mm", 18, 1.5, 15, 176.7, 135, false],
+            ["20 mm", 20, 1.5, 17, 227.0, 150, false],
         ];
 
         // PU: SMC TU/TIUB 표준 호칭(외경x내경) 기준. 최소R = 외경x4 참고값(가이드).
