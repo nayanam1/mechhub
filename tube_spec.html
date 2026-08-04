@@ -84,11 +84,11 @@
 
             <!-- 테프론 튜브 -->
             <div class="card" style="padding:16px; margin-bottom:20px;">
-                <h3><span class="mat-badge badge-ptfe">PFA</span>&nbsp;테프론(PFA) 튜브</h3>
-                <p class="card-note">내열·내약품성이 필요한 배관에 사용. PTFE 대비 투명하고 기계적 특성이 우수합니다. <b>사용온도: -60 ~ 260℃</b></p>
+                <h3><span class="mat-badge badge-ptfe">PFA</span>&nbsp;TL / TIL (Super PFA) 튜브</h3>
+                <p class="card-note">SMC TL/TIL 시리즈 카탈로그 기준. 고순도 불소수지 튜브로 내열·내약품성이 매우 우수합니다. <b>사용온도: -65 ~ 260°C</b></p>
                 <div style="overflow-x:auto;">
                 <table class="data-table spec-table">
-                    <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm)</th><th>일반규격</th></tr></thead>
+                    <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm)</th><th>비고</th><th>일반규격</th></tr></thead>
                     <tbody id="ptfeBody"></tbody>
                 </table>
                 </div>
@@ -96,16 +96,16 @@
 
             <!-- PU 튜브 -->
             <div class="card" style="padding:16px; margin-bottom:20px;">
-                <h3><span class="mat-badge badge-pu">PU</span>&nbsp;폴리우레탄 공압 튜브</h3>
-                <p class="card-note">SMC TU/TIUB 계열과 동일한 통용 호칭(외경x내경)의 공압용 우레탄 튜브 규격입니다. 굵게 표시된 규격이 각 외경의 표준(1차) 규격입니다. <b>사용온도: -20 ~ 60℃</b></p>
+                <h3><span class="mat-badge badge-pu">PU</span>&nbsp;TU / TIUB 폴리우레탄 튜브</h3>
+                <p class="card-note">SMC TU/TIUB 시리즈 카탈로그 기준 공압용 우레탄 튜브 규격입니다. <b>사용온도: -20 ~ 60℃</b></p>
                 <div style="overflow-x:auto;">
                 <table class="data-table spec-table">
-                    <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm, 참고)</th><th>일반규격</th></tr></thead>
+                    <thead><tr><th>호칭</th><th>외경 (mm)</th><th>두께 (mm)</th><th>내경 (mm)</th><th>넓이 (mm²)</th><th>최소 R반경 (mm)</th><th>일반규격</th></tr></thead>
                     <tbody id="puBody"></tbody>
                 </table>
                 </div>
                 <div class="notice-banner info">
-                    ※ PU 튜브의 최소 곡률반경은 경도(Shore A)·제조사(SMC/Pisco/Festo 등)에 따라 편차가 있어, 위 값은 <b>외경 × 약 4배</b>를 적용한 설계 참고값(≈)입니다. 고사이클 굴곡·정밀설계 용도는 반드시 사용 튜브 제조사 데이터시트로 재확인하세요.
+                    ※ 최소 굽힘 반경은 SMC 카탈로그(20℃) 기준입니다. 고온 환경이나 반복 굴곡 시에는 더 큰 반경(2~3배)을 적용하는 것이 안전합니다.
                 </div>
             </div>
 
@@ -114,8 +114,8 @@
 
     <script>
         // ID = OD - 2t, area = pi/4 * ID^2 (모두 검산 완료된 값)
-        const susData = [
-            ["1/8\"", 3.175, 0.71, 1.755, 2.4, "~10", false],
+        const susData = [ // label, od, t, id, area, rmin, common
+            ["1/8\"", 3.175, 0.71, 1.755, 2.4, "~10", true],
             ["1/4\"", 6.35, 0.89, 4.57, 16.4, "19 (3/4\")", true],
             ["1/4\"", 6.35, 1.24, 3.87, 11.8, "19 (3/4\")", false],
             ["3/8\"", 9.525, 0.89, 7.745, 47.1, "24 (15/16\")", true],
@@ -130,55 +130,47 @@
             ["1\"", 25.4, 2.11, 21.18, 352.3, "101.6 (4\")", false],
         ];
 
-        const ptfeData = [
-            ["1/8\"", 3.18, 0.79, 1.6, 2.0, 13, false],
-            ["1/4\"", 6.35, 1.0, 4.35, 14.9, 25, false],
-            ["1/4\"", 6.35, 1.27, 3.81, 11.4, 20, true],
-            ["3/8\"", 9.53, 1.0, 7.53, 44.5, 50, false],
-            ["3/8\"", 9.53, 1.27, 6.99, 38.4, 38, true],
-            ["1/2\"", 12.7, 1.0, 10.7, 89.9, 65, false],
-            ["1/2\"", 12.7, 1.27, 10.16, 81.1, 51, false],
-            ["1/2\"", 12.7, 1.59, 9.52, 71.2, 76, true],
-            ["3/4\"", 19.05, 1.27, 16.51, 214.1, 140, false],
-            ["3/4\"", 19.05, 1.59, 15.87, 197.8, 114, true],
-            ["1\"", 25.4, 1.59, 22.22, 387.8, 203, true],
-            ["1\"", 25.4, 1.98, 21.44, 361.0, 178, false],
-            ["2 mm", 2, 0.5, 1, 0.8, 6, false],
-            ["3 mm", 3, 0.5, 2, 3.1, 12, false],
-            ["4 mm", 4, 1.0, 2, 3.1, 10, true],
-            ["6 mm", 6, 1.0, 4, 12.6, 18, true],
-            ["8 mm", 8, 1.0, 6, 28.3, 32, true],
-            ["10 mm", 10, 1.0, 8, 50.3, 40, true],
-            ["12 mm", 12, 1.0, 10, 78.5, 60, true],
-            ["12 mm", 12, 1.5, 9, 63.6, 54, false],
-            ["14 mm", 14, 1.0, 12, 113.1, 84, false],
-            ["16 mm", 16, 1.0, 14, 153.9, 112, false],
-            ["18 mm", 18, 1.5, 15, 176.7, 135, false],
-            ["20 mm", 20, 1.5, 17, 227.0, 150, false],
+        // PFA: SMC TL/TIL (Super PFA) 시리즈 기준 (P0721-0722)
+        const ptfeData = [ // label, od, t, id, area, rmin, note, common
+            ["1/8\"", 3.18, 0.5, 2.18, 3.7, 12, "TIL01", true],
+            ["3/16\"", 4.76, 0.79, 3.18, 7.9, 20, "TIL05", false],
+            ["1/4\"", 6.35, 1.19, 3.97, 12.4, 35, "TIL07", true],
+            ["3/8\"", 9.53, 1.59, 6.35, 31.7, 55, "TIL11", true],
+            ["1/2\"", 12.7, 1.59, 9.52, 71.3, 70, "TIL13", true],
+            ["3/4\"", 19.05, 1.59, 15.87, 197.8, 120, "TIL19", true],
+            ["1\"", 25.4, 1.59, 22.22, 387.8, 180, "TIL25", false],
+            ["4 mm", 4, 0.5, 3, 7.1, 12, "TL0403", true],
+            ["6 mm", 6, 1.0, 4, 12.6, 35, "TL0604", true],
+            ["8 mm", 8, 1.0, 6, 28.3, 45, "TL0806", true],
+            ["10 mm", 10, 1.0, 8, 50.3, 55, "TL1008", true],
+            ["12 mm", 12, 1.0, 10, 78.5, 70, "TL1210", true],
+            ["19 mm", 19, 1.5, 16, 201.1, 120, "TL1916", false],
         ];
 
-        // PU: SMC TU/TIUB 표준 호칭(외경x내경) 기준. 최소R = 외경x4 참고값(가이드).
-        const puData = [
-            ["3x2", 3, 0.5, 2, 3.1, 12, true],
-            ["4x2.5", 4, 0.75, 2.5, 4.9, 16, true],
-            ["4x2", 4, 1.0, 2, 3.1, 16, false],
-            ["6x4", 6, 1.0, 4, 12.6, 24, true],
-            ["8x5", 8, 1.5, 5, 19.6, 32, true],
-            ["8x6", 8, 1.0, 6, 28.3, 32, false],
-            ["10x6.5", 10, 1.75, 6.5, 33.2, 40, true],
-            ["10x7.5", 10, 1.25, 7.5, 44.2, 40, false],
-            ["12x8", 12, 2.0, 8, 50.3, 48, true],
-            ["12x9", 12, 1.5, 9, 63.6, 48, false],
-            ["16x11", 16, 2.5, 11, 95.0, 64, false],
-            ["16x12", 16, 2.0, 12, 113.1, 64, true],
+        // PU: SMC TU/TIUB 시리즈 기준 (P0682-0687)
+        const puData = [ // label, od, t, id, area, rmin, common
+            ["1/8\"", 3.18, 0.59, 2.0, 3.1, 10, true],
+            ["3/16\"", 4.76, 0.88, 3.0, 7.1, 15, false],
+            ["1/4\"", 6.35, 1.06, 4.23, 14.1, 23, true],
+            ["3/8\"", 9.53, 1.59, 6.35, 31.7, 35, true],
+            ["1/2\"", 12.7, 2.12, 8.46, 56.2, 45, true],
+            ["3x2", 3, 0.5, 2, 3.1, 7, true],
+            ["4x2.5", 4, 0.75, 2.5, 4.9, 10, true],
+            ["6x4", 6, 1.0, 4, 12.6, 15, true],
+            ["8x5", 8, 1.5, 5, 19.6, 20, true],
+            ["10x6.5", 10, 1.75, 6.5, 33.2, 27, true],
+            ["12x8", 12, 2.0, 8, 50.3, 35, true],
+            ["16x10", 16, 3.0, 10, 78.5, 45, true],
         ];
 
         function renderTable(data, tbodyId) {
             const tbody = document.getElementById(tbodyId);
             tbody.innerHTML = data.map(r => {
-                const [label, od, t, id, area, rmin, common] = r;
+                const isPtfe = (tbodyId === 'ptfeBody');
+                const [label, od, t, id, area, rmin, extra, common] = isPtfe ? r : [...r.slice(0,6), '-', r[6]];
                 return `<tr class="${common ? 'common-row' : ''}" data-label="${label.toLowerCase()}">
                     <td>${label}</td><td>${od}</td><td>${t}</td><td>${id}</td><td>${area}</td><td>${rmin}</td>
+                    <td>${extra}</td>
                     <td class="chk">${common ? 'O' : ''}</td>
                 </tr>`;
             }).join('');
