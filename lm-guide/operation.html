@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MechHub · 공통 운전 프로파일</title><link rel="stylesheet" href="common.css"><link rel="stylesheet" href="operation.css"><script defer src="operation-profile.js?v=20261017-1"></script><script defer src="drive-calculations.js?v=20261017-1"></script><script defer src="cycle-torque.js?v=20261017-1"></script><script defer src="operation-app.js?v=20261017-rms1"></script></head>
+<body><header><a href="../index.html" class="brand">MECH<span>HUB</span></a><b>공통 운전 프로파일</b><a href="common.html">기존 LM 상세 검토 ↗</a></header>
+<main><div class="intro"><div><small>SHARED OPERATING PROFILE</small><h1>동작을 나누면, 선정 조건이 명확해집니다.</h1><p>시간·볼스크류·모터·LM이 한 프로파일을 공유합니다. 구간별 시간과 리드별 회전수·토크를 비교합니다. 실제 제품 선정에는 추가 조건과 카탈로그 검증이 필요합니다.</p></div><button id="reset-profile" class="primary">프레스 시작 조건</button></div>
+<section><h2>01 편도 이동과 끝부분 가압</h2><form id="profile-form" novalidate><div class="profile-fields">
+<label>편도 전체 스트로크 · mm<input id="strokeMm" type="number" min="0" step="any" value="400" required></label>
+<label>편도 이동 시간 · s<input id="forwardTimeS" type="number" min="0" step="any" value="0.6" required></label>
+<label>끝부분 요구 가압력 · tonf<input id="pressForceTonf" type="number" min="0" step="any" value="1" required></label>
+<label>가압 이동 거리 · mm<input id="pressDistanceMm" type="number" min="0" step="any" placeholder="미정"></label>
+<label>가압 이동 시간 · s<input id="pressTimeS" type="number" min="0" step="any" placeholder="미정"></label>
+<label>이동부 전체 질량 · kg<input id="movingMassKg" type="number" min="0" step="any" placeholder="미정 · 1tonf와 별개"></label>
+<label>설치 방향<select id="orientation"><option value="unknown">미정</option><option value="vertical">수직</option><option value="horizontal">수평</option></select></label>
+<label>각 구간의 가속·감속 시간 비율<input id="rampFraction" type="number" min="0" max="0.5" step="0.05" value="0.25"></label>
+</div><p class="help">0.6초 = 접근 이동 + 가압 이동입니다. 도착 후 유지·복귀는 포함하지 않습니다. 가속과 감속은 각각 구간 시간의 25%로 시작하며, 확인할 파형 가정입니다. 50%는 삼각 속도입니다.</p>
+<details><summary>전체 사이클을 알 때 추가 입력</summary><div class="profile-fields extra"><label>도착 후 가압 유지 · s<input id="holdTimeS" type="number" min="0" step="any" placeholder="미정 · 없으면 0 입력"></label><label>복귀 이동 · s<input id="returnTimeS" type="number" min="0" step="any" placeholder="미정"></label><label>기타 대기·안정화 · s<input id="settleTimeS" type="number" min="0" step="any" placeholder="미정 · 없으면 0 입력"></label></div></details></form><p id="profile-error" role="alert" hidden></p><p id="profile-status" role="status" class="scope"></p></section>
+<div id="profile-results"><section><h2>02 시간 계산</h2><div id="profile-metrics" class="metrics"></div><p id="waveform-note" class="help"></p><div id="velocity-chart"></div><div id="segment-table" class="table-wrap"></div><details><summary>계산 모델과 가정</summary><ul id="profile-assumptions"></ul><p class="help">구간 속도 v = 거리 / [시간 × (1 − 가속시간비율)], 가속도 a = v / 가속시간. 구간 경계의 속도는 0입니다. 힘이 동시에 작용하는 시점은 별도 하중 프로파일이 필요합니다.</p></details></section>
+<section id="drive-section"><h2>03 볼스크류·모터 · 리드별 비교</h2><form id="drive-form" novalidate><div class="profile-fields">
+<label>비교 리드 · mm (쉼표 구분)<input id="leadsMm" value="5,10,20,25,32,40"></label>
+<label>스크류 정효율 · 0 초과 ~ 1<input id="screwEfficiency" type="number" min="0" max="1" step="any" placeholder="미정 · 예: 0.9는 가정값"></label>
+<label>감속비 · 모터 rpm / 스크류 rpm<input id="ratio" type="number" min="0" step="any" value="1"></label>
+<label>전달계 정효율 · 0 초과 ~ 1<input id="driveEfficiency" type="number" min="0" max="1" step="any" value="1"></label>
+<label>스크류측 회전 관성 · kg·m²<input id="screwSideInertia" type="number" min="0" step="any" placeholder="미정 · 이동 질량 환산 관성 제외"></label>
+<label>모터측 회전 관성 · kg·m²<input id="motorSideInertia" type="number" min="0" step="any" placeholder="회전자 + 입력측 부품"></label>
+<label>기타 축방향 저항 · N<input id="extraAxialResistanceN" type="number" min="0" step="any" placeholder="미정 · 무시 가정이면 0 명시"></label>
+<label>스크류측 예압·마찰 토크 · N·m<input id="preloadTorqueNm" type="number" min="0" step="any" placeholder="미정 · 무시 가정이면 0 명시"></label>
+</div><p class="help">초기 감속비1·전달계 효율1은 직결·전달 손실 무시 가정입니다. 스크류 효율은 별도 입력하며 자동 가정하지 않습니다. 회전 관성에는 스크류·커플링·풀리 등을 해당 축 기준으로 포함하세요.</p></form>
+<p id="drive-error" role="alert" hidden></p><p id="drive-status" class="scope" role="status"></p><p class="help">회전수는 최고속도 기준입니다. 이상 토크(η=1)는 이론 최소값, 가압 부하 토크는 가압력 성분만입니다. 마지막 열은 누락 조건이 모두 입력된 경우의 보수적 크기 상한이며 실제 피크·RMS·모터 정격 토크가 아닙니다. 숫자가 작다는 이유로 적합 순위를 매기지 않습니다.</p><div id="drive-table" class="table-wrap"></div>
+<details open><summary>선정에 필요한 추가 입력과 검토</summary><ul id="drive-missing"></ul></details><details><summary>계산식·가정과 근거</summary><p class="help">n = 60v/리드, T = F·리드/(2πη), 모터 n = 스크류 n × 감속비. 모터 부하 토크 = 스크류 부하 토크/(감속비 × 전달 효율). 가압 구간 밖에는 가압력 1tonf를 적용하지 않습니다.</p><ul id="drive-assumptions"></ul><p><a href="https://www.thk.com/eu/en/products/ball_screw/selection/0013/" target="_blank" rel="noopener">THK 회전 토크 계산</a> · <a href="https://www.thk.com/us/en/products/ball_screw/selection/0014/" target="_blank" rel="noopener">THK 모터 선정 기준</a></p></details></section>
+<section id="cycle-section"><h2>04 전체 사이클 RMS · 모터 수치 제한 비교</h2><p class="help">위의 ‘전체 사이클을 알 때 추가 입력’에서 유지·복귀·기타 대기 시간을 입력하세요. 없는 정지 구간은 0을 명시합니다. 가압력 모델은 실제 공정 확인이 필요한 계산 가정입니다.</p>
+<form id="cycle-form" novalidate><div class="profile-fields">
+<label>가압 이동 중 힘 모델<select id="forceMode"><option value="unknown">미정 · RMS 미계산</option><option value="constant">일정한 요구 가압력 가정</option><option value="linear_ramp">0 → 요구 가압력 선형 증가 가정</option></select></label>
+<label>수직일 때 전진 방향<select id="verticalDirection"><option value="unknown">미정 / 수평에는 미적용</option><option value="forward_up">전진 상승 (+중력 저항)</option><option value="forward_down">전진 하강 (중력 도움)</option></select></label>
+<label>스크류 역효율 · 0 초과 ~ 1<input id="reverseScrewEfficiency" type="number" min="0" max="1" step="any" placeholder="미정 · 정효율과 구분"></label>
+<label>전달계 역효율 · 0 초과 ~ 1<input id="reverseDriveEfficiency" type="number" min="0" max="1" step="any" placeholder="미정 · 정효율과 구분"></label>
+<label>복귀 시 요구 축력 · N<input id="returnForceN" type="number" step="any" placeholder="부호 있음 · 없으면 0 명시"></label>
+<label>유지 모터축 토크 · N·m<input id="holdMotorTorqueNm" type="number" step="any" placeholder="중력·가압·브레이크 반영"></label>
+<label>대기 모터축 토크 · N·m<input id="settleMotorTorqueNm" type="number" step="any" placeholder="무부하 확인 후 0 명시"></label>
+<label>모터 정격 토크 · N·m<input id="ratedTorqueNm" type="number" min="0" step="any" placeholder="모터·드라이버 사양 확인"></label>
+<label>모터 최대 토크 · N·m<input id="maxTorqueNm" type="number" min="0" step="any" placeholder="허용 지속시간 별도 확인"></label>
+<label>모터 정격 회전수 · rpm<input id="ratedRpm" type="number" min="0" step="any" placeholder="토크속도 곡선 기준"></label>
+<label>모터 최대 회전수 · rpm<input id="maxRpm" type="number" min="0" step="any" placeholder="토크가 유지되는 속도 아님"></label>
+</div><p class="help">+축은 전진 방향입니다. 복귀 요구 축력은 질량·중력·가이드 저항 이외의 추가 성분만 입력하며, 복귀를 방해하는 하중은 음수입니다. 유지·대기 토크는 모터축 값 전체를 입력합니다. 정지 시간 0이면 해당 토크는 필요 없습니다.</p></form>
+<p id="cycle-error" role="alert" hidden></p><p id="cycle-status" class="scope" role="status"></p><div id="cycle-table" class="table-wrap"></div>
+<p class="help">RMS ≤ 정격, 최대 |토크| ≤ 최대 토크, 최대 |rpm| ≤ 최대 회전수를 각각 비교합니다. 정격 회전수 초과는 즉시 탈락이 아니며 해당 속도의 허용 토크 곡선이 필요합니다. 세 수치가 통과해도 피크 지속시간·열·드라이버·제동 및 기계부 검증 전에는 최종 적합이 아닙니다.</p>
+<details open><summary>RMS 계산·모터 비교에 필요한 추가 입력</summary><ul id="cycle-missing"></ul></details>
+<details><summary>리드별 구간 토크 이력</summary><label>표시할 리드<select id="cycle-detail-lead"></select></label><div id="cycle-phases" class="table-wrap"></div></details>
+<details><summary>RMS 모델과 계산 가정</summary><ul id="cycle-assumptions"></ul><p class="help">선형 구간 T₀→T₁의 제곱 적분 = Δt(T₀²+T₀T₁+T₁²)/3. RMS = √(각 구간 제곱 적분 합 / 전체 시간). 유지·대기를 포함합니다.</p></details></section>
+<section><h2>05 같은 조건을 공유하는 네 모듈</h2><p class="help">아래 네 모듈은 같은 프로파일 ID와 데이터를 참조합니다. 입력 변경 시 함께 갱신되며, 누락 조건은 0이나 이전 값으로 대체하지 않습니다.</p><div id="consumer-cards" class="consumer-grid"></div><p id="lm-gate" class="scope"></p><button id="export-profile" type="button">공통 프로파일 JSON 저장</button><p id="export-status" role="status" class="help"></p></section></div>
+<footer>기존 LM 계산·제품 DB는 보존합니다. 이 프로파일의 가압 조건을 기존 대칭 왕복 계산에 자동 적용하지 않습니다.</footer></main><nav style="padding:18px 5%;border-top:1px solid #dce5e7;font:13px sans-serif;display:flex;gap:20px;flex-wrap:wrap" aria-label="MechHub 도구 이동"><a href="../index.html">← MechHub 홈</a><a href="../lm-guide/common.html">LM Guide</a><a href="../engineering/index.html?tool=screw">볼스크류</a><a href="../engineering/index.html?tool=motor">모터</a><a href="../takt.html">택타임</a></nav></body></html>

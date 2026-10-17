@@ -1,0 +1,50 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Theta 형상→하중 근거 검토</title><style>body{font:16px/1.7 system-ui;max-width:1100px;margin:36px auto;padding:0 24px;color:#183044}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:8px;text-align:left}pre{white-space:pre-wrap;background:#f0f4f7;padding:18px}.notice{background:#fff3d4;padding:18px}img{max-width:100%}figure{display:inline-block;max-width:45%;vertical-align:top}a{color:#165ca0}</style>
+<h1>Theta 형상 → 하중 근거 검토</h1><p>2026-10-16 · <a href="../lm-guide/index.html">계산 화면</a> · <a href="Theta_카탈로그_재검증.html">기존71조건 Pm 대조</a> · <a href="theta_geometry_basis.json">근거·수치 JSON</a></p>
+<p class="notice"><b>판정: 일부 도출, kP와5.7 mm는 미확정.</b> 좌표의 팔길이와 강체 평형은 정리했다. 임의 BS에서의 접촉 등가하중과 하중 중심 높이는 검토한 자료에서 공식 근거를 찾지 못했다. 두 값을 공식 상수로 승격하거나 1/BS로 대체하지 않았다. 이번 검토는 새 THK 실행값이 아니라 카탈로그·도면 검토다.</p>
+<h2>1. 공식 입력 도면에서 확인한 좌표</h2><figure><img src="THK_wall_1rail_2block_mass.png" alt="THK 벽면 1레일 2블록 질량 좌표"><figcaption>THK 툴 Shitsuryo: Gr은 취부면에서 질량 쪽, Ga는 No.1 중심에서 다른 블록 방향, Gt는 레일 중심선 기준.</figcaption></figure><figure><img src="THK_wall_1rail_2block_dimension.png" alt="THK 추력 위치와 BS 좌표"><figcaption>THK 툴 Sunpo: Br은 취부면 반대쪽의 추력선까지, Bt는 레일 중심선부터, BS는 블록 중심 간격.</figcaption></figure>
+<p>2026-10-16 로그인된 THK 결과 화면 HSR10R / 벽면 / 1레일2블록에서 표시 자산을 보존했다. <a href="https://tcs.thk.com/images/lm/shitsuryo/k_1_2_m1.png">질량 도면 원본</a> · <a href="https://tcs.thk.com/images/lm/sunpo/k_1_2_dimension.png">추력 도면 원본</a> (로그인 필요 가능). 이 그림은 좌표 정의를 제공하며 하중 중심 h의 수치 치수는 제공하지 않는다.</p>
+<h2>2. 형상→강체 평형: 도출 가능한 부분</h2><p>자체 좌표: x=No.1→No.2, y=취부면에서 추력 쪽, z=Gt/Bt 방향. 질량 위치는 (Ga,−Gr,Gt), 추력 위치는 (0,Br,Bt). 가속 구간의 관성력은 (−ma,0,0), 추력은 (+ma,0,0), 중력은 (0,0,−W). 추가 외력·마찰·회전 가속도는 없는 배치다.</p>
+<pre>W = m·9.80665 N, a = (V/1000)/tn m/s²
+취부면 원점에서 ΣM = Σ(r × F):
+Mx = W·Gr
+My = W·Ga + m·a·(Bt−Gt)
+Mz = −m·a·(Br+Gr)                     [N·mm]
+
+블록 중심을 점지지로 이상화한 각 블록 부하 합력:
+D1 = −Mz/BS; D2 = Mz/BS
+T1 = −W + My/BS; T2 = −My/BS
+ΣD=0, ΣT=−W, BS·D2=Mz, −BS·T2=My
+
+하중 중심이 취부면에서 질량 쪽으로 h 떨어져 있다면:
+잔여 롤 모멘트 Mc = W·(Gr−h)
+→ h가 없으면 Mc는 미확정. 두 블록에 Mc/2를 배분하는 것도 별도의 가정.</pre>
+<p>여기서 D/T는 블록이 받는 합력이며 지지대가 테이블에 가하는 반력은 반대 부호다. 이 평형식은 THK의 임의 BS 접촉 해석식이라고 주장하지 않는다. 블록 내부의 끝단 볼 집중하중·예압·강성 및 잔여 모멘트를 반영하지 않아 이 합력을 곧바로 PE/Pm에 넣지 않는다.</p>
+<h2>3. 모멘트 등가계수 K와 kP는 같은가?</h2><p><a href="https://tech.thk.com/en/products/pdf/en_a01_040.pdf#page=1">THK A1-40~42</a>는 모멘트에 의한 불균일 볼 하중을 등가하중 P=K·M으로 환산하고, K=C0/M 허용값 관계를 설명한다. <a href="https://tech.thk.com/en/products/pdf/en_a01_040.pdf#page=5">계수 정의</a>의 KAR2/KAL2/KB2는 두 블록을 밀착한 경우다. 임의의 BS를 넣는 함수는 검토한 구간에 없다.</p>
+<p><a href="THK_legacy_linear_guides.pdf#page=69">구형 THK PDF69쪽 / 인쇄57</a> HSR10: KAR1=KAL1=KB1=0.309, KAR2=KAL2=KB2=0.0533, KCR=KCL=0.235 mm⁻¹. 이 표의 밀착 쌍 계수를 Theta BS31.6의 kP=0.05021과 같다고 둘 수 없다. <a href="THK_legacy_linear_guides.pdf#page=242">PDF242쪽</a> 정격의 비 C0/MA1=0.310569106, C0/MA2=0.053351955, C0/MC=0.235802469 mm⁻¹ 역시 표의 반올림값과 완전히 같지 않다. 개정·반올림 출처를 유지한다.</p>
+<table><tr><th>BS mm</th><th>기존 후보 kP mm⁻¹</th><th>점지지 1/BS mm⁻¹</th><th>kP/(1/BS)</th><th>판정</th></tr><tr><td>40</td><td>0.02902</td><td>0.025</td><td>1.1608</td><td>kP 공식 도출 미완료</td></tr><tr><td>60</td><td>0.016677009192</td><td>0.016666666667</td><td>1.000620552</td><td>kP 공식 도출 미완료</td></tr><tr><td>100</td><td>0.01</td><td>0.01</td><td>1</td><td>kP 공식 도출 미완료</td></tr><tr><td>31.6</td><td>0.05021</td><td>0.03164556962</td><td>1.586636</td><td>kP 공식 도출 미완료</td></tr></table>
+<p>차이는 곧 평형 위반의 증거가 아니다. 접촉 등가하중은 단순 합력과 정의가 다르다. BS100에서 수치가 같다는 이유만으로 다른 BS에도 kP=1/BS를 적용하지 않는다. BS60 값은 관측 전환점에서 역산한 후보이고, 공식 계수로 분류하지 않는다.</p>
+<h2>4. 5.7 mm를 도면 치수로 확정할 수 있는가?</h2><p><a href="THK_legacy_linear_guides.pdf#page=264">구형 PDF264~265쪽 / 인쇄252~253</a> HSR10R-M: 조립높이 M=13, 폭 W=20, 블록 길이 L=31, 본체 길이 L1=20.1, K=10.8, 레일 높이 M1=7 mm. 검토한 도면에는 하중 중심 높이5.7 mm가 명시되어 있지 않다. 조립높이·레일높이·급유부 치수만으로 접촉 중심 또는 롤 회전 중심을 확정하지 않는다. 축척 그림에서 픽셀 비율을 재어 치수로 사용하지 않았다.</p><p>툴 모델 HSR10R와 도면 HSR10R-M, 구형/현행 XR의 정격·치수 개정 일치도 별도 확인이 필요하다. 5.7은 현재 출력 재현에서 추정된 취부면→유효 기준점으로만 남긴다. 도면 원점 Gr=0과 후보 롤 영점 Gr=5.7은 서로 다른 개념이다.</p>
+<h2>5. 모듈 수정과 검증</h2><p>theta-geometry.js에 합력·모멘트·점지지 분배를 독립 추가했다. h 기본값은 없으며, 미입력 시 잔여 롤 모멘트는 null이다. 화면에서 h와 도면 근거를 입력하면 별도 평형 표와 JSON에 기록되지만 THK 공식 치수로 인정하지 않는다. 기존 후보 모듈은 kP·5.7·롤 반분의 상태를 내보내며 기존71조건의 재현 경로를 보존한다.</p><p>다음 확인에 필요한 자료: 해당 개정 HSR10R의 하중 중심 치수 또는 THK의 기준점 설명, 임의 블록 간격의 접촉/등가 모멘트 배분 절차. 이 자료 없이 수치 일치만으로 공식 도출 완료라고 판정하지 않는다.</p><section id="additional-research"><h2>6. 본회원 로그인 후 기술자료·CAD 후속 조사</h2>
+<p class="notice"><b>공식 도출 상태: 미완료.</b> 이번 조사에서 새 kP 또는 기준점을 툴 출력에 맞춰 추정하지 않았다. 수치 상수와 기존71조건 재현 계산은 변경하지 않았다. 본회원 기술자료2개(9쪽+5쪽)를 열람했다. 구형 HSR10R 원본 CAD 파일은 확보하지 못했으며, CAD 내부 형상을 검사했다고 주장하지 않는다.</p>
+<h3>새로 확인한 근거와 접근 한계</h3><table><tr><th>자료</th><th>확인한 내용</th><th>아직 확인하지 못한 내용</th></tr>
+<tr><td><a href="https://www.thk.pl/dopobrania/hsr.pdf#page=23">THK 구형 영문 A-284~285</a> · <a href="THK_HSR_older_EN.pdf#page=23">저장 PDF23~24쪽</a></td><td>HSR10RM의 M13/W20/L31/L1=20.1/K10.8/레일높이7 mm. M 접미사는 블록·레일·볼의 스테인리스 재질 표기.</td><td>하중 중심5.7 mm 치수는 없음. 이 도면판과 툴 제품 DB의 개정 일치는 확인하지 못함.</td></tr>
+<tr><td><a href="https://www.thk.com/jp/ja/products/faq/lm_guide/-/0038/modal.html">THK 모멘트 등가계수 FAQ</a></td><td>1축1블록 또는2블록 밀착 시, 블록 끝단의 볼 부하 집중 때문에 모멘트 등가계수 적용.</td><td>임의 BS 함수·하중 중심 치수는 제시되지 않음.</td></tr>
+<tr><td><a href="https://www.thk.com/jp/ja/products/faq/lm_guide/-/0160/modal.html">블록 스팬·레일 스팬 기술자료</a> / <a href="https://www.thk.com/jp/ja/products/faq/lm_guide/-/0159/modal.html">블록1개와2개 차이 기술자료</a></td><td>본회원 로그인 후 PDF 두 개를 내려받아 전쪽 텍스트와 그림을 확인했다. <a href="THK_block_rail_span_technical.pdf">스팬 자료9쪽</a> / <a href="THK_one_two_blocks_technical.pdf">블록1개·2개 자료5쪽</a>.</td><td><b>열람 완료: 필요한 산출식 없음.</b> 모멘트 강성·볼 부하의 정성 설명과 SHS 비교 사례다. HSR10R의5.7 mm 치수나 임의 BS→kP 식은 제시되지 않는다. 비교 사례를 Theta 검증 데이터로 추가하지 않았다.</td></tr>
+<tr><td><a href="https://thk.partcommunity.com/3d-cad-models/hsr10xr1uum-65lm-g7-5g7-5-without-grease-nipple-thk?info=thk%2Flinear_motion_systems%2Flm_guide%2Flm_guide%2Flm_guide_hsr%2Fminiature_type%2Fhsr_xrm_asmtab.prj">THK CADENAS HSR10XR 모델</a></td><td>본회원 SSO에서 HSR10R 검색은 결과 없음. HSR 계열→미니어처 목록에서도 현행 XR/XC 등의 형식 확인. 별도 참고 HSR10XR1UUM+65LM의 STEP AP214 생성과 다운로드 링크 출현 확인.</td><td>파일 전송은 브라우저 다운로드 이벤트 미수신 및 직접 다운로드의 Cloudflare 차단으로 미완료. 우회하지 않았다. 내부 형상 미검사. HSR10R와XR의 대응 관계 미확정. 현재 라이브러리에서 못 찾았다는 뜻이며 구형 CAD가 어디에도 없다는 판정은 아니다.</td></tr>
+<tr><td><a href="https://www.thk.com/jp/ja/journal/products/article-13052026-1.html">THK DF 구조·접촉선 설명</a></td><td>DF의 작용선 교차 등 내부 접촉 형상이 중요함을 설명.</td><td>일반 개념도이며 HSR10R 치수 단면도가 아님. 그림의 축척·접촉선 위치를5.7 mm의 증거로 쓰지 않음.</td></tr></table>
+<p><a href="https://online.thk.com/tools/cad/jp/ja/?languageIso=ja">THK 공식 CAD 이용 안내</a>: 간섭 확인용으로 단순화된 참고 데이터이며 제품 사양을 보증하지 않는다. 따라서 CAD 형상에서 읽는 명목 치수와 툴 접촉 해석용 치수는 별도로 검증해야 한다.</p><h3>5.7 mm와 1/KCR를 혼동하지 않는다</h3><pre>KCR = C0 / Mc_allow [1/mm]
+1/KCR = Mc_allow / C0 [mm] : 정격의 비로 얻은 등가 팔길이
+h [mm] : 레일 취부면에서 정의된 하중 중심까지의 좌표
+→ 단위가 같아도 같은 물리량이 아니다.
+기존 KCR=0.235이면 1/KCR≈4.255319 mm. h=5.7의 도출 근거가 되지 않는다.</pre>
+<p>하중 중심은 외형 중심·질량 중심·급유구 중심과 구분해야 한다. 접촉점 위치와 접촉각을 알아도 실제 해석 기준점 및 예압·강성에 따른 배분 정의가 별도로 필요할 수 있다. CAD에 보이는 명목 홈 형상만으로 툴의 유효 기준점이 입증되는 것은 아니다.</p>
+<h3>BS만으로 kP를 확정할 수 없는 이유</h3><pre>레이디얼 합력 분배의 평형:
+D1 + D2 = 0
+BS·D2 + mz1 + mz2 = Mz
+mz1,mz2 : 각 블록 내부에서 부담하는 국소 모멘트
+
+mz1=mz2=0을 가정하면 D2=Mz/BS.
+하지만 국소 모멘트 배분을 허용하면 접촉·강성 조건 없이 D2는 유일하지 않다.
+더구나 kP의 대상 P가 볼 부하의 등가량이면 합력 D와 동일하다고 둘 수 없다.</pre>
+<p>이는 자체 정역학 설명이며 THK 내부 알고리즘을 역산한 식이 아니다. kP=1/BS를 일반 THK식으로 승격하지 않고, 기존 표를 보간하거나 단면 치수로 새 경험식을 만들지 않았다. K=C0/M 관계 역시 정격값의 환산 관계이며 임의 BS 배분 함수까지 결정하지 않는다.</p>
+<h3>공식 확인에 필요한 질문</h3><ol><li>툴 HSR10R의 적용 도면·제품 DB 개정과 HSR10RM/HSR10XR의 대응 관계는 무엇인가?</li><li>레일 취부면을 기준으로 한 하중 중심 또는 접촉 작용선 치수가 있는가? 툴의 롤 모멘트 기준점은 무엇인가?</li><li>1레일2블록 비밀착 배치에서 BS를 고려하는 모멘트 배분식과 등가하중 P의 정의는 무엇인가?</li><li>블록별 롤 모멘트 반분의 성립 조건, 예압·접촉 강성·유효 볼 수의 취급은 무엇인가?</li></ol><p>위 질문은 검토용이며 THK에 전송하지 않았다. 본회원 기술자료 열람은 완료했다. 현재 남은 것은 정확한 구형 도면 개정·하중 중심 정의·비밀착 블록의 접촉 등가하중 배분 절차에 대한 제조사 근거다. <a href="hsr10r_additional_research.json">출처별 접근 상태·근거 분류 JSON</a></p></section></html>

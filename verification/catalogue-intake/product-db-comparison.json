@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-16",
+  "oldCount": 7,
+  "newCount": 26,
+  "unchangedNumericModels": [
+    "PU09TR",
+    "PU09UR",
+    "PU12TR",
+    "PU12UR",
+    "PU15AL",
+    "PU15BL"
+  ],
+  "numericFieldsCompared": [
+    "height",
+    "width",
+    "length",
+    "C50",
+    "C0",
+    "MRO",
+    "epsilonR"
+  ],
+  "changedSameModelFields": [],
+  "relatedDifferentModel": [
+    {
+      "oldModel": "HSR10RM (구판)",
+      "newModel": "HSR10XRM",
+      "oldC50": 1960,
+      "newC50": 2160,
+      "oldC0": 3820,
+      "newC0": 3540,
+      "meaning": "서로 다른 형번 · 값 덮어쓰기/대체품 판정 아님"
+    }
+  ],
+  "newModels": [
+    "PE09TR",
+    "PE09UR",
+    "PE12AR",
+    "PE12BR",
+    "PE15AR",
+    "PE15BR",
+    "HSR8XSRM",
+    "HSR8XRM",
+    "HSR8XLRM",
+    "HSR10XSRM",
+    "HSR10XRM",
+    "HSR10XLRM",
+    "HSR12XSRM",
+    "HSR12XRM",
+    "HSR12XLRM",
+    "SHS15C",
+    "SHS15LC",
+    "SHS20C",
+    "SHS20LC"
+  ]
+}
