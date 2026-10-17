@@ -1,5 +1,5 @@
 {
-  "release": "2026-10-17",
+  "release": "2026-10-17-minas-mdmf1",
   "purpose": "manufacturer-neutral preliminary selection",
   "files": {
     "common.css": {
@@ -11,20 +11,20 @@
       "sha256": "6140cc944994912bcb4ff39f63415f4689ebb34ce053b69f38cd72d0451acfe9"
     },
     "hub.js": {
-      "bytes": 2940,
-      "sha256": "bfa06f65db3a57bc7bcf89da075468c9e05ca9a999ea4c1c4882959a4b039d01"
+      "bytes": 2976,
+      "sha256": "831f65f01bea32f90bc1ea602c45115d0e6cc2fb38568a52284bebf7ea6866b8"
     },
     "index.html": {
-      "bytes": 5420,
-      "sha256": "265028b76c9524c265f14c05e965e4d2691dcba157440ad6f0e7e46890805ee0"
+      "bytes": 5458,
+      "sha256": "e6dfbaeb20ca87da1b3ab97c91a7a2f581de53f3f8dfed37e7b28b64673ae5de"
     },
     "sidebar.js": {
       "bytes": 98,
       "sha256": "d68e8ba3e9c4b703526af65ae59b88f67a2ed205c7fae128cef73fc9d884deb4"
     },
     "takt.html": {
-      "bytes": 2974,
-      "sha256": "43cb118b66414f3b3b2f41baabde816daec88dfb0e0b14257eaa17360288f582"
+      "bytes": 3005,
+      "sha256": "c7f01938e8788c017168f3755287040ddbc5448e0d408ea47afce1f37ff39d1b"
     },
     "takt.js": {
       "bytes": 3613,
@@ -35,8 +35,8 @@
       "sha256": "4d2e0125dde1f83984b3ac6db3b82972d248a2b1acf15e5d2f6d0bd42edef029"
     },
     "engineering/index.html": {
-      "bytes": 6067,
-      "sha256": "ec209bfb8a4d9c1f16ce8eab4022b7ead4cabb0471ac712e062557472377459e"
+      "bytes": 6158,
+      "sha256": "4d0db13f6a036d5fcac5e5deb05acd64cfc2747871e147ef35444d5b55f056f8"
     },
     "engineering/motors.js": {
       "bytes": 2468,
@@ -87,8 +87,8 @@
       "sha256": "d375e271c68a2216aa650f8c065894d375c4a9e4927b17e7eed6a5a597b19834"
     },
     "lm-guide/common.html": {
-      "bytes": 8520,
-      "sha256": "9007c27905549c08ada46a19400836ee9a67cb56dd6646f0a3eb55e44cc9488b"
+      "bytes": 8559,
+      "sha256": "144d06f77ecaa5d898cc7a606f379a08b64e2d82ab0b729e8844762de471ac7b"
     },
     "lm-guide/common.js": {
       "bytes": 18606,
@@ -103,8 +103,8 @@
       "sha256": "856a96247063d4445f8d7c3b573e3ecd038854e27baae54683ddca117e7074f7"
     },
     "lm-guide/empirical.html": {
-      "bytes": 17734,
-      "sha256": "41b0f783b023d6b58ef8655c328512f8e79c655cd3aab2b7953d90ca0f0ed874"
+      "bytes": 17948,
+      "sha256": "da362480220dc73f144e3c2bcfea578c4c1bde7cb24771717cf797de16f3deca"
     },
     "lm-guide/examples.js": {
       "bytes": 8480,
@@ -123,8 +123,20 @@
       "sha256": "ec5b61dfe3a625f660bcbc54539f0cc4d5229254ed006e7d278ad0b58ad43d00"
     },
     "lm-guide/index.html": {
-      "bytes": 6989,
-      "sha256": "cbc16b1942001a222110f27a4e73517db5b656dfb0e1519b1a696669d19cca49"
+      "bytes": 7170,
+      "sha256": "775f086efbd3b4933650effe468ec8def691a8693278f9a8961ced531cefc8fe"
+    },
+    "lm-guide/minas-catalog.js": {
+      "bytes": 2116,
+      "sha256": "a0610f9b4aaa6df7654f80ec228aee9d7e68fadc467dcb76125a6b5f669da4b1"
+    },
+    "lm-guide/motor-catalog-notes.html": {
+      "bytes": 6506,
+      "sha256": "5ca4c004c23984185e53a142b807bd86ecc40c85ffbe6a574a4fbf49cc18e3b2"
+    },
+    "lm-guide/motor-matching.js": {
+      "bytes": 7904,
+      "sha256": "c71aa03900f5bc0a501edc7fdcdc8389e870a1fc391f62c9e59480419b9b47ac"
     },
     "lm-guide/nsk-app.js": {
       "bytes": 8297,
@@ -143,24 +155,24 @@
       "sha256": "9d9444aee13c474663747cb522c4e6b717fc1de369f6d31c0fc1aa196645ed98"
     },
     "lm-guide/nsk.html": {
-      "bytes": 9414,
-      "sha256": "2dfc88d0d5a17aa152260b40ddbaecabfbd9a8e41edf2155f805e375da64db73"
+      "bytes": 9469,
+      "sha256": "4ffa6c6769d4cb093bf3b18c0195abd37eb489fb2ebd7dc3875f926f05ac56c3"
     },
     "lm-guide/operation-app.js": {
-      "bytes": 13213,
-      "sha256": "00c7e25a030cc48ae6fa0082251633130e267fc52127a513d54d895fc74e4934"
+      "bytes": 20942,
+      "sha256": "34f1eb807e69dd97b59f7be3e5fb5b7465d1d9fed3d236ab264aa5433c08af60"
     },
     "lm-guide/operation-profile.js": {
       "bytes": 6870,
       "sha256": "c656bc5df57855635b61978d837a22e0bea55d002c56f0e0ed9d38cb4a7548bc"
     },
     "lm-guide/operation.css": {
-      "bytes": 1837,
-      "sha256": "71e4150af86d3cf1288b1f382a9eb92bc719aed90b524ef71102998bfc1cd148"
+      "bytes": 2138,
+      "sha256": "7c33f56a1a1a9afcf3c37ce1a2e2b6288834beb54c1da8818eda86ca513d949e"
     },
     "lm-guide/operation.html": {
-      "bytes": 11647,
-      "sha256": "c2e8c84603f41d80a7b6cb8b438c27d1e57c367b2369f129c820023284dc1afd"
+      "bytes": 15899,
+      "sha256": "47319cb6b59558cce42c91b8a77aac74a01921f287c5a8adf2ac0fe39897f705"
     },
     "lm-guide/product-data.js": {
       "bytes": 27180,
@@ -207,52 +219,52 @@
       "sha256": "6524d496e60d5ffb20df3539a884dc625fdfff199b942a9a5058dae920dafc8e"
     },
     "verification/Theta_BS간격_검증.html": {
-      "bytes": 36587,
-      "sha256": "99aa862135ff85089c56447b27e8f5ed8b5f62b3dd9e97c8719745e6dbfe0892"
+      "bytes": 41076,
+      "sha256": "c03070272b6fa3c1b572674d3f52b59a7e64593a4133c6f049c01d5fc3180af3"
     },
     "verification/Theta_Gr전환_추가시험.html": {
-      "bytes": 21689,
-      "sha256": "e494f05fb6cc71cfed561938f21e0b1890fbec60e9ccd4a81d2a979daa500b3d"
+      "bytes": 23133,
+      "sha256": "c5779b50640bb7f3939c3a6260609cf22e7e6b52b92b86e97681a48df87b75d8"
     },
     "verification/Theta_No1전환_검증.html": {
-      "bytes": 31809,
-      "sha256": "91e1cfe490a7cffcce1bd2cfcd57e1edaea1f271d7b35e225241b2b70defceed"
+      "bytes": 35178,
+      "sha256": "1f5016aa83289b2d2b7eff00087721e1bddffc672525f8a529cf70deb76713c8"
     },
     "verification/Theta_NSK_PU09TR_1kg_corrected_tool.png": {
       "bytes": 140937,
       "sha256": "832b5412a81e3f2d5abb28a106015e23e875e9307626f44fbe570b70e7e200e8"
     },
     "verification/Theta_NSK_검증.html": {
-      "bytes": 23021,
-      "sha256": "ec01ecc78e28532ad57e4e0b40881a8647f4a50a557a8a9f24f00a89c4ff6f88"
+      "bytes": 23921,
+      "sha256": "bd2f86213cde907a5149babaf52984f45d1230e0a083465645c5e8b5e5cbe810"
     },
     "verification/Theta_raceway_Pm_cross.png": {
       "bytes": 26312,
       "sha256": "f1230cf5544fbc70f71670ef34b3ed702a1cab2d058a57b382715c97f19d3dac"
     },
     "verification/Theta_미세전환_검증.html": {
-      "bytes": 25292,
-      "sha256": "e07efe90f07a0432977784e5398958c5694468a8dee37b2347adea84cca801c5"
+      "bytes": 27692,
+      "sha256": "5042a3c8af1dc201ff1f011344d76e4d768f009fac92cbf95640335dcac2d744"
     },
     "verification/Theta_복합조건_검증.html": {
-      "bytes": 12824,
-      "sha256": "8d3a8a796e1796c6f25bbb1fca0158eb2b87c3d24f982458d0306f5d2436569b"
+      "bytes": 13504,
+      "sha256": "55ca05fb0c2e719117e715abfa72569f3820931d1a96529695da84a470e9daea"
     },
     "verification/Theta_자동하중_검증.html": {
-      "bytes": 57030,
-      "sha256": "c8db1c5fc60e284b174e3e8bdae4db9c0076b5799e697b665e37d660145e7e8d"
+      "bytes": 62545,
+      "sha256": "92cdd1d2818c7a6582ee4a431760b878133bfe825210195d75bd8c09c301ae17"
     },
     "verification/Theta_조건변경_비교표.html": {
-      "bytes": 9134,
-      "sha256": "5f7e5f241d4f66ae63f27b6954a7cd199cff885229c3cddb25e630db827a55f9"
+      "bytes": 9767,
+      "sha256": "3fd1967b3340055c525528171635f086de0f54562b9d59d01d3d2bbd9f541cc3"
     },
     "verification/Theta_카탈로그_재검증.html": {
-      "bytes": 35598,
-      "sha256": "258067f05a238010686739c4c5dc5781946ffe5db319b69c44d8d62732d353bf"
+      "bytes": 47720,
+      "sha256": "b35d84ca7d4af0ec721207973128b90fe9ad90dbaf79ee785ed38c542dc0c62e"
     },
     "verification/Theta_형상하중_근거검토.html": {
-      "bytes": 13094,
-      "sha256": "4aac2684a544d03bda2fbf13a88e6cb1e7c1e8899d366329e245ec0b1e2d845d"
+      "bytes": 13699,
+      "sha256": "704b4040f4e19862966c440836653461cc6d136cbd80dd923997ed3c1e3c2153"
     },
     "verification/THK_wall_1rail_2block_dimension.png": {
       "bytes": 9758,
