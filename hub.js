@@ -1,6 +1,6 @@
 'use strict';
 const tools=[
- {name:'LM Guide 선정',en:'LINEAR GUIDE',icon:'↔',status:'조건부 가선정',type:'limited',url:'lm-guide/common.html',text:'설치 자세와 블록 배치, 무게중심을 입력하고 블록별 하중과 제품 후보를 확인합니다.',detail:'26개 제품 데이터 · NSK 12형번 계산',scope:'현재 계산: 벽면 · 1레일 · 2블록'},
+ {name:'LM Guide 선정',en:'LINEAR GUIDE',icon:'↔',status:'조건부 가선정',type:'limited',url:'lm-guide/common.html',text:'설치 자세와 블록 배치, 무게중심을 입력하고 블록별 하중과 제품 후보를 확인합니다.',detail:'26개 제품 데이터 · NSK 12형번 계산',scope:'수평·수직·벽면 / 1레일 2블록·2레일 2~4블록'},
  {name:'볼스크류 선정',en:'BALL SCREW',icon:'⟷',status:'조건부 가선정',type:'limited',url:'engineering/index.html?tool=screw',text:'리드별 축하중·수명·정적 안전율을 검토하고 지지조건에 따른 좌굴과 위험속도를 확인합니다.',detail:'THK BNK · 4개 카탈로그 구성',scope:'G0 예압 수명 미검증 · G2 조건부 후보'},
  {name:'모터 선정',en:'SERVO MOTOR',icon:'◎',status:'조건부 가선정',type:'limited',url:'lm-guide/operation.html?tool=motor',text:'접근·가압·유지·복귀 사이클을 입력하고 리드·모터 조합별 RMS·피크 토크를 비교합니다.',detail:'Panasonic A6 MDMF · 200/400V · 8종',scope:'보수 근사 곡선 · 반복 열·회생 미검증'},
  {name:'택타임 계산',en:'MOTION TIME',icon:'◷',status:'계산 제공',type:'ready',url:'takt.html',text:'거리·최고속도·가감속도로 삼각형 또는 사다리꼴 이동 시간을 계산하고 왕복 사이클을 확인합니다.',detail:'속도 그래프 · 편도 / 왕복 · JSON 저장',scope:'정지→이동→정지 · 이상화 등가속도'},

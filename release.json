@@ -1,5 +1,5 @@
 {
-  "release": "2026-10-17-minas-mdmf1",
+  "release": "2026-10-17-lm-layout2",
   "purpose": "manufacturer-neutral preliminary selection",
   "files": {
     "common.css": {
@@ -11,12 +11,12 @@
       "sha256": "6140cc944994912bcb4ff39f63415f4689ebb34ce053b69f38cd72d0451acfe9"
     },
     "hub.js": {
-      "bytes": 2976,
-      "sha256": "831f65f01bea32f90bc1ea602c45115d0e6cc2fb38568a52284bebf7ea6866b8"
+      "bytes": 2992,
+      "sha256": "1f98b64ba3f5c91eee58ccf0c1856729a3cb870386eb7694498ed608f39271c3"
     },
     "index.html": {
       "bytes": 5458,
-      "sha256": "e6dfbaeb20ca87da1b3ab97c91a7a2f581de53f3f8dfed37e7b28b64673ae5de"
+      "sha256": "93513223cccde7fdc8f8c21417f0cec3bf02517a4e107caa06028f6a451a173c"
     },
     "sidebar.js": {
       "bytes": 98,
@@ -35,8 +35,8 @@
       "sha256": "4d2e0125dde1f83984b3ac6db3b82972d248a2b1acf15e5d2f6d0bd42edef029"
     },
     "engineering/index.html": {
-      "bytes": 6158,
-      "sha256": "4d0db13f6a036d5fcac5e5deb05acd64cfc2747871e147ef35444d5b55f056f8"
+      "bytes": 6223,
+      "sha256": "49ef737430c901df2e92196f72e446dc6e1c06454e6ef5a9e95fc4a647ed78a8"
     },
     "engineering/motors.js": {
       "bytes": 2468,
@@ -87,12 +87,12 @@
       "sha256": "d375e271c68a2216aa650f8c065894d375c4a9e4927b17e7eed6a5a597b19834"
     },
     "lm-guide/common.html": {
-      "bytes": 8559,
-      "sha256": "144d06f77ecaa5d898cc7a606f379a08b64e2d82ab0b729e8844762de471ac7b"
+      "bytes": 9751,
+      "sha256": "e11f8a1330c0fb74bb7e364ba0a341ce5062069c62cc537122b75bd4f4cc06ca"
     },
     "lm-guide/common.js": {
-      "bytes": 18606,
-      "sha256": "96e9f1aaa242c3967ae55006fccdd13295e19ed953d54a835b687b1eafea1fed"
+      "bytes": 20566,
+      "sha256": "f75c4ab197d0747e0dee12f5f0b4fac8f7f6a1074f8a69108206952bc09129a6"
     },
     "lm-guide/cycle-torque.js": {
       "bytes": 8524,
@@ -125,6 +125,14 @@
     "lm-guide/index.html": {
       "bytes": 7170,
       "sha256": "775f086efbd3b4933650effe468ec8def691a8693278f9a8961ced531cefc8fe"
+    },
+    "lm-guide/layout-loads.js": {
+      "bytes": 6671,
+      "sha256": "3fd6ecf9822073a76afbcc344a0dd2761921818c715d95a121020b41c843053a"
+    },
+    "lm-guide/layout-verification.html": {
+      "bytes": 8596,
+      "sha256": "e8a4660876634bd0f2663daa0ef0ec7d7ffbfc625ed115e4a87d94214e190e05"
     },
     "lm-guide/minas-catalog.js": {
       "bytes": 2116,
@@ -179,8 +187,8 @@
       "sha256": "59e960c17b0a038dfd0f5915b311745315b0906c3a211719d1d09b2cf558af2b"
     },
     "lm-guide/products.js": {
-      "bytes": 2122,
-      "sha256": "4de9c72991ad0b06116bba44e666020f53820dced6db48344abc6d5205ce150a"
+      "bytes": 2075,
+      "sha256": "5c6703dab3d175267acdf7690cb7278b76d6d34cca4e7894b4f80b423de3ebe9"
     },
     "lm-guide/reaction-validation.js": {
       "bytes": 2390,
