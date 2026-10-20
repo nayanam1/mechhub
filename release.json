@@ -1,5 +1,5 @@
 {
-  "release": "2026-10-17-lm-layout2",
+  "release": "2026-10-20-nsk-four-block1",
   "purpose": "manufacturer-neutral preliminary selection",
   "files": {
     "common.css": {
@@ -87,12 +87,12 @@
       "sha256": "d375e271c68a2216aa650f8c065894d375c4a9e4927b17e7eed6a5a597b19834"
     },
     "lm-guide/common.html": {
-      "bytes": 9751,
-      "sha256": "e11f8a1330c0fb74bb7e364ba0a341ce5062069c62cc537122b75bd4f4cc06ca"
+      "bytes": 9990,
+      "sha256": "e616b1aa474f6008803fefbe0287772165210dc498c1807121e5e9d9249359f6"
     },
     "lm-guide/common.js": {
-      "bytes": 20566,
-      "sha256": "f75c4ab197d0747e0dee12f5f0b4fac8f7f6a1074f8a69108206952bc09129a6"
+      "bytes": 21411,
+      "sha256": "11c89905eacd01d4396f2f436b4b5342dfb4fe9e347bf7ed87bd348b756a7f4f"
     },
     "lm-guide/cycle-torque.js": {
       "bytes": 8524,
@@ -131,8 +131,8 @@
       "sha256": "3fd6ecf9822073a76afbcc344a0dd2761921818c715d95a121020b41c843053a"
     },
     "lm-guide/layout-verification.html": {
-      "bytes": 8596,
-      "sha256": "e8a4660876634bd0f2663daa0ef0ec7d7ffbfc625ed115e4a87d94214e190e05"
+      "bytes": 13264,
+      "sha256": "efed6716466250bf541aaef75704a2cdee52e7fa2008b5ea3c7ff4a44ccd9279"
     },
     "lm-guide/minas-catalog.js": {
       "bytes": 2116,
@@ -187,8 +187,8 @@
       "sha256": "59e960c17b0a038dfd0f5915b311745315b0906c3a211719d1d09b2cf558af2b"
     },
     "lm-guide/products.js": {
-      "bytes": 2075,
-      "sha256": "5c6703dab3d175267acdf7690cb7278b76d6d34cca4e7894b4f80b423de3ebe9"
+      "bytes": 4033,
+      "sha256": "33e30491b48e6e3ae2193d37731e8193987be897ea40486bc179c489f981c6ae"
     },
     "lm-guide/reaction-validation.js": {
       "bytes": 2390,
